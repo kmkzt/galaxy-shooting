@@ -14,11 +14,12 @@ import {
 let camera: Camera, scene: Scene, renderer: Renderer
 let geometry: Geometry, material: Material, mesh: Mesh
 
+const MOVE_POINT = 1
 const init = () => {
   camera = new PerspectiveCamera(
-    70,
+    200,
     window.innerWidth / window.innerHeight,
-    0.01,
+    0.02,
     10
   )
   camera.position.z = 1
@@ -47,3 +48,22 @@ const animate = () => {
 
 init()
 animate()
+
+setInterval(() => {
+  console.log(camera.position)
+  let { x } = camera.position
+  camera.position.setX(x + MOVE_POINT)
+}, 1000)
+window.addEventListener('mousemove', (ev: MouseEvent) => {
+  // camera.position.setX(ev.clientX)
+  // if (window.innerWidth / 2 > ev.clientX) {
+  //   camera.translateX(MOVE_POINT)
+  // } else {
+  //   camera.translateX(-MOVE_POINT)
+  // }
+  // if (window.innerHeight / 2 > ev.clientY) {
+  //   camera.translateY(MOVE_POINT)
+  // } else {
+  //   camera.translateY(-MOVE_POINT)
+  // }
+})
