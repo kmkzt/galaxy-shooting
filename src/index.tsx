@@ -15,34 +15,39 @@ import { hydrate } from 'react-dom'
 import { Controler } from './Controler'
 import { Keyboard } from './enum/keyboard'
 
-let camera: Camera, scene: Scene, renderer: Renderer
-let geometry: Geometry, material: Material, mesh: Mesh
-
 const TRANSLATE_UNIT = 0.1
 const ROTATE_UNIT = 0.01
+
+const FRAME_X = 500
+const FRAME_Y = 500
+// const FRAME_X = innerWidth
+// const FRAME_Y = innerHeight
+
+const ASPECT_RATIO = FRAME_X / FRAME_Y
+
+let mesh: Mesh
+
+const scene: Scene = new Scene()
+const renderer = new WebGLRenderer({
+  antialias: true,
+  canvas: document.getElementById('drawarea') as HTMLCanvasElement
+})
+
+const camera = new PerspectiveCamera(200, ASPECT_RATIO, 0.02, 10)
+
+const box = () => {
+  const geometry: Geometry = new BoxGeometry(0.2, 0.2, 0.2)
+  const material: Material = new MeshNormalMaterial()
+
+  return new Mesh(geometry, material)
+}
+
 const init = () => {
-  camera = new PerspectiveCamera(
-    200,
-    window.innerWidth / window.innerHeight,
-    0.02,
-    10
-  )
   camera.position.z = 1
-
-  scene = new Scene()
-
-  geometry = new BoxGeometry(0.2, 0.2, 0.2)
-  material = new MeshNormalMaterial()
-
-  mesh = new Mesh(geometry, material)
+  mesh = box()
   scene.add(mesh)
 
-  renderer = new WebGLRenderer({
-    antialias: true,
-    canvas: document.getElementById('drawarea') as HTMLCanvasElement
-  })
-  renderer.setSize(window.innerWidth, window.innerHeight)
-  // document.body.appendChild(renderer.domElement)
+  renderer.setSize(FRAME_X, FRAME_Y)
 }
 
 const animate = () => {
