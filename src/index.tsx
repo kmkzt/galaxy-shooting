@@ -102,6 +102,18 @@ const keyboardAction = (key: Keyboard) => {
     case Keyboard.LEFT_ARROW:
       mesh.position.setX(mesh.position.x + TRANSLATE_UNIT)
       break
+    case Keyboard.KEY_U:
+      camera.position.setY(camera.position.y - TRANSLATE_UNIT)
+      break
+    case Keyboard.KEY_D:
+      camera.position.setY(camera.position.y + TRANSLATE_UNIT)
+      break
+    case Keyboard.KEY_L:
+      camera.position.setX(camera.position.x - TRANSLATE_UNIT)
+      break
+    case Keyboard.KEY_R:
+      camera.position.setX(camera.position.x + TRANSLATE_UNIT)
+      break
   }
 }
 hydrate(
