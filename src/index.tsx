@@ -52,9 +52,13 @@ const init = () => {
 
 const animate = () => {
   requestAnimationFrame(animate)
+  // camera.rotation.x += ROTATE_UNIT
+  // camera.rotation.y += ROTATE_UNIT
+  // camera.rotation.z += ROTATE_UNIT
 
   mesh.rotation.x += ROTATE_UNIT
   mesh.rotation.y += ROTATE_UNIT * 2
+  mesh.rotation.z += ROTATE_UNIT * 3
 
   renderer.render(scene, camera)
 }
@@ -95,29 +99,50 @@ const keyboardAction = (key: Keyboard) => {
   console.log(key)
   console.log('mesh: ', mesh, '\ncamera:', camera)
   switch (key) {
+    /**
+     * BOX POSITION Y
+     */
     case Keyboard.UP_ARROW:
-      mesh.position.setY(mesh.position.y - TRANSLATE_UNIT)
+      mesh.position.y -= TRANSLATE_UNIT
       break
     case Keyboard.DOWN_ARROW:
-      mesh.position.setY(mesh.position.y + TRANSLATE_UNIT)
+      mesh.position.y += TRANSLATE_UNIT
       break
+    /**
+     * BOX POSITION X
+     */
     case Keyboard.RIGHT_ARROW:
-      mesh.position.setX(mesh.position.x - TRANSLATE_UNIT)
+      mesh.position.x -= TRANSLATE_UNIT
       break
     case Keyboard.LEFT_ARROW:
-      mesh.position.setX(mesh.position.x + TRANSLATE_UNIT)
+      mesh.position.x += TRANSLATE_UNIT
       break
+    /**
+     * CAMERA POSITION Y
+     */
     case Keyboard.KEY_U:
-      camera.position.setY(camera.position.y - TRANSLATE_UNIT)
+      camera.position.y -= TRANSLATE_UNIT
       break
     case Keyboard.KEY_D:
-      camera.position.setY(camera.position.y + TRANSLATE_UNIT)
+      camera.position.y += TRANSLATE_UNIT
       break
+    /**
+     * CAMERA POSITION X
+     */
     case Keyboard.KEY_L:
-      camera.position.setX(camera.position.x - TRANSLATE_UNIT)
+      camera.position.x -= TRANSLATE_UNIT
       break
     case Keyboard.KEY_R:
-      camera.position.setX(camera.position.x + TRANSLATE_UNIT)
+      camera.position.x += TRANSLATE_UNIT
+      break
+    /**
+     * CAMERA POSITION Z
+     */
+    case Keyboard.KEY_N:
+      camera.position.z -= TRANSLATE_UNIT
+      break
+    case Keyboard.KEY_F:
+      camera.position.z += TRANSLATE_UNIT
       break
   }
 }
