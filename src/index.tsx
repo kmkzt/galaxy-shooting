@@ -10,6 +10,7 @@ import {
   MeshNormalMaterial,
   WebGLRenderer
 } from 'three'
+import Stats from 'stats.js'
 import React from 'react'
 import { hydrate } from 'react-dom'
 import { Controler } from './Controler'
@@ -27,6 +28,7 @@ const ASPECT_RATIO = FRAME_X / FRAME_Y
 const FAR = 10
 
 let spaceShip: Mesh
+let stats: Stats
 const canvasFrame = document.getElementById('drawarea') as HTMLCanvasElement
 
 const scene: Scene = new Scene()
@@ -49,6 +51,9 @@ const init = () => {
   spaceShip = genSpaceShip()
   scene.add(spaceShip)
 
+  stats = new Stats()
+  document.body.appendChild(stats.dom)
+  renderer.setPixelRatio(window.devicePixelRatio)
   renderer.setSize(FRAME_X, FRAME_Y)
 }
 
@@ -61,7 +66,7 @@ const animate = () => {
   // spaceShip.rotation.x += ROTATE_UNIT
   // spaceShip.rotation.y += ROTATE_UNIT * 2
   // spaceShip.rotation.z += ROTATE_UNIT * 3
-
+  stats.update()
   renderer.render(scene, camera)
 }
 
