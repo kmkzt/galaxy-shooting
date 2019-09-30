@@ -1,7 +1,7 @@
 import {
   Mesh,
-  Renderer,
-  Camera,
+  // Renderer,
+  // Camera,
   Geometry,
   Material,
   Scene,
@@ -17,7 +17,7 @@ import { Controler } from './Controler'
 import { Keyboard } from './enum/keyboard'
 
 const TRANSLATE_UNIT = 0.05
-const ROTATE_UNIT = 0.01
+// const ROTATE_UNIT = 0.01
 
 const FRAME_X = 500
 const FRAME_Y = 500

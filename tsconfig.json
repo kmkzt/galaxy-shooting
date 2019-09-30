@@ -13,7 +13,6 @@
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "downlevelIteration": true,
-    "noEmit": true,
     "noUnusedLocals": false,
     "forceConsistentCasingInFileNames": true,
     "strict": true,

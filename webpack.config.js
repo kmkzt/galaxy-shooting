@@ -6,6 +6,7 @@ const config = devMode
   ? require('./webpack.dev.config')
   : require('./webpack.prod.config')
 
+/** @type {import('webpack').Configuration} */
 const common = {
   mode: devMode ? 'development' : 'production',
   entry: resolve(__dirname, 'src/index'),
@@ -17,12 +18,26 @@ const common = {
   module: {
     rules: [
       {
+        enforce: 'pre',
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'eslint-loader',
+            options: {
+              failOnWarning: true,
+              fix: true
+            }
+          }
+        ]
+      },
+      {
         test: /\.tsx?$/,
         exclude: /node_modules/,
         use: {
           loader: 'ts-loader',
           options: {
-            transpileOnly: true
+            transpileOnly: !devMode
           }
         }
       },
