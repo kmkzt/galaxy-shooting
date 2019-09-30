@@ -17,7 +17,7 @@ import { Controler } from './Controler'
 import { Keyboard } from './enum/keyboard'
 
 const TRANSLATE_UNIT = 0.05
-// const ROTATE_UNIT = 0.01
+const ROTATE_UNIT = 0.1
 
 const FRAME_X = 500
 const FRAME_Y = 500
@@ -38,9 +38,9 @@ const renderer = new WebGLRenderer({
 })
 
 const camera = new PerspectiveCamera(200, ASPECT_RATIO, 0.02, FAR)
-
+let spaceShip_rotate: boolean = false
 const genSpaceShip = () => {
-  const geometry: Geometry = new BoxGeometry(0.2, 0.2, 0.2)
+  const geometry: Geometry = new BoxGeometry(1, 0.2, 0.2)
   const material: Material = new MeshNormalMaterial()
 
   return new Mesh(geometry, material)
@@ -51,8 +51,12 @@ const init = () => {
   spaceShip = genSpaceShip()
   scene.add(spaceShip)
 
+  /**
+   * stats.js setup
+   */
   stats = new Stats()
   document.body.appendChild(stats.dom)
+
   renderer.setPixelRatio(window.devicePixelRatio)
   renderer.setSize(FRAME_X, FRAME_Y)
 }
@@ -63,9 +67,14 @@ const animate = () => {
   // camera.rotation.y += ROTATE_UNIT
   // camera.rotation.z += ROTATE_UNIT
 
-  // spaceShip.rotation.x += ROTATE_UNIT
-  // spaceShip.rotation.y += ROTATE_UNIT * 2
-  // spaceShip.rotation.z += ROTATE_UNIT * 3
+  if (spaceShip_rotate) {
+    // spaceShip.rotation.x += ROTATE_UNIT
+    // spaceShip.rotation.y += ROTATE_UNIT * 2
+    spaceShip.rotation.z += ROTATE_UNIT
+  }
+  /**
+   * stats.js update
+   */
   stats.update()
   renderer.render(scene, camera)
 }
@@ -78,9 +87,23 @@ animate()
 //   let { x } = camera.position
 //   camera.position.setX(x + MOVE_POINT)
 // }, 1000)
+
+/**
+ *
+ */
+canvasFrame.addEventListener('click', () => {
+  spaceShip_rotate = !spaceShip_rotate
+})
+
+/**
+ * MOUSEMOVE HANDLER
+ */
 canvasFrame.addEventListener('mousemove', (e: MouseEvent) => {
   console.log(e)
   const canvasRect = canvasFrame.getBoundingClientRect()
+  /**
+   * frame point
+   */
   const x =
     (canvasRect.width - e.clientX) / canvasRect.width - camera.aspect / 2
   const y =
@@ -88,19 +111,11 @@ canvasFrame.addEventListener('mousemove', (e: MouseEvent) => {
   console.log('x', x)
   console.log('y', y)
 
+  /**
+   * SpaceShip move
+   */
   spaceShip.position.x = x * camera.far
   spaceShip.position.y = y * camera.far
-  // camera.position.setX(ev.clientX)
-  // if (window.innerWidth / 2 > ev.clientX) {
-  //   camera.translateX(MOVE_POINT)
-  // } else {
-  //   camera.translateX(-MOVE_POINT)
-  // }
-  // if (window.innerHeight / 2 > ev.clientY) {
-  //   camera.translateY(MOVE_POINT)
-  // } else {
-  //   camera.translateY(-MOVE_POINT)
-  // }
 })
 
 const isKeycode = (key: number): key is Keyboard =>

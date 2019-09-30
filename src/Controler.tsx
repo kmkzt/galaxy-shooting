@@ -38,10 +38,6 @@ export const Controler: FC<Props> = ({ onKeyboard }) => {
 }
 
 const Wrap = styled.div`
-  position: fixed;
-  bottom: 10px;
-  right: 10px;
   display: flex;
-  justify-content: flex-end;
   flex-wrap: wrap;
 `
