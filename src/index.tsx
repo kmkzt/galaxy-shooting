@@ -10,9 +10,10 @@ import {
   MeshNormalMaterial,
   WebGLRenderer
 } from 'three'
-import Stats from 'stats.js'
 import React from 'react'
 import { hydrate } from 'react-dom'
+import Stats from 'stats.js'
+import dat from 'dat.gui'
 import { Controler } from './Controler'
 import { Keyboard } from './enum/keyboard'
 
@@ -59,6 +60,22 @@ const init = () => {
 
   renderer.setPixelRatio(window.devicePixelRatio)
   renderer.setSize(FRAME_X, FRAME_Y)
+
+  const gui = new dat.GUI()
+  for (let key in spaceShip) {
+    if (typeof spaceShip[key] === 'object') {
+      // console.log(key, typeof spaceShip[key])
+      for (let param in spaceShip[key]) {
+        // console.log(param, typeof spaceShip[key][param])
+        if (
+          typeof spaceShip[key][param] !== 'object' &&
+          typeof spaceShip[key][param] !== 'function'
+        ) {
+          gui.add(spaceShip[key], param)
+        }
+      }
+    }
+  }
 }
 
 const animate = () => {
