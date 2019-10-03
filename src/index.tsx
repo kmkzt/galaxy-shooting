@@ -1,14 +1,20 @@
 import {
   Mesh,
   // Renderer,
-  // Camera,
+  Camera,
   Geometry,
   Material,
   Scene,
   PerspectiveCamera,
   BoxGeometry,
   MeshNormalMaterial,
-  WebGLRenderer
+  MeshPhongMaterial,
+  WebGLRenderer,
+  VertexColors,
+  Float32BufferAttribute,
+  Color,
+  BoxBufferGeometry,
+  Fog
 } from 'three'
 import React from 'react'
 import { hydrate } from 'react-dom'
@@ -28,30 +34,101 @@ const FRAME_Y = 500
 const ASPECT_RATIO = FRAME_X / FRAME_Y
 const FAR = 10
 
+/**
+ * Object
+ */
 let spaceShip: Mesh
+let spaceShip_rotate: boolean = false
+
+let boxs: Mesh[] = []
+
+/**
+ * COntroler
+ */
 let stats: Stats
 const canvasFrame = document.getElementById('drawarea') as HTMLCanvasElement
 
-const scene: Scene = new Scene()
+let camera: PerspectiveCamera
+let scene: Scene
+
 const renderer = new WebGLRenderer({
   antialias: true,
   canvas: canvasFrame
 })
 
-const camera = new PerspectiveCamera(200, ASPECT_RATIO, 0.02, FAR)
-let spaceShip_rotate: boolean = false
 const genSpaceShip = () => {
   const geometry: Geometry = new BoxGeometry(1, 0.2, 0.2)
   const material: Material = new MeshNormalMaterial()
 
-  return new Mesh(geometry, material)
+  spaceShip = new Mesh(geometry, material)
+  scene.add(spaceShip)
+}
+/**
+ * Generate box
+ */
+const genBox = () => {
+  const boxBufferGeometry = new BoxBufferGeometry(20, 20, 20)
+  const boxGeometry = boxBufferGeometry.toNonIndexed() // ensure each face has unique vertices
+  const position = boxGeometry.attributes.position
+  const colors = []
+  const color = new Color()
+  for (var i = 0, l = position.count; i < l; i++) {
+    color.setHSL(Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75)
+    colors.push(color.r, color.g, color.b)
+  }
+  boxGeometry.addAttribute('color', new Float32BufferAttribute(colors, 3))
+  for (var i = 0; i < 500; i++) {
+    const boxMaterial = new MeshPhongMaterial({
+      specular: 0xffffff,
+      flatShading: true,
+      vertexColors: VertexColors
+    })
+    boxMaterial.color.setHSL(
+      Math.random() * 0.2 + 0.5,
+      0.75,
+      Math.random() * 0.25 + 0.75
+    )
+    const box = new Mesh(boxGeometry, boxMaterial)
+    box.position.x = Math.floor(Math.random() * 20 - 10) * FAR
+    box.position.y = Math.floor(Math.random() * 20) * 20 + FAR / 2
+    box.position.z = Math.floor(Math.random() * 20 - 10) * FAR
+    scene.add(box)
+    boxs.push(box)
+  }
 }
 
 const init = () => {
+  camera = new PerspectiveCamera(200, ASPECT_RATIO, 0.02, FAR)
   camera.position.z = 1
-  spaceShip = genSpaceShip()
-  scene.add(spaceShip)
 
+  /**
+   * TODO: adjust box camera
+   */
+  // camera = new PerspectiveCamera(
+  //   75,
+  //   window.innerWidth / window.innerHeight,
+  //   1,
+  //   1000
+  // )
+  // camera.position.z = 10
+
+  scene = new Scene()
+  scene.background = new Color(0xffffff)
+  /**
+   * TODO: adjust box scene
+   */
+  // scene = new Scene()
+  // scene.background = new Color(0xffffff)
+  // scene.fog = new Fog(0xffffff, 0, 750)
+  /**
+   * generate space ship
+   */
+  genSpaceShip()
+
+  /**
+   * generate box
+   */
+  genBox()
   /**
    * stats.js setup
    */
