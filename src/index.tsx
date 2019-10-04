@@ -14,7 +14,8 @@ import {
   Float32BufferAttribute,
   Color,
   BoxBufferGeometry,
-  Fog
+  Fog,
+  HemisphereLight
 } from 'three'
 import React from 'react'
 import { hydrate } from 'react-dom'
@@ -24,12 +25,13 @@ import { Controler } from './Controler'
 import { Keyboard } from './enum/keyboard'
 
 const TRANSLATE_UNIT = 0.05
+const CAMERA_MOVE_UNIT = 20
 const ROTATE_UNIT = 0.1
 
-const FRAME_X = 500
-const FRAME_Y = 500
-// const FRAME_X = innerWidth
-// const FRAME_Y = innerHeight
+// const FRAME_X = 500
+// const FRAME_Y = 500
+const FRAME_X = innerWidth
+const FRAME_Y = innerHeight
 
 const ASPECT_RATIO = FRAME_X / FRAME_Y
 const FAR = 10
@@ -67,7 +69,7 @@ const genSpaceShip = () => {
  * Generate box
  */
 const genBox = () => {
-  const boxBufferGeometry = new BoxBufferGeometry(20, 20, 20)
+  const boxBufferGeometry = new BoxBufferGeometry(1, 1, 1)
   const boxGeometry = boxBufferGeometry.toNonIndexed() // ensure each face has unique vertices
   const position = boxGeometry.attributes.position
   const colors = []
@@ -78,20 +80,24 @@ const genBox = () => {
   }
   boxGeometry.addAttribute('color', new Float32BufferAttribute(colors, 3))
   for (var i = 0; i < 500; i++) {
-    const boxMaterial = new MeshPhongMaterial({
-      specular: 0xffffff,
-      flatShading: true,
-      vertexColors: VertexColors
-    })
-    boxMaterial.color.setHSL(
-      Math.random() * 0.2 + 0.5,
-      0.75,
-      Math.random() * 0.25 + 0.75
-    )
+    // const boxMaterial = new MeshPhongMaterial({
+    //   specular: 0xffffff,
+    //   flatShading: true,
+    //   vertexColors: VertexColors
+    // })
+    // boxMaterial.color.setHSL(
+    //   Math.random() * 0.2 + 0.5,
+    //   0.75,
+    //   Math.random() * 0.25 + 0.75
+    // )
+    const boxMaterial = new MeshNormalMaterial()
+
     const box = new Mesh(boxGeometry, boxMaterial)
-    box.position.x = Math.floor(Math.random() * 20 - 10) * FAR
-    box.position.y = Math.floor(Math.random() * 20) * 20 + FAR / 2
-    box.position.z = Math.floor(Math.random() * 20 - 10) * FAR
+    box.position.x = Math.floor(Math.random() * 100) / 10 - 5
+    box.position.y = Math.floor(Math.random() * 100) / 10 - 5
+    box.position.z = Math.floor(Math.random() * 100) / 10 - 5 - FAR
+
+    console.log(box.position)
     scene.add(box)
     boxs.push(box)
   }
@@ -101,19 +107,12 @@ const init = () => {
   camera = new PerspectiveCamera(200, ASPECT_RATIO, 0.02, FAR)
   camera.position.z = 1
 
-  /**
-   * TODO: adjust box camera
-   */
-  // camera = new PerspectiveCamera(
-  //   75,
-  //   window.innerWidth / window.innerHeight,
-  //   1,
-  //   1000
-  // )
-  // camera.position.z = 10
-
   scene = new Scene()
   scene.background = new Color(0xffffff)
+
+  // const light = new HemisphereLight(0xeeeeff, 0x777788, 0.75)
+  // light.position.set(0.5, 1, 0.75)
+  // scene.add(light)
   /**
    * TODO: adjust box scene
    */
@@ -129,15 +128,18 @@ const init = () => {
    * generate box
    */
   genBox()
-  /**
-   * stats.js setup
-   */
-  stats = new Stats()
-  document.body.appendChild(stats.dom)
 
+  /**
+   * Renderer config
+   */
   renderer.setPixelRatio(window.devicePixelRatio)
   renderer.setSize(FRAME_X, FRAME_Y)
 
+  /**
+   * DEV TOOLS
+   */
+  stats = new Stats()
+  document.body.appendChild(stats.dom)
   const gui = new dat.GUI()
   for (let key in spaceShip) {
     if (typeof spaceShip[key] === 'object') {
@@ -202,14 +204,13 @@ canvasFrame.addEventListener('mousemove', (e: MouseEvent) => {
     (canvasRect.width - e.clientX) / canvasRect.width - camera.aspect / 2
   const y =
     (e.clientY - canvasRect.height) / canvasRect.height + camera.aspect / 2
-  console.log('x', x)
-  console.log('y', y)
 
   /**
    * SpaceShip move
    */
   spaceShip.position.x = x * camera.far
   spaceShip.position.y = y * camera.far
+  console.log(spaceShip.position)
 })
 
 const isKeycode = (key: number): key is Keyboard =>
@@ -248,28 +249,28 @@ const keyboardAction = (key: Keyboard) => {
      * CAMERA POSITION Y
      */
     case Keyboard.KEY_U:
-      camera.position.y -= TRANSLATE_UNIT
+      camera.position.y -= CAMERA_MOVE_UNIT
       break
     case Keyboard.KEY_D:
-      camera.position.y += TRANSLATE_UNIT
+      camera.position.y += CAMERA_MOVE_UNIT
       break
     /**
      * CAMERA POSITION X
      */
     case Keyboard.KEY_L:
-      camera.position.x -= TRANSLATE_UNIT
+      camera.position.x -= CAMERA_MOVE_UNIT
       break
     case Keyboard.KEY_R:
-      camera.position.x += TRANSLATE_UNIT
+      camera.position.x += CAMERA_MOVE_UNIT
       break
     /**
      * CAMERA POSITION Z
      */
     case Keyboard.KEY_N:
-      camera.position.z -= TRANSLATE_UNIT
+      camera.position.z -= CAMERA_MOVE_UNIT
       break
     case Keyboard.KEY_F:
-      camera.position.z += TRANSLATE_UNIT
+      camera.position.z += CAMERA_MOVE_UNIT
       break
   }
 }
