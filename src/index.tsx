@@ -28,10 +28,10 @@ const TRANSLATE_UNIT = 0.05
 const CAMERA_MOVE_UNIT = 20
 const ROTATE_UNIT = 0.1
 
-// const FRAME_X = 500
-// const FRAME_Y = 500
-const FRAME_X = innerWidth
-const FRAME_Y = innerHeight
+const FRAME_X = 500
+const FRAME_Y = 500
+// const FRAME_X = innerWidth
+// const FRAME_Y = innerHeight
 
 const ASPECT_RATIO = FRAME_X / FRAME_Y
 const FAR = 10
@@ -80,17 +80,17 @@ const genBox = () => {
   }
   boxGeometry.addAttribute('color', new Float32BufferAttribute(colors, 3))
   for (var i = 0; i < 500; i++) {
-    // const boxMaterial = new MeshPhongMaterial({
-    //   specular: 0xffffff,
-    //   flatShading: true,
-    //   vertexColors: VertexColors
-    // })
-    // boxMaterial.color.setHSL(
-    //   Math.random() * 0.2 + 0.5,
-    //   0.75,
-    //   Math.random() * 0.25 + 0.75
-    // )
-    const boxMaterial = new MeshNormalMaterial()
+    const boxMaterial = new MeshPhongMaterial({
+      specular: 0xffffff,
+      flatShading: true,
+      vertexColors: VertexColors
+    })
+    boxMaterial.color.setHSL(
+      Math.random() * 0.2 + 0.5,
+      0.75,
+      Math.random() * 0.25 + 0.75
+    )
+    // const boxMaterial = new MeshNormalMaterial()
 
     const box = new Mesh(boxGeometry, boxMaterial)
     box.position.x = Math.floor(Math.random() * 100) / 10 - 5
@@ -110,9 +110,9 @@ const init = () => {
   scene = new Scene()
   scene.background = new Color(0xffffff)
 
-  // const light = new HemisphereLight(0xeeeeff, 0x777788, 0.75)
-  // light.position.set(0.5, 1, 0.75)
-  // scene.add(light)
+  const light = new HemisphereLight(0xeeeeff, 0x777788, 0.75)
+  light.position.set(0.5, 1, 0.75)
+  scene.add(light)
   /**
    * TODO: adjust box scene
    */
@@ -178,11 +178,10 @@ const animate = () => {
 init()
 animate()
 
-// setInterval(() => {
-//   console.log(camera.position)
-//   let { x } = camera.position
-//   camera.position.setX(x + MOVE_POINT)
-// }, 1000)
+setInterval(() => {
+  camera.position.z -= 0.01
+  spaceShip.position.z -= 0.01
+}, 10)
 
 /**
  *
