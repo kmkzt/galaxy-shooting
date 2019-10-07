@@ -93,8 +93,8 @@ const genBox = () => {
     // const boxMaterial = new MeshNormalMaterial()
 
     const box = new Mesh(boxGeometry, boxMaterial)
-    box.position.x = Math.floor(Math.random() * 100) / 10 - 5
-    box.position.y = Math.floor(Math.random() * 100) / 10 - 5
+    box.position.x = Math.floor(Math.random() * FRAME_X) * 0.5 - FRAME_X / 10
+    box.position.y = Math.floor(Math.random() * FRAME_Y) * 0.5 - FRAME_Y / 10
     box.position.z = Math.floor(Math.random() * 100) / 10 - 5 - FAR
 
     console.log(box.position)
