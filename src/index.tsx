@@ -47,11 +47,16 @@ let boxs: Mesh[] = []
 /**
  * COntroler
  */
-let stats: Stats
+const stats: Stats = new Stats()
 const canvasFrame = document.getElementById('drawarea') as HTMLCanvasElement
 
-let camera: PerspectiveCamera
-let scene: Scene
+const camera: PerspectiveCamera = new PerspectiveCamera(
+  200,
+  ASPECT_RATIO,
+  0.02,
+  FAR
+)
+const scene: Scene = new Scene()
 
 const renderer = new WebGLRenderer({
   antialias: true,
@@ -104,15 +109,23 @@ const genBox = () => {
 }
 
 const init = () => {
-  camera = new PerspectiveCamera(200, ASPECT_RATIO, 0.02, FAR)
   camera.position.z = 1
 
-  scene = new Scene()
-  scene.background = new Color(0xffffff)
-
+  /**
+   * background color
+   */
+  scene.background = new Color(0x000000)
+  /**
+   * Fog
+   */
+  scene.fog = new Fog(0x000000, 50, 2000)
+  /**
+   * Light
+   */
   const light = new HemisphereLight(0xeeeeff, 0x777788, 0.75)
   light.position.set(0.5, 1, 0.75)
   scene.add(light)
+
   /**
    * TODO: adjust box scene
    */
@@ -138,7 +151,6 @@ const init = () => {
   /**
    * DEV TOOLS
    */
-  stats = new Stats()
   document.body.appendChild(stats.dom)
   const gui = new dat.GUI()
   for (let key in spaceShip) {
