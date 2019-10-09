@@ -152,23 +152,35 @@ const init = () => {
    * DEV TOOLS
    */
   document.body.appendChild(stats.dom)
+
   const gui = new dat.GUI()
-  for (let key in spaceShip) {
-    if (typeof spaceShip[key] === 'object') {
-      // console.log(key, typeof spaceShip[key])
-      for (let param in spaceShip[key]) {
-        // console.log(param, typeof spaceShip[key][param])
-        if (
-          typeof spaceShip[key][param] !== 'object' &&
-          typeof spaceShip[key][param] !== 'function'
-        ) {
-          gui.add(spaceShip[key], param)
+  setDataGui(camera, gui.addFolder('camera'))
+  setDataGui(scene, gui.addFolder('scene'))
+  setDataGui(light, gui.addFolder('light'))
+  setDataGui(spaceShip, gui.addFolder('spaceShip'))
+}
+
+const setDataGui = (data: object, g: dat.GUI) => {
+  for (let key in data) {
+    switch (typeof data[key]) {
+      case 'object':
+        // console.log(key, typeof spaceShip[key])
+        let paramGui = g.addFolder(key)
+        for (let param in data[key]) {
+          if (typeof data[key][param] === 'function') continue
+          if (typeof data[key][param] === 'object') continue
+          paramGui.add(data[key], param)
         }
-      }
+        break
+      case 'number':
+      case 'string':
+        g.add(data, key)
+        break
     }
   }
 }
 
+const nestGuiAdd = (data: any, key: string, g: dat.GUI) => {}
 const animate = () => {
   requestAnimationFrame(animate)
   // camera.rotation.x += ROTATE_UNIT
@@ -190,10 +202,10 @@ const animate = () => {
 init()
 animate()
 
-setInterval(() => {
-  camera.position.z -= 0.01
-  spaceShip.position.z -= 0.01
-}, 10)
+// setInterval(() => {
+//   camera.position.z -= 0.01
+//   spaceShip.position.z -= 0.01
+// }, 10)
 
 /**
  *
