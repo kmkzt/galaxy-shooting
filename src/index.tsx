@@ -15,7 +15,8 @@ import {
   Color,
   BoxBufferGeometry,
   Fog,
-  HemisphereLight
+  HemisphereLight,
+  Object3D
 } from 'three'
 import React from 'react'
 import { hydrate } from 'react-dom'
@@ -42,38 +43,36 @@ const FAR = 10
 let spaceShip: Mesh
 let spaceShip_rotate: boolean = false
 
-let boxs: Mesh[] = []
+let boxs: Object3D[] = []
 
 /**
- * COntroler
+ * Controler
  */
-const stats: Stats = new Stats()
+const stats = new Stats()
 const canvasFrame = document.getElementById('drawarea') as HTMLCanvasElement
 
-const camera: PerspectiveCamera = new PerspectiveCamera(
-  200,
-  ASPECT_RATIO,
-  0.02,
-  FAR
-)
-const scene: Scene = new Scene()
+const camera = new PerspectiveCamera(200, ASPECT_RATIO, 0.02, FAR)
+const scene = new Scene()
 
 const renderer = new WebGLRenderer({
   antialias: true,
   canvas: canvasFrame
 })
 
-const genSpaceShip = () => {
+/**
+ * Generate SpaceShip
+ */
+const genSpaceShip = (s: Scene) => {
   const geometry: Geometry = new BoxGeometry(1, 0.2, 0.2)
   const material: Material = new MeshNormalMaterial()
 
   spaceShip = new Mesh(geometry, material)
-  scene.add(spaceShip)
+  s.add(spaceShip)
 }
 /**
  * Generate box
  */
-const genBox = () => {
+const genBox = (s: Scene) => {
   const boxBufferGeometry = new BoxBufferGeometry(1, 1, 1)
   const boxGeometry = boxBufferGeometry.toNonIndexed() // ensure each face has unique vertices
   const position = boxGeometry.attributes.position
@@ -101,9 +100,7 @@ const genBox = () => {
     box.position.x = Math.floor(Math.random() * FRAME_X) * 0.5 - FRAME_X / 10
     box.position.y = Math.floor(Math.random() * FRAME_Y) * 0.5 - FRAME_Y / 10
     box.position.z = Math.floor(Math.random() * 100) / 10 - 5 - FAR
-
-    console.log(box.position)
-    scene.add(box)
+    s.add(box)
     boxs.push(box)
   }
 }
@@ -131,16 +128,16 @@ const init = () => {
    */
   // scene = new Scene()
   // scene.background = new Color(0xffffff)
-  // scene.fog = new Fog(0xffffff, 0, 750)
+  scene.fog = new Fog(0xffffff, 0, 750)
   /**
    * generate space ship
    */
-  genSpaceShip()
+  genSpaceShip(scene)
 
   /**
    * generate box
    */
-  genBox()
+  genBox(scene)
 
   /**
    * Renderer config
@@ -180,18 +177,33 @@ const setDataGui = (data: object, g: dat.GUI) => {
   }
 }
 
-const nestGuiAdd = (data: any, key: string, g: dat.GUI) => {}
+/**
+ * Check Block
+ * TODO: Fix check no block
+ */
+const isNoBlock = () => camera.position.z < -15
+
+/**
+ * Animation loop
+ */
 const animate = () => {
   requestAnimationFrame(animate)
-  // camera.rotation.x += ROTATE_UNIT
-  // camera.rotation.y += ROTATE_UNIT
-  // camera.rotation.z += ROTATE_UNIT
 
   if (spaceShip_rotate) {
-    // spaceShip.rotation.x += ROTATE_UNIT
-    // spaceShip.rotation.y += ROTATE_UNIT * 2
     spaceShip.rotation.z += ROTATE_UNIT
   }
+
+  if (isNoBlock()) {
+    scene.remove(...boxs)
+    genBox(scene)
+    camera.position.z = 0
+    spaceShip.position.z = 0
+  }
+  /**
+   * Moving SpaceShip
+   */
+  spaceShip.position.z -= 0.2
+  camera.position.z -= 0.2
   /**
    * stats.js update
    */
@@ -201,11 +213,6 @@ const animate = () => {
 
 init()
 animate()
-
-// setInterval(() => {
-//   camera.position.z -= 0.01
-//   spaceShip.position.z -= 0.01
-// }, 10)
 
 /**
  *
@@ -218,7 +225,6 @@ canvasFrame.addEventListener('click', () => {
  * MOUSEMOVE HANDLER
  */
 canvasFrame.addEventListener('mousemove', (e: MouseEvent) => {
-  console.log(e)
   const canvasRect = canvasFrame.getBoundingClientRect()
   /**
    * frame point
@@ -233,11 +239,11 @@ canvasFrame.addEventListener('mousemove', (e: MouseEvent) => {
    */
   spaceShip.position.x = x * camera.far
   spaceShip.position.y = y * camera.far
-  console.log(spaceShip.position)
 })
 
 const isKeycode = (key: number): key is Keyboard =>
   Object.values(Keyboard).includes(key)
+
 window.addEventListener('keydown', (ev: KeyboardEvent) => {
   const keyCode = ev.keyCode
   if (isKeycode(keyCode)) {
@@ -246,9 +252,6 @@ window.addEventListener('keydown', (ev: KeyboardEvent) => {
 })
 
 const keyboardAction = (key: Keyboard) => {
-  console.log(key)
-  console.log('spaceShip: ', spaceShip)
-  console.log('camera:', camera)
   switch (key) {
     /**
      * spaceShip POSITION Y
