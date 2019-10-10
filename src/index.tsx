@@ -181,7 +181,7 @@ const setDataGui = (data: object, g: dat.GUI) => {
  * Check Block
  * TODO: Fix check no block
  */
-const isNoBlock = () => camera.position.z < -15
+const isNoBlock = () => camera.position.z < -10
 
 /**
  * Animation loop
@@ -196,7 +196,7 @@ const animate = () => {
   if (isNoBlock()) {
     scene.remove(...boxs)
     genBox(scene)
-    camera.position.z = 0
+    camera.position.z = 1
     spaceShip.position.z = 0
   }
   /**
