@@ -29,10 +29,10 @@ const TRANSLATE_UNIT = 0.05
 const CAMERA_MOVE_UNIT = 20
 const ROTATE_UNIT = 0.1
 
-const FRAME_X = 500
-const FRAME_Y = 500
-// const FRAME_X = innerWidth
-// const FRAME_Y = innerHeight
+// const FRAME_X = 500
+// const FRAME_Y = 500
+const FRAME_X = innerWidth
+const FRAME_Y = innerHeight
 
 const ASPECT_RATIO = FRAME_X / FRAME_Y
 const FAR = 10
@@ -230,9 +230,9 @@ canvasFrame.addEventListener('mousemove', (e: MouseEvent) => {
    * frame point
    */
   const x =
-    (canvasRect.width - e.clientX) / canvasRect.width - camera.aspect / 2
-  const y =
-    (e.clientY - canvasRect.height) / canvasRect.height + camera.aspect / 2
+    ((canvasRect.width - e.clientX - FRAME_X / 2) * camera.aspect) /
+    canvasRect.width
+  const y = (e.clientY - canvasRect.height + FRAME_Y / 2) / canvasRect.height
 
   /**
    * SpaceShip move
