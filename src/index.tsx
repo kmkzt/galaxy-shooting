@@ -75,7 +75,7 @@ renderer.setSize(FRAME_X, FRAME_Y)
 const ASPECT_RATIO = FRAME_X / FRAME_Y
 const FOV = 200
 const FAR = 10
-const NEAR = 0.02
+const NEAR = 0.5
 const DEFAULT_DISTANCE_Z = 1
 
 const camera = new PerspectiveCamera(FOV, ASPECT_RATIO, NEAR, FAR)
@@ -108,6 +108,7 @@ const switchSpeceShipRotate = () => (spaceShip_rotate = !spaceShip_rotate)
  * Generate box
  */
 let boxs: Object3D[] = []
+const BOX_NUMBER = 100
 const genBox = (s: Scene) => {
   const boxBufferGeometry = new BoxBufferGeometry(1, 1, 1)
   const boxGeometry = boxBufferGeometry.toNonIndexed() // ensure each face has unique vertices
@@ -119,7 +120,7 @@ const genBox = (s: Scene) => {
     colors.push(color.r, color.g, color.b)
   }
   boxGeometry.addAttribute('color', new Float32BufferAttribute(colors, 3))
-  for (var i = 0; i < 500; i++) {
+  for (var i = 0; i < BOX_NUMBER; i++) {
     const boxMaterial = new MeshPhongMaterial({
       specular: 0xffffff,
       flatShading: true,
@@ -133,9 +134,9 @@ const genBox = (s: Scene) => {
     // const boxMaterial = new MeshNormalMaterial()
 
     const box = new Mesh(boxGeometry, boxMaterial)
-    box.position.x = Math.floor(Math.random() * FRAME_X) * 0.5 - FRAME_X / 10
-    box.position.y = Math.floor(Math.random() * FRAME_Y) * 0.5 - FRAME_Y / 10
-    box.position.z = Math.floor(Math.random() * 100) / 10 - 5 - FAR
+    box.position.x = Math.floor(Math.random() * FRAME_X - FRAME_X * 0.5) / FAR
+    box.position.y = Math.floor(Math.random() * FRAME_Y - FRAME_Y * 0.5) / FAR
+    box.position.z = Math.floor(Math.random() * 100) / FAR - FAR
     s.add(box)
     boxs.push(box)
   }
