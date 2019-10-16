@@ -16,6 +16,7 @@ export class SpaceShip extends Mesh {
     material: Material | Material[] = new MeshNormalMaterial()
   ) {
     super(geometry, material)
+    this.switchRotate = this.switchRotate.bind(this)
   }
 
   public switchRotate() {

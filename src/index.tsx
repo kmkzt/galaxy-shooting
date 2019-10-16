@@ -1,19 +1,8 @@
 import {
-  Mesh,
-  // Renderer,
-  Camera,
-  Geometry,
-  Material,
   Scene,
   PerspectiveCamera,
-  BoxGeometry,
-  MeshNormalMaterial,
-  MeshPhongMaterial,
   WebGLRenderer,
-  VertexColors,
-  Float32BufferAttribute,
   Color,
-  BoxBufferGeometry,
   Fog,
   HemisphereLight,
   Object3D
@@ -25,6 +14,7 @@ import dat from 'dat.gui'
 import { Controler } from './Controler'
 import { Keyboard } from './enum/keyboard'
 import { SpaceShip } from './SpaceShip'
+import { Meteolite } from './Meteolite'
 
 const TRANSLATE_UNIT = 0.05
 const CAMERA_MOVE_UNIT = 20
@@ -95,45 +85,17 @@ scene.add(light)
  * SpaceShip Configuration
  */
 let spaceShip: SpaceShip = new SpaceShip()
-let spaceShip_rotate: boolean = false
-
-const switchSpeceShipRotate = () => (spaceShip_rotate = !spaceShip_rotate)
 
 /**
  * Generate box
  */
-let boxs: Object3D[] = []
-const BOX_NUMBER = 100
-const genBox = (s: Scene) => {
-  const boxBufferGeometry = new BoxBufferGeometry(1, 1, 1)
-  const boxGeometry = boxBufferGeometry.toNonIndexed() // ensure each face has unique vertices
-  const position = boxGeometry.attributes.position
-  const colors = []
-  const color = new Color()
-  for (var i = 0, l = position.count; i < l; i++) {
-    color.setHSL(Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75)
-    colors.push(color.r, color.g, color.b)
-  }
-  boxGeometry.addAttribute('color', new Float32BufferAttribute(colors, 3))
-  for (var i = 0; i < BOX_NUMBER; i++) {
-    const boxMaterial = new MeshPhongMaterial({
-      specular: 0xffffff,
-      flatShading: true,
-      vertexColors: VertexColors
-    })
-    boxMaterial.color.setHSL(
-      Math.random() * 0.2 + 0.5,
-      0.75,
-      Math.random() * 0.25 + 0.75
-    )
-    // const boxMaterial = new MeshNormalMaterial()
-
-    const box = new Mesh(boxGeometry, boxMaterial)
-    box.position.x = Math.floor(Math.random() * FRAME_X - FRAME_X * 0.5) / FAR
-    box.position.y = Math.floor(Math.random() * FRAME_Y - FRAME_Y * 0.5) / FAR
-    box.position.z = Math.floor(Math.random() * 100) / FAR - FAR
-    s.add(box)
-    boxs.push(box)
+let meteolites: Object3D[] = []
+const METEOLITE_NUMBER = 100
+const genMeteolites = () => {
+  for (var i = 0; i < METEOLITE_NUMBER; i++) {
+    const meteo = new Meteolite()
+    meteo.setRandomPosition(FRAME_X, FRAME_Y, FAR)
+    meteolites.push(meteo)
   }
 }
 // TODO: Fix check no block
@@ -150,8 +112,8 @@ const init = () => {
   /**
    * generate box
    */
-  genBox(scene)
-
+  genMeteolites()
+  scene.add(...meteolites)
   /**
    * DEV TOOLS
    */
@@ -175,8 +137,9 @@ const animate = () => {
   }
 
   if (isNoBox()) {
-    scene.remove(...boxs)
-    genBox(scene)
+    scene.remove(...meteolites)
+    genMeteolites()
+    scene.add(...meteolites)
     camera.position.z = DEFAULT_DISTANCE_Z
     spaceShip.position.z = 0
   }
@@ -199,7 +162,7 @@ animate()
  * CLICK ACTION
  */
 canvasFrame.addEventListener('click', () => {
-  switchSpeceShipRotate()
+  spaceShip.switchRotate()
 })
 
 /**
@@ -267,7 +230,7 @@ const keyboardAction = (key: Keyboard) => {
       camera.position.z += CAMERA_MOVE_UNIT
       break
     case Keyboard.SPACE:
-      switchSpeceShipRotate()
+      spaceShip.switchRotate()
       break
   }
 }
