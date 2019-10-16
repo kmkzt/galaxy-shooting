@@ -24,6 +24,7 @@ import Stats from 'stats.js'
 import dat from 'dat.gui'
 import { Controler } from './Controler'
 import { Keyboard } from './enum/keyboard'
+import { SpaceShip } from './SpaceShip'
 
 const TRANSLATE_UNIT = 0.05
 const CAMERA_MOVE_UNIT = 20
@@ -93,15 +94,9 @@ scene.add(light)
 /**
  * SpaceShip Configuration
  */
-let spaceShip: Mesh
+let spaceShip: SpaceShip = new SpaceShip()
 let spaceShip_rotate: boolean = false
-const genSpaceShip = (s: Scene) => {
-  const geometry: Geometry = new BoxGeometry(1, 0.2, 0.2)
-  const material: Material = new MeshNormalMaterial()
 
-  spaceShip = new Mesh(geometry, material)
-  s.add(spaceShip)
-}
 const switchSpeceShipRotate = () => (spaceShip_rotate = !spaceShip_rotate)
 
 /**
@@ -150,7 +145,7 @@ const init = () => {
   /**
    * generate space ship
    */
-  genSpaceShip(scene)
+  scene.add(spaceShip)
 
   /**
    * generate box
@@ -175,7 +170,7 @@ const init = () => {
 const animate = () => {
   requestAnimationFrame(animate)
 
-  if (spaceShip_rotate) {
+  if (spaceShip.isRotation) {
     spaceShip.rotation.z += ROTATE_UNIT
   }
 
