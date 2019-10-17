@@ -89,17 +89,16 @@ let spaceShip: SpaceShip = new SpaceShip()
 /**
  * Generate box
  */
-let meteolites: Object3D[] = []
-const METEOLITE_NUMBER = 100
-const genMeteolites = () => {
-  for (var i = 0; i < METEOLITE_NUMBER; i++) {
+let meteolites: Meteolite[] = []
+const METEOLITE_DEFAULT_NUMBER = 100
+const METEOLITE_DISTANCE = 10
+const genMeteolites = (num: number = METEOLITE_DEFAULT_NUMBER) => {
+  for (var i = 0; i < num; i++) {
     const meteo = new Meteolite()
-    meteo.setRandomPosition(FRAME_X, FRAME_Y, FAR)
+    meteo.setRandomPosition(FRAME_X, FRAME_Y, METEOLITE_DISTANCE)
     meteolites.push(meteo)
   }
 }
-// TODO: Fix check no block
-const isNoBox = () => camera.position.z < -camera.far
 /**
  * Init
  */
@@ -136,13 +135,15 @@ const animate = () => {
     spaceShip.rotation.z += ROTATE_UNIT
   }
 
-  if (isNoBox()) {
-    scene.remove(...meteolites)
-    genMeteolites()
-    scene.add(...meteolites)
-    camera.position.z = DEFAULT_DISTANCE_Z
-    spaceShip.position.z = 0
-  }
+  /**
+   * Move Meteolites Position
+   */
+  meteolites
+    .filter((me: Meteolite) => me.position.z > camera.position.z)
+    .map((me: Meteolite) => {
+      me.position.z -= METEOLITE_DISTANCE
+    })
+
   /**
    * Moving SpaceShip
    */
