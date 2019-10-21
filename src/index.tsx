@@ -4,8 +4,7 @@ import {
   WebGLRenderer,
   Color,
   Fog,
-  HemisphereLight,
-  Object3D
+  HemisphereLight
 } from 'three'
 import React from 'react'
 import { hydrate } from 'react-dom'
@@ -145,10 +144,20 @@ const animate = () => {
     })
 
   /**
+   * Check Crash
+   */
+  const hitMeteolites = meteolites.find((me: Meteolite) => spaceShip.touch(me))
+  if (hitMeteolites) {
+    spaceShip.isClashed = true
+  }
+
+  /**
    * Moving SpaceShip
    */
-  spaceShip.position.z -= 0.2
-  camera.position.z -= 0.2
+  if (!spaceShip.isClashed) {
+    spaceShip.position.z -= 0.2
+    camera.position.z -= 0.2
+  }
   /**
    * stats.js update
    */
