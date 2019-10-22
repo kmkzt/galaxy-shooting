@@ -15,10 +15,6 @@ import { Keyboard } from './enum/keyboard'
 import { SpaceShip } from './SpaceShip'
 import { Meteolite } from './Meteolite'
 
-const TRANSLATE_UNIT = 0.05
-const CAMERA_MOVE_UNIT = 20
-const ROTATE_UNIT = 0.1
-
 /**
  * DEV TOOLS
  */
@@ -47,10 +43,11 @@ const setDataGui = (data: object, g: dat.GUI) => {
  * Renderer
  */
 const canvasFrame = document.getElementById('drawarea') as HTMLCanvasElement
-const FRAME_X = innerWidth
-const FRAME_Y = innerHeight
+const FRAME_X = window.innerWidth
+const FRAME_Y = window.innerHeight
 // const FRAME_X = 500
 // const FRAME_Y = 500
+const FRAME_Z = 2000
 
 const renderer = new WebGLRenderer({
   antialias: true,
@@ -63,13 +60,11 @@ renderer.setSize(FRAME_X, FRAME_Y)
  * Camera
  */
 const ASPECT_RATIO = FRAME_X / FRAME_Y
-const FOV = 200
-const FAR = 10
-const NEAR = 0.5
-const DEFAULT_DISTANCE_Z = 1
+const FOV = 60
+const NEAR = 7
 
-const camera = new PerspectiveCamera(FOV, ASPECT_RATIO, NEAR, FAR)
-camera.position.z = DEFAULT_DISTANCE_Z
+const camera = new PerspectiveCamera(FOV, ASPECT_RATIO, NEAR, FRAME_Z)
+camera.position.z = 0
 /**
  * Scene
  */
@@ -84,17 +79,17 @@ scene.add(light)
  * SpaceShip Configuration
  */
 let spaceShip: SpaceShip = new SpaceShip()
-
+spaceShip.position.z = -10
 /**
  * Generate box
  */
 let meteolites: Meteolite[] = []
 const METEOLITE_DEFAULT_NUMBER = 100
-const METEOLITE_DISTANCE = 10
 const genMeteolites = (num: number = METEOLITE_DEFAULT_NUMBER) => {
   for (var i = 0; i < num; i++) {
     const meteo = new Meteolite()
-    meteo.setRandomPosition(FRAME_X, FRAME_Y, METEOLITE_DISTANCE)
+    meteo.setRandomPosition(FRAME_X, FRAME_Y, FRAME_Z)
+    meteo.position.z += FRAME_Z
     meteolites.push(meteo)
   }
 }
@@ -135,12 +130,12 @@ const animate = () => {
   }
 
   /**
-   * Move Meteolites Position
+   * Repeat Meteolites Position
    */
   meteolites
     .filter((me: Meteolite) => me.position.z > camera.position.z)
     .map((me: Meteolite) => {
-      me.position.z -= METEOLITE_DISTANCE
+      me.position.z -= FRAME_Z
     })
 
   /**
@@ -183,19 +178,25 @@ canvasFrame.addEventListener('mousemove', (e: MouseEvent) => {
    * mosemove point
    */
   const canvasRect = canvasFrame.getBoundingClientRect()
-  const mousemove_x =
-    ((canvasRect.width - e.clientX - FRAME_X / 2) * camera.aspect) /
-    canvasRect.width
-  const mousemove_y =
-    (e.clientY - canvasRect.height + FRAME_Y / 2) / canvasRect.height
+  // min: -0.5, max: 0.5
+  const mousemove_x = e.clientX / canvasRect.width - 0.5
+  const mousemove_y = 0.5 - e.clientY / canvasRect.height
 
   /**
    * SpaceShip move
    */
   const distanceSpaceshipFromCamera = camera.position.z - spaceShip.position.z
-  spaceShip.position.x = mousemove_x * camera.far * distanceSpaceshipFromCamera
-  spaceShip.position.y = mousemove_y * camera.far * distanceSpaceshipFromCamera
+  spaceShip.position.x =
+    mousemove_x * camera.aspect * distanceSpaceshipFromCamera
+  spaceShip.position.y = mousemove_y * distanceSpaceshipFromCamera
 })
+
+/**
+ * Keyboard parameter
+ */
+const TRANSLATE_UNIT = 0.05
+const CAMERA_MOVE_UNIT = 20
+const ROTATE_UNIT = 0.1
 
 const isKeycode = (key: number): key is Keyboard =>
   Object.values(Keyboard).includes(key)

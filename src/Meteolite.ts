@@ -53,7 +53,7 @@ export class Meteolite extends Mesh {
   public setRandomPosition(x: number, y: number, z: number) {
     this.position.x = Math.floor(Math.random() * x - x * 0.5) / z
     this.position.y = Math.floor(Math.random() * y - y * 0.5) / z
-    this.position.z = Math.floor(Math.random() * 100) / z - z
+    this.position.z = Math.floor(Math.random() * z - z * 0.5)
     return this
   }
 }
