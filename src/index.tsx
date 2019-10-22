@@ -64,7 +64,6 @@ const FOV = 60
 const NEAR = 7
 
 const camera = new PerspectiveCamera(FOV, ASPECT_RATIO, NEAR, FRAME_Z)
-camera.position.z = 0
 /**
  * Scene
  */
@@ -78,8 +77,9 @@ scene.add(light)
 /**
  * SpaceShip Configuration
  */
+const CAMERA_DISTANCE = 10
 let spaceShip: SpaceShip = new SpaceShip()
-spaceShip.position.z = -10
+spaceShip.position.z = -CAMERA_DISTANCE
 /**
  * Generate box
  */
@@ -185,10 +185,8 @@ canvasFrame.addEventListener('mousemove', (e: MouseEvent) => {
   /**
    * SpaceShip move
    */
-  const distanceSpaceshipFromCamera = camera.position.z - spaceShip.position.z
-  spaceShip.position.x =
-    mousemove_x * camera.aspect * distanceSpaceshipFromCamera
-  spaceShip.position.y = mousemove_y * distanceSpaceshipFromCamera
+  spaceShip.position.x = mousemove_x * camera.aspect * CAMERA_DISTANCE
+  spaceShip.position.y = mousemove_y * CAMERA_DISTANCE
 })
 
 /**
