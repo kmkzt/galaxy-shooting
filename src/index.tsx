@@ -80,6 +80,7 @@ scene.add(light)
  */
 
 let spaceShip: SpaceShip = new SpaceShip()
+
 /**
  * Generate box
  */
@@ -152,8 +153,8 @@ const animate = () => {
    * Moving SpaceShip
    */
   if (!spaceShip.isClashed) {
-    spaceShip.position.z -= 0.2
-    camera.position.z -= 0.2
+    spaceShip.position.z -= spaceShip.flightSpeed
+    camera.position.z -= spaceShip.flightSpeed
   }
   /**
    * stats.js update
