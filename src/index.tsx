@@ -47,7 +47,6 @@ const FRAME_X = window.innerWidth
 const FRAME_Y = window.innerHeight
 // const FRAME_X = 500
 // const FRAME_Y = 500
-const FRAME_Z = 2000
 
 const renderer = new WebGLRenderer({
   antialias: true,
@@ -62,16 +61,17 @@ renderer.setSize(FRAME_X, FRAME_Y)
 const ASPECT_RATIO = FRAME_X / FRAME_Y
 const FOV = 60
 const NEAR = 9
+const FAR = 2000
 const CAMERA_DISTANCE = NEAR + 1
-const camera = new PerspectiveCamera(FOV, ASPECT_RATIO, NEAR, FRAME_Z)
+const camera = new PerspectiveCamera(FOV, ASPECT_RATIO, NEAR, FAR)
 camera.position.z = CAMERA_DISTANCE
 /**
  * Scene
  */
 const scene = new Scene()
 scene.background = new Color(0x000000)
-scene.fog = new Fog(0x000000, 50, 2000)
-// scene.fog = new Fog(0xffffff, 0, 750)
+// scene.fog = new Fog(0x000000, 50, 2000)
+scene.fog = new Fog(0x000000, NEAR, FAR)
 const light = new HemisphereLight(0xeeeeff, 0x777788, 0.75)
 light.position.set(0.5, 1, 0.75)
 scene.add(light)
@@ -80,21 +80,20 @@ scene.add(light)
  */
 
 let spaceShip: SpaceShip = new SpaceShip()
-
 /**
  * Generate box
  */
 let meteolites: Meteolite[] = []
-const METEOLITE_DEFAULT_NUMBER = 100
+const METEOLITE_DEFAULT_NUMBER = 1000
 const genMeteolites = (num: number = METEOLITE_DEFAULT_NUMBER) => {
   for (var i = 0; i < num; i++) {
     const meteo = new Meteolite()
     meteo.setRandomPosition(
       CAMERA_DISTANCE * ASPECT_RATIO,
       CAMERA_DISTANCE,
-      FRAME_Z
+      FAR
     )
-    meteo.position.z += FRAME_Z
+    meteo.position.z += FAR
     meteolites.push(meteo)
   }
 }
@@ -136,9 +135,9 @@ const animate = () => {
    * Repeat Meteolites Position
    */
   meteolites
-    .filter((me: Meteolite) => me.position.z > camera.position.z)
+    .filter((me: Meteolite) => me.position.z > spaceShip.position.z + 10)
     .map((me: Meteolite) => {
-      me.position.z -= FRAME_Z
+      me.position.z -= FAR
     })
 
   /**
@@ -197,7 +196,7 @@ canvasFrame.addEventListener('mousemove', (e: MouseEvent) => {
  * Keyboard parameter
  */
 const TRANSLATE_UNIT = 0.05
-const CAMERA_MOVE_UNIT = 20
+const CAMERA_MOVE_UNIT = 1
 const ROTATE_UNIT = 0.1
 
 const isKeycode = (key: number): key is Keyboard =>
