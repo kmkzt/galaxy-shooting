@@ -62,8 +62,9 @@ renderer.setSize(FRAME_X, FRAME_Y)
 const ASPECT_RATIO = FRAME_X / FRAME_Y
 const FOV = 60
 const NEAR = 9
-
+const CAMERA_DISTANCE = NEAR + 1
 const camera = new PerspectiveCamera(FOV, ASPECT_RATIO, NEAR, FRAME_Z)
+camera.position.z = CAMERA_DISTANCE
 /**
  * Scene
  */
@@ -77,9 +78,8 @@ scene.add(light)
 /**
  * SpaceShip Configuration
  */
-const CAMERA_DISTANCE = NEAR + 1
+
 let spaceShip: SpaceShip = new SpaceShip()
-spaceShip.position.z = -CAMERA_DISTANCE
 /**
  * Generate box
  */
@@ -127,8 +127,6 @@ const init = () => {
  * Animation loop
  */
 const animate = () => {
-  requestAnimationFrame(animate)
-
   if (spaceShip.isRotation) {
     spaceShip.rotation.z += ROTATE_UNIT
   }
@@ -162,6 +160,7 @@ const animate = () => {
    */
   stats.update()
   renderer.render(scene, camera)
+  requestAnimationFrame(animate)
 }
 
 init()
