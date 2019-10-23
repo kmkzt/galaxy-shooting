@@ -1,11 +1,6 @@
 import {
   Mesh,
-  // Renderer,
-  Camera,
-  Geometry,
   Material,
-  BoxGeometry,
-  MeshNormalMaterial,
   BufferGeometry,
   BoxBufferGeometry,
   MeshPhongMaterial,
@@ -14,8 +9,9 @@ import {
   Float32BufferAttribute
 } from 'three'
 
-const initGeoMetry = (): BufferGeometry => {
-  const geometry = new BoxBufferGeometry(1, 1, 1).toNonIndexed()
+const initGeoMetry = (size: number = 1): BufferGeometry => {
+  const bs = Math.random() * size + 0.5
+  const geometry = new BoxBufferGeometry(bs, bs, bs).toNonIndexed()
   const colors: number[] = []
   const color = new Color()
   for (let i = 0, l = geometry.attributes.position.count; i < l; i++) {
@@ -40,13 +36,13 @@ const initMaterial = (): Material => {
   return material
 }
 
+interface MeteoLiteOption {
+  size?: number
+}
 export class Meteolite extends Mesh {
   public isRotation: boolean = false
-  constructor(
-    geometry: Geometry | BufferGeometry = initGeoMetry(),
-    material: Material | Material[] = initMaterial()
-  ) {
-    super(geometry, material)
+  constructor({ size }: MeteoLiteOption = {}) {
+    super(initGeoMetry(size), initMaterial())
     this.setRandomPosition = this.setRandomPosition.bind(this)
   }
 
