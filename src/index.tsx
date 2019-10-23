@@ -61,7 +61,7 @@ renderer.setSize(FRAME_X, FRAME_Y)
  */
 const ASPECT_RATIO = FRAME_X / FRAME_Y
 const FOV = 60
-const NEAR = 7
+const NEAR = 9
 
 const camera = new PerspectiveCamera(FOV, ASPECT_RATIO, NEAR, FRAME_Z)
 /**
@@ -77,7 +77,7 @@ scene.add(light)
 /**
  * SpaceShip Configuration
  */
-const CAMERA_DISTANCE = 10
+const CAMERA_DISTANCE = NEAR + 1
 let spaceShip: SpaceShip = new SpaceShip()
 spaceShip.position.z = -CAMERA_DISTANCE
 /**
@@ -88,7 +88,11 @@ const METEOLITE_DEFAULT_NUMBER = 100
 const genMeteolites = (num: number = METEOLITE_DEFAULT_NUMBER) => {
   for (var i = 0; i < num; i++) {
     const meteo = new Meteolite()
-    meteo.setRandomPosition(FRAME_X, FRAME_Y, FRAME_Z)
+    meteo.setRandomPosition(
+      CAMERA_DISTANCE * ASPECT_RATIO,
+      CAMERA_DISTANCE,
+      FRAME_Z
+    )
     meteo.position.z += FRAME_Z
     meteolites.push(meteo)
   }
