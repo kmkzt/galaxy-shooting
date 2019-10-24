@@ -4,7 +4,10 @@ import {
   WebGLRenderer,
   Color,
   Fog,
-  HemisphereLight
+  HemisphereLight,
+  Vector2,
+  Raycaster,
+  Intersection
 } from 'three'
 import React from 'react'
 import { hydrate } from 'react-dom'
@@ -75,10 +78,15 @@ scene.fog = new Fog(0x000000, NEAR, FAR)
 const light = new HemisphereLight(0xeeeeff, 0x777788, 0.75)
 light.position.set(0.5, 1, 0.75)
 scene.add(light)
+
+/**
+ * Mouse point
+ */
+const raycaster = new Raycaster()
+const mouse = new Vector2()
 /**
  * SpaceShip Configuration
  */
-
 let spaceShip: SpaceShip = new SpaceShip()
 /**
  * Generate box
@@ -177,17 +185,31 @@ canvasFrame.addEventListener('click', () => {
  * MOUSEMOVE ACTION
  */
 canvasFrame.addEventListener('mousemove', (e: MouseEvent) => {
+  e.preventDefault()
   /**
    * mosemove point
    */
-  const canvasRect = canvasFrame.getBoundingClientRect()
-  // min: -0.5, max: 0.5
-  const mousemove_x = e.clientX / canvasRect.width - 0.5
-  const mousemove_y = 0.5 - e.clientY / canvasRect.height
+  const rect = canvasFrame.getBoundingClientRect()
 
+  /**
+   * Mouse Point 2D
+   */
+  mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1
+  mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1
+
+  raycaster.setFromCamera(mouse, camera)
+
+  raycaster.intersectObjects(meteolites, true).map((inMeteo: Intersection) => {
+    inMeteo.object.rotateX(3)
+    inMeteo.object.rotateY(3)
+    inMeteo.object.rotateZ(3)
+  })
   /**
    * SpaceShip move
    */
+  // min: -0.5, max: 0.5
+  const mousemove_x = mouse.x / 2
+  const mousemove_y = mouse.y / 2
   spaceShip.position.x = mousemove_x * camera.aspect * CAMERA_DISTANCE
   spaceShip.position.y = mousemove_y * CAMERA_DISTANCE
 })
