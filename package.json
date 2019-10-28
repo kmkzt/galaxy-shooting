@@ -28,7 +28,8 @@
     "redux-logger": "3.0.6",
     "stats.js": "0.17.0",
     "styled-components": "4.4.0",
-    "three": "0.109.0"
+    "three": "0.109.0",
+    "typescript-fsa": "3.0.0"
   },
   "devDependencies": {
     "@babel/core": "7.6.2",

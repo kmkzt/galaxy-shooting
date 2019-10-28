@@ -1,6 +1,6 @@
 import React, { FC, useCallback } from 'react'
 import styled from 'styled-components'
-import { Keyboard } from './enum/keyboard'
+import { Keyboard } from '@/enum/keyboard'
 
 interface Props {
   onKeyboard: (code: Keyboard) => void

@@ -9,14 +9,18 @@ import {
   Raycaster,
   Intersection
 } from 'three'
-import React from 'react'
+import React, { Fragment } from 'react'
 import { hydrate } from 'react-dom'
 import Stats from 'stats.js'
 import dat from 'dat.gui'
-import { Controler } from './Controler'
+import { Controler } from './components/Controler'
 import { Keyboard } from './enum/keyboard'
-import { SpaceShip } from './SpaceShip'
-import { Meteolite } from './Meteolite'
+import { SpaceShip } from './object/SpaceShip'
+import { Meteolite } from './object/Meteolite'
+import { Provider } from 'react-redux'
+import store from './store'
+import { POINT_INC, POINT_RESET } from './store/Score'
+import { Menu } from './components/Menu'
 
 /**
  * DEV TOOLS
@@ -87,7 +91,7 @@ const mouse = new Vector2()
 /**
  * SpaceShip Configuration
  */
-let spaceShip: SpaceShip = new SpaceShip()
+const spaceShip: SpaceShip = new SpaceShip()
 /**
  * Generate box
  */
@@ -162,6 +166,7 @@ const animate = () => {
   if (!spaceShip.isClashed) {
     spaceShip.position.z -= spaceShip.flightSpeed
     camera.position.z -= spaceShip.flightSpeed
+    store.dispatch(POINT_INC(1))
   }
   /**
    * stats.js update
@@ -264,12 +269,18 @@ const keyboardAction = (key: Keyboard) => {
       camera.position.z += CAMERA_MOVE_UNIT
       break
     case Keyboard.SPACE:
-      spaceShip.switchRotate()
+      spaceShip.isClashed = false
+      store.dispatch(POINT_RESET())
       break
   }
 }
 
 hydrate(
-  <Controler onKeyboard={keyboardAction} />,
+  <Provider store={store}>
+    <Fragment>
+      <Menu />
+      <Controler onKeyboard={keyboardAction} />
+    </Fragment>
+  </Provider>,
   document.getElementById('controler')
 )
