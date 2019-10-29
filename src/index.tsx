@@ -10,6 +10,7 @@ import {
   Intersection
 } from 'three'
 import React, { Fragment } from 'react'
+import styled from 'styled-components'
 import { hydrate } from 'react-dom'
 import Stats from 'stats.js'
 import dat from 'dat.gui'
@@ -275,12 +276,20 @@ const keyboardAction = (key: Keyboard) => {
   }
 }
 
+const Panel = styled.div`
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.4);
+  padding: 12px;
+`
+
 hydrate(
   <Provider store={store}>
-    <Fragment>
+    <Panel>
       <Menu />
       <Controler onKeyboard={keyboardAction} />
-    </Fragment>
+    </Panel>
   </Provider>,
   document.getElementById('controler')
 )
