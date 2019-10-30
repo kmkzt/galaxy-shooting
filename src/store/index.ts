@@ -1,9 +1,12 @@
-import { createStore } from 'redux'
+import { createStore, combineReducers } from 'redux'
 import { reducer as score, State as Score } from '@/store/Score'
+import { reducer as play, State as Play } from '@/store/Play'
 
-// import createStore from 'redux'
-// import  from 'react-redux'
+export type RootStore = {
+  score: Score
+  play: Play
+}
 
-export type RootStore = Score
-
-export default createStore(score)
+export default createStore<RootStore, any, {}, {}>(
+  combineReducers({ score, play })
+)

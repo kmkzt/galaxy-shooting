@@ -22,6 +22,7 @@ import { Provider } from 'react-redux'
 import store from './store'
 import { POINT_INC, POINT_RESET } from './store/Score'
 import { Menu } from './components/Menu'
+import { Start } from './components/Start'
 
 /**
  * DEV TOOLS
@@ -164,7 +165,11 @@ const animate = () => {
   /**
    * Moving SpaceShip
    */
-  if (!spaceShip.isClashed) {
+  if (
+    !spaceShip.isClashed &&
+    store.getState().play.active &&
+    !store.getState().play.menu
+  ) {
     spaceShip.position.z -= spaceShip.flightSpeed
     camera.position.z -= spaceShip.flightSpeed
     store.dispatch(POINT_INC(1))
@@ -286,10 +291,13 @@ const Panel = styled.div`
 
 hydrate(
   <Provider store={store}>
-    <Panel>
-      <Menu />
-      <Controler onKeyboard={keyboardAction} />
-    </Panel>
+    <Fragment>
+      <Start />
+      <Panel>
+        <Menu />
+        <Controler onKeyboard={keyboardAction} />
+      </Panel>
+    </Fragment>
   </Provider>,
   document.getElementById('controler')
 )
