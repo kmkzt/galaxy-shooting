@@ -10,8 +10,8 @@ const Layer = styled.div`
   bottom: 0;
   right: 0;
   left: 0;
-  width: 100vh;
-  height: 100vw;
+  width: 100vw;
+  height: 100vh;
   background: rgba(0, 0, 0, 0.4);
   padding: 12px;
   display: flex;
