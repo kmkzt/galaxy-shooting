@@ -138,9 +138,19 @@ const init = () => {
 }
 
 /**
- * Animation loop
+ * game is active
  */
-const animate = () => {
+const isGameActive = (): boolean =>
+  store.getState().play.active && !store.getState().play.menu
+
+/**
+ * Geme behavior
+ */
+const gameBehaviorUpdate = () => {
+  if (!isGameActive()) {
+    return
+  }
+  /** SpaceShip Move */
   if (spaceShip.isRotation) {
     spaceShip.rotation.z += ROTATE_UNIT
   }
@@ -165,19 +175,27 @@ const animate = () => {
   /**
    * Moving SpaceShip
    */
-  if (
-    !spaceShip.isClashed &&
-    store.getState().play.active &&
-    !store.getState().play.menu
-  ) {
+  if (!spaceShip.isClashed) {
     spaceShip.position.z -= spaceShip.flightSpeed
     camera.position.z -= spaceShip.flightSpeed
     store.dispatch(POINT_INC(1))
   }
+}
+/**
+ * 3D animation
+ */
+const animate = () => {
+  /**
+   * Game parameter update
+   */
+  gameBehaviorUpdate()
   /**
    * stats.js update
    */
   stats.update()
+  /**
+   * Render animation
+   */
   renderer.render(scene, camera)
   requestAnimationFrame(animate)
 }
