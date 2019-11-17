@@ -23,6 +23,7 @@ import store from './store'
 import { POINT_INC, POINT_RESET } from './store/Score'
 import { Menu } from './components/Menu'
 import { Start } from './components/Start'
+import { PLAY_MENU_TOGGLE } from './store/Play'
 
 /**
  * DEV TOOLS
@@ -98,18 +99,36 @@ const spaceShip: SpaceShip = new SpaceShip()
  * Generate box
  */
 let meteolites: Meteolite[] = []
-const METEOLITE_DEFAULT_NUMBER = 1000
-const genMeteolites = (num: number = METEOLITE_DEFAULT_NUMBER) => {
-  for (var i = 0; i < num; i++) {
-    const meteo = new Meteolite()
-    meteo.setRandomPosition(
-      CAMERA_DISTANCE * ASPECT_RATIO,
-      CAMERA_DISTANCE,
-      FAR
-    )
-    meteo.position.z += FAR
-    meteolites.push(meteo)
+
+interface GenerateMeteolitesOption {
+  quauntity: number
+  base_z: number
+}
+
+const generateMeteolitesDefaultOption: GenerateMeteolitesOption = {
+  quauntity: 100,
+  base_z: FAR
+}
+
+const generateMeteolites = (option?: GenerateMeteolitesOption) => {
+  const { quauntity, base_z }: GenerateMeteolitesOption = {
+    ...generateMeteolitesDefaultOption,
+    ...(option || {})
   }
+  for (var i = 0; i < quauntity; i++) {
+    meteolites.push(initMeteo(base_z))
+  }
+}
+
+const initMeteo = (mateoZ: number): Meteolite => {
+  const meteo = new Meteolite()
+  meteo.setRandomPosition(
+    CAMERA_DISTANCE * ASPECT_RATIO,
+    CAMERA_DISTANCE,
+    mateoZ
+  )
+  meteo.position.z += FAR
+  return meteo
 }
 /**
  * Init
@@ -123,7 +142,7 @@ const init = () => {
   /**
    * generate box
    */
-  genMeteolites()
+  generateMeteolites()
   scene.add(...meteolites)
   /**
    * DEV TOOLS
@@ -292,9 +311,12 @@ const keyboardAction = (key: Keyboard) => {
     case Keyboard.KEY_F:
       camera.position.z += CAMERA_MOVE_UNIT
       break
-    case Keyboard.SPACE:
+    case Keyboard.ENTER:
       spaceShip.isClashed = false
       store.dispatch(POINT_RESET())
+      break
+    case Keyboard.SPACE:
+      store.dispatch(PLAY_MENU_TOGGLE())
       break
   }
 }
