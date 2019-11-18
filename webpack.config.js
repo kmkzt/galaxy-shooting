@@ -51,6 +51,14 @@ const common = {
           'sass-loader'
         ]
       },
+      {
+        test: /\.(png|jpe?g|gif|3ds|abc|fbx|mtl|obj|x3d)$/i,
+        use: [
+          {
+            loader: 'file-loader'
+          }
+        ]
+      },
       { test: /\.html$/, use: 'html-loader' }
     ]
   },

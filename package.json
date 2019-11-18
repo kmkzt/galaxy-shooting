@@ -29,7 +29,6 @@
     "stats.js": "0.17.0",
     "styled-components": "4.4.1",
     "three": "0.110.0",
-    "three-tds-loader": "1.1.1",
     "typescript-fsa": "3.0.0"
   },
   "devDependencies": {
@@ -62,7 +61,6 @@
     "@types/rimraf": "2.0.3",
     "@types/stats.js": "0.17.0",
     "@types/styled-components": "4.4.0",
-    "@types/three-tds-loader": "1.1.2",
     "@types/uglifyjs-webpack-plugin": "1.1.0",
     "@types/webpack": "4.39.8",
     "@types/webpack-dev-server": "3.4.0",
@@ -87,6 +85,7 @@
     "eslint-plugin-prettier": "3.1.1",
     "eslint-plugin-react": "7.16.0",
     "eslint-plugin-react-hooks": "2.2.0",
+    "file-loader": "4.2.0",
     "html-loader": "0.5.5",
     "html-webpack-plugin": "3.2.0",
     "jest": "24.9.0",
