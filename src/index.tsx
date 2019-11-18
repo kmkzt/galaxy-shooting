@@ -79,7 +79,7 @@ camera.position.z = CAMERA_DISTANCE
  * Scene
  */
 const scene = new Scene()
-scene.background = new Color(0x000000)
+scene.background = new Color(0xffffff)
 // scene.fog = new Fog(0x000000, 50, 2000)
 scene.fog = new Fog(0x000000, NEAR, FAR)
 const light = new HemisphereLight(0xeeeeff, 0x777788, 0.75)
@@ -94,7 +94,7 @@ const mouse = new Vector2()
 /**
  * SpaceShip Configuration
  */
-const spaceShip: SpaceShip = new SpaceShip()
+const spaceShip = new SpaceShip()
 /**
  * Generate box
  */
@@ -133,7 +133,8 @@ const initMeteo = (mateoZ: number): Meteolite => {
 /**
  * Init
  */
-const init = () => {
+const init = async () => {
+  await spaceShip.init()
   /**
    * generate space ship
    */

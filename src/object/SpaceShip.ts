@@ -5,22 +5,48 @@ import {
   BoxGeometry,
   MeshNormalMaterial,
   BufferGeometry,
-  Object3D
+  Object3D,
+  Group
 } from 'three'
 
-export class SpaceShip extends Mesh {
+import { TDSLoader } from 'three/examples/jsm/loaders/TDSLoader.js'
+
+const loadSpaceShip = async (): Promise<Group> =>
+  new Promise((resolve, reject) => {
+    const loader = new TDSLoader()
+    setTimeout(() => reject(), 100000)
+    loader.setResourcePath(
+      require('../models/3ds/spaceShip/textures/F-15Cmetal.jpg')
+    )
+    loader.load(
+      require('../models/3ds/spaceShip/spaceShip.3ds'),
+      (obj: Group) => {
+        console.log(obj)
+        resolve(obj)
+      }
+    )
+  })
+export class SpaceShip extends Group {
   public isRotation: boolean = false
   public isClashed: boolean = false
   public flightSpeed: number = 0.2
-  constructor(
-    geometry: Geometry | BufferGeometry = new BoxGeometry(1, 0.2, 0.2),
-    material: Material | Material[] = new MeshNormalMaterial()
-  ) {
-    super(geometry, material)
+  constructor() {
+    super()
+    this.init = this.init.bind(this)
     this.switchRotate = this.switchRotate.bind(this)
     this.checkVector = this.checkVector.bind(this)
   }
 
+  public async init(): Promise<void> {
+    try {
+      const spaceShipObj = await loadSpaceShip()
+      this.add(spaceShipObj)
+    } catch (err) {
+      const geometry: Geometry | BufferGeometry = new BoxGeometry(1, 0.2, 0.2)
+      const material: Material | Material[] = new MeshNormalMaterial()
+      this.add(new Mesh(geometry, material))
+    }
+  }
   public switchRotate() {
     this.isRotation = !this.isRotation
   }
