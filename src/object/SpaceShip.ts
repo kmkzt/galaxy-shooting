@@ -16,7 +16,7 @@ const loadSpaceShip = async (): Promise<Group> =>
     const loader = new TDSLoader()
     setTimeout(() => reject(), 100000)
     loader.setResourcePath(
-      require('../models/3ds/spaceShip/textures/F-15Cmetal.jpg')
+      require('../models/3ds/spaceShip/textures/F15A.jpg.meta')
     )
     loader.load(
       require('../models/3ds/spaceShip/spaceShip.3ds'),
@@ -41,6 +41,11 @@ export class SpaceShip extends Group {
     try {
       const spaceShipObj = await loadSpaceShip()
       this.add(spaceShipObj)
+      this.scale.x = 0.2
+      this.scale.y = 0.2
+      this.scale.z = 0.2
+      // this.rotateY(90)
+      this.rotateX(90)
     } catch (err) {
       const geometry: Geometry | BufferGeometry = new BoxGeometry(1, 0.2, 0.2)
       const material: Material | Material[] = new MeshNormalMaterial()

@@ -52,7 +52,7 @@ const common = {
         ]
       },
       {
-        test: /\.(png|jpe?g|gif|3ds|abc|fbx|mtl|obj|x3d)$/i,
+        test: /\.(png|jpe?g|gif|3ds|abc|fbx|mtl|obj|x3d|zip|meta)$/i,
         use: [
           {
             loader: 'file-loader'

@@ -172,7 +172,7 @@ const gameBehaviorUpdate = () => {
   }
   /** SpaceShip Move */
   if (spaceShip.isRotation) {
-    spaceShip.rotation.z += ROTATE_UNIT
+    spaceShip.rotation.y += ROTATE_UNIT
   }
 
   /**
