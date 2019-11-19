@@ -72,17 +72,17 @@ const ASPECT_RATIO = FRAME_X / FRAME_Y
 const FOV = 60
 const NEAR = 9
 const FAR = 2000
-const CAMERA_DISTANCE = NEAR + 1
+const CAMERA_DISTANCE = NEAR + 5
 const camera = new PerspectiveCamera(FOV, ASPECT_RATIO, NEAR, FAR)
 camera.position.z = CAMERA_DISTANCE
 /**
  * Scene
  */
 const scene = new Scene()
-scene.background = new Color(0xffffff)
+scene.background = new Color(0x333366)
 // scene.fog = new Fog(0x000000, 50, 2000)
 scene.fog = new Fog(0x000000, NEAR, FAR)
-const light = new HemisphereLight(0xeeeeff, 0x777788, 0.75)
+const light = new HemisphereLight(0xeeeeff, 0x222222, 1)
 light.position.set(0.5, 1, 0.75)
 scene.add(light)
 
@@ -172,7 +172,7 @@ const gameBehaviorUpdate = () => {
   }
   /** SpaceShip Move */
   if (spaceShip.isRotation) {
-    spaceShip.rotation.y += ROTATE_UNIT
+    spaceShip.rotation.z += ROTATE_UNIT
   }
 
   /**

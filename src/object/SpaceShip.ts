@@ -22,6 +22,11 @@ const loadSpaceShip = async (): Promise<Group> =>
       require('../models/3ds/spaceShip/spaceShip.3ds'),
       (obj: Group) => {
         console.log(obj)
+        obj.scale.x /= 2
+        obj.scale.y /= 2
+        obj.scale.z /= 2
+        obj.rotateX(90)
+        obj.rotateY(180)
         resolve(obj)
       }
     )
@@ -41,11 +46,6 @@ export class SpaceShip extends Group {
     try {
       const spaceShipObj = await loadSpaceShip()
       this.add(spaceShipObj)
-      this.scale.x = 0.2
-      this.scale.y = 0.2
-      this.scale.z = 0.2
-      // this.rotateY(90)
-      this.rotateX(90)
     } catch (err) {
       const geometry: Geometry | BufferGeometry = new BoxGeometry(1, 0.2, 0.2)
       const material: Material | Material[] = new MeshNormalMaterial()
