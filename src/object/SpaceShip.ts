@@ -6,22 +6,30 @@ import {
   MeshNormalMaterial,
   BufferGeometry,
   Object3D,
-  Group
+  Group,
+  TextureLoader,
+  Texture
 } from 'three'
-
 import { TDSLoader } from 'three/examples/jsm/loaders/TDSLoader.js'
 
 const loadSpaceShip = async (): Promise<Group> =>
   new Promise((resolve, reject) => {
-    const loader = new TDSLoader()
     setTimeout(() => reject(), 100000)
-    loader.setResourcePath(
-      require('../models/3ds/spaceShip/textures/F15A.jpg.meta')
+    const texture: Texture = new TextureLoader().load(
+      require('../models/3ds/spaceShip/textures/F15A.jpg')
     )
+    const loader = new TDSLoader()
+    loader.setResourcePath('http://localhost:9000')
     loader.load(
       require('../models/3ds/spaceShip/spaceShip.3ds'),
       (obj: Group) => {
         console.log(obj)
+        obj.traverse(child => {
+          console.log(child)
+          if ((child as any).isMesh) {
+            ;((child as Mesh).material as any).normalMap = texture
+          }
+        })
         obj.scale.x /= 2
         obj.scale.y /= 2
         obj.scale.z /= 2
