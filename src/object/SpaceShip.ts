@@ -10,7 +10,7 @@ import {
   TextureLoader,
   Texture
 } from 'three'
-import { TDSLoader } from 'three/examples/jsm/loaders/TDSLoader.js'
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
 
 const loadSpaceShip = async (): Promise<Group> =>
   new Promise((resolve, reject) => {
@@ -18,10 +18,10 @@ const loadSpaceShip = async (): Promise<Group> =>
     const texture: Texture = new TextureLoader().load(
       require('../models/3ds/spaceShip/textures/F15A.jpg')
     )
-    const loader = new TDSLoader()
+    const loader = new OBJLoader()
     loader.setResourcePath('http://localhost:9000')
     loader.load(
-      require('../models/3ds/spaceShip/spaceShip.3ds'),
+      require('../models/3ds/spaceShip/spaceShip.obj'),
       (obj: Group) => {
         console.log(obj)
         obj.traverse(child => {
@@ -33,8 +33,7 @@ const loadSpaceShip = async (): Promise<Group> =>
         obj.scale.x /= 2
         obj.scale.y /= 2
         obj.scale.z /= 2
-        obj.rotateX(90)
-        obj.rotateY(180)
+        obj.rotateZ(90)
         resolve(obj)
       }
     )
