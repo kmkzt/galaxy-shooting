@@ -10,34 +10,8 @@ import {
   TextureLoader,
   Texture
 } from 'three'
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
+import { loadObject3D } from '@/utils/loadObject3d'
 
-const loadSpaceShip = async (): Promise<Group> =>
-  new Promise((resolve, reject) => {
-    setTimeout(() => reject(), 100000)
-    const texture: Texture = new TextureLoader().load(
-      require('../models/3ds/spaceShip/textures/F15A.jpg')
-    )
-    const loader = new OBJLoader()
-    loader.setResourcePath('http://localhost:9000')
-    loader.load(
-      require('../models/3ds/spaceShip/spaceShip.obj'),
-      (obj: Group) => {
-        console.log(obj)
-        obj.traverse(child => {
-          console.log(child)
-          if ((child as any).isMesh) {
-            ;((child as Mesh).material as any).normalMap = texture
-          }
-        })
-        obj.scale.x /= 2
-        obj.scale.y /= 2
-        obj.scale.z /= 2
-        obj.rotateZ(90)
-        resolve(obj)
-      }
-    )
-  })
 export class SpaceShip extends Group {
   public isRotation: boolean = false
   public isClashed: boolean = false
@@ -51,7 +25,10 @@ export class SpaceShip extends Group {
 
   public async init(): Promise<void> {
     try {
-      const spaceShipObj = await loadSpaceShip()
+      const spaceShipObj = await loadObject3D({
+        texturePath: require('../models/3ds/spaceShip/textures/F15A.jpg'),
+        objectPath: require('../models/3ds/spaceShip/spaceShip.obj')
+      })
       this.add(spaceShipObj)
     } catch (err) {
       const geometry: Geometry | BufferGeometry = new BoxGeometry(1, 0.2, 0.2)
