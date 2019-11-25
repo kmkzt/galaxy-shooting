@@ -14,12 +14,10 @@ export const loadObject3D = async ({
   new Promise((resolve, reject) => {
     setTimeout(() => reject(), 100000)
     const texture: Texture = new TextureLoader().load(texturePath)
-    console.log(texture)
     const loader = new OBJLoader()
     loader.setResourcePath((resourcePath || '/') + '/assets/textures')
     loader.load(objectPath, (obj: Group) => {
       obj.traverse(child => {
-        console.log('child', child)
         if ((child as any).isMesh) {
           ;((child as Mesh).material as any).normalMap = texture
         }
