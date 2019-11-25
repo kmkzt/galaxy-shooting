@@ -109,22 +109,23 @@ interface GenerateMeteolitesOption {
 }
 
 const generateMeteolitesDefaultOption: GenerateMeteolitesOption = {
-  quauntity: 100,
+  quauntity: 5,
   base_z: FAR
 }
 
-const generateMeteolites = (option?: GenerateMeteolitesOption) => {
+const generateMeteolites = async (option?: GenerateMeteolitesOption) => {
   const { quauntity, base_z }: GenerateMeteolitesOption = {
     ...generateMeteolitesDefaultOption,
     ...(option || {})
   }
   for (var i = 0; i < quauntity; i++) {
-    meteolites.push(initMeteo(base_z))
+    meteolites.push(await initMeteo(base_z))
   }
 }
 
-const initMeteo = (mateoZ: number): Meteolite => {
+const initMeteo = async (mateoZ: number): Promise<Meteolite> => {
   const meteo = new Meteolite()
+  await meteo.init()
   meteo.setRandomPosition(
     CAMERA_DISTANCE * ASPECT_RATIO,
     CAMERA_DISTANCE,
@@ -146,7 +147,7 @@ const init = async () => {
   /**
    * generate box
    */
-  generateMeteolites()
+  await generateMeteolites()
   scene.add(...meteolites)
   /**
    * DEV TOOLS

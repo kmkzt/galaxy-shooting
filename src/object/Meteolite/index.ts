@@ -1,4 +1,5 @@
 import {
+  Group,
   Mesh,
   Material,
   BufferGeometry,
@@ -8,6 +9,7 @@ import {
   Color,
   Float32BufferAttribute
 } from 'three'
+import { loadObject3D } from '@/utils/loadObject3d'
 
 const initGeoMetry = (size: number = 1): BufferGeometry => {
   const bs = Math.random() * size + 0.5
@@ -39,13 +41,27 @@ const initMaterial = (): Material => {
 interface MeteoLiteOption {
   size?: number
 }
-export class Meteolite extends Mesh {
+export class Meteolite extends Group {
   public isRotation: boolean = false
-  constructor({ size }: MeteoLiteOption = {}) {
-    super(initGeoMetry(size), initMaterial())
+  private option: MeteoLiteOption
+  constructor(option: MeteoLiteOption = {}) {
+    super()
+    this.option = option
     this.setRandomPosition = this.setRandomPosition.bind(this)
   }
 
+  public async init(): Promise<void> {
+    try {
+      const obj = await loadObject3D({
+        texturePath: require('./models/textures/Meteolite1.png'),
+        objectPath: require('./models/Meteolite1.obj')
+      })
+      this.add(obj)
+    } catch (err) {
+      const { size } = this.option
+      this.add(new Mesh(initGeoMetry(size), initMaterial()))
+    }
+  }
   public setRandomPosition(x: number, y: number, z: number) {
     this.position.x = (Math.random() - 0.5) * x
     this.position.y = (Math.random() - 0.5) * y
