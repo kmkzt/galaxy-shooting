@@ -52,10 +52,36 @@ const common = {
         ]
       },
       {
-        test: /\.(png|jpe?g|gif|3ds|abc|fbx|mtl|obj|x3d|zip|meta)$/i,
+        test: /\.(png|jpe?g|gif)$/i,
+        include: /textures/,
         use: [
           {
-            loader: 'file-loader'
+            loader: 'file-loader',
+            options: {
+              outputPath: 'assets/textures'
+            }
+          }
+        ]
+      },
+      {
+        test: /\.(3ds|abc|fbx|mtl|obj|x3d|zip|meta)$/i,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              outputPath: 'assets/models'
+            }
+          }
+        ]
+      },
+      {
+        test: /\.(png|jpe?g|gif)$/i,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              outputPath: 'assets/images'
+            }
           }
         ]
       },
