@@ -29,6 +29,7 @@ export class SpaceShip extends Group {
         texturePath: require('../models/3ds/spaceShip/textures/F15A.jpg'),
         objectPath: require('../models/3ds/spaceShip/spaceShip.obj')
       })
+      obj.rotateX(3)
       obj.scale.x /= 2
       obj.scale.y /= 2
       obj.scale.z /= 2

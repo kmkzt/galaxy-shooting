@@ -30,25 +30,26 @@ import { PLAY_MENU_TOGGLE } from './store/Play'
  */
 const stats = new Stats()
 const gui = new dat.GUI()
-const setDataGui = (data: object, g: dat.GUI) => {
-  for (let key in data) {
-    switch (typeof data[key]) {
-      case 'object':
-        // console.log(key, typeof spaceShip[key])
-        let paramGui = g.addFolder(key)
-        for (let param in data[key]) {
-          if (typeof data[key][param] === 'function') continue
-          if (typeof data[key][param] === 'object') continue
-          paramGui.add(data[key], param)
-        }
-        break
-      case 'number':
-      case 'string':
-        g.add(data, key)
-        break
-    }
-  }
-}
+// TODO: add onChange
+// const setDataGui = (data: object, g: dat.GUI) => {
+//   for (let key in data) {
+//     switch (typeof data[key]) {
+//       case 'object':
+//         // console.log(key, typeof spaceShip[key])
+//         let paramGui = g.addFolder(key)
+//         for (let param in data[key]) {
+//           if (typeof data[key][param] === 'function') continue
+//           if (typeof data[key][param] === 'object') continue
+//           paramGui.add(data[key], param)
+//         }
+//         break
+//       case 'number':
+//       case 'string':
+//         g.add(data, key)
+//         break
+//     }
+//   }
+// }
 /**
  * Renderer
  */
@@ -95,6 +96,8 @@ const mouse = new Vector2()
  * SpaceShip Configuration
  */
 const spaceShip = new SpaceShip()
+const spaceShipGUI = gui.add(spaceShip.rotation, 'x')
+spaceShipGUI.onChange((val: string) => (spaceShip.rotation.x = Number(val)))
 /**
  * Generate box
  */
@@ -151,10 +154,10 @@ const init = async () => {
   document.body.appendChild(stats.dom)
 
   // TODO: FIX controlable object
-  setDataGui(camera, gui.addFolder('camera'))
-  setDataGui(scene, gui.addFolder('scene'))
-  setDataGui(light, gui.addFolder('light'))
-  setDataGui(spaceShip, gui.addFolder('spaceShip'))
+  // setDataGui(camera, gui.addFolder('camera'))
+  // setDataGui(scene, gui.addFolder('scene'))
+  // setDataGui(light, gui.addFolder('light'))
+  // setDataGui(spaceShip, gui.addFolder('spaceShip'))
 }
 
 /**
