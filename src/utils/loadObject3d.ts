@@ -15,16 +15,13 @@ export const loadObject3D = async ({
     setTimeout(() => reject(), 100000)
     const texture: Texture = new TextureLoader().load(texturePath)
     const loader = new OBJLoader()
-    loader.setResourcePath(resourcePath || 'http://localhost:9000')
+    loader.setResourcePath(resourcePath || 'http://localhost:9000/texture')
     loader.load(objectPath, (obj: Group) => {
       obj.traverse(child => {
         if ((child as any).isMesh) {
           ;((child as Mesh).material as any).normalMap = texture
         }
       })
-      obj.scale.x /= 2
-      obj.scale.y /= 2
-      obj.scale.z /= 2
       resolve(obj)
     })
   })

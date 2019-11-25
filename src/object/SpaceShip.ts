@@ -25,11 +25,14 @@ export class SpaceShip extends Group {
 
   public async init(): Promise<void> {
     try {
-      const spaceShipObj = await loadObject3D({
+      const obj = await loadObject3D({
         texturePath: require('../models/3ds/spaceShip/textures/F15A.jpg'),
         objectPath: require('../models/3ds/spaceShip/spaceShip.obj')
       })
-      this.add(spaceShipObj)
+      obj.scale.x /= 2
+      obj.scale.y /= 2
+      obj.scale.z /= 2
+      this.add(obj)
     } catch (err) {
       const geometry: Geometry | BufferGeometry = new BoxGeometry(1, 0.2, 0.2)
       const material: Material | Material[] = new MeshNormalMaterial()
