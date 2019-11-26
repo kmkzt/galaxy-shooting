@@ -1,11 +1,11 @@
 {
-  "name": "three-game",
+  "name": "galaxy-shooting",
   "version": "0.1.0",
   "private": true,
   "author": "kmkzt",
   "scripts": {
     "dev": "NODE_ENV=development webpack-dev-server",
-    "build": "rm -r lib && NODE_ENV=production webpack -p",
+    "build": "rimraf docs && NODE_ENV=production webpack -p",
     "test": "jest",
     "lint": "eslint -c .eslintrc.js --fix \"./src/**/**.{ts,tsx}\"",
     "lint:fix": "prettier --write ./src/**/*.{ts,tsx}"

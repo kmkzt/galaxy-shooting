@@ -1,6 +1,9 @@
 const { resolve } = require('path')
 const { smart } = require('webpack-merge')
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const Dotenv = require('dotenv-webpack')
+
 const devMode = process.env.NODE_ENV === 'development'
 const config = devMode
   ? require('./webpack.dev.config')
@@ -8,11 +11,9 @@ const config = devMode
 
 /** @type {import('webpack').Configuration} */
 const common = {
-  mode: devMode ? 'development' : 'production',
   entry: resolve(__dirname, 'src/index'),
   output: {
-    filename: '[name].bundle.js',
-    path: resolve('public')
+    filename: '[name].bundle.js'
   },
 
   module: {
@@ -102,7 +103,17 @@ const common = {
         )
       })
     ]
-  }
+  },
+
+  plugins: [
+    new Dotenv({
+      path: 'production.env',
+      safe: false
+    }),
+    new HtmlWebpackPlugin({
+      template: resolve('template.html')
+    })
+  ]
 }
 
 module.exports = smart(common, config)
