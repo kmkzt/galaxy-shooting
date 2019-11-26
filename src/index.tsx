@@ -18,15 +18,14 @@ import Stats from 'stats.js'
 import dat from 'dat.gui'
 import { Controler } from './components/Controler'
 import { Keyboard } from './enum/keyboard'
-import { SpaceShip } from './object/SpaceShip'
-import { Meteolite } from './object/Meteolite'
+import SpaceShip, { loadSpaceShipModel } from './object/SpaceShip'
+import Meteolite, { loadMeteolitesModel } from './object/Meteolite'
 import { Provider } from 'react-redux'
 import store from './store'
 import { POINT_INC, POINT_RESET } from './store/Score'
 import { Menu } from './components/Menu'
 import { Start } from './components/Start'
 import { PLAY_MENU_TOGGLE } from './store/Play'
-import { loadObject3D } from './utils/loadObject3d'
 
 /**
  * DEV TOOLS
@@ -98,9 +97,12 @@ const mouse = new Vector2()
 /**
  * SpaceShip Configuration
  */
-const spaceShip = new SpaceShip()
-const spaceShipGUI = gui.add(spaceShip.rotation, 'x')
-spaceShipGUI.onChange((val: string) => (spaceShip.rotation.x = Number(val)))
+let spaceShip = new SpaceShip()
+
+const setSpaceShipGUI = () => {
+  const spaceShipGUI = gui.add(spaceShip.rotation, 'x')
+  spaceShipGUI.onChange((val: string) => (spaceShip.rotation.x = Number(val)))
+}
 /**
  * Generate box
  */
@@ -133,7 +135,6 @@ const initMeteo = (mateoZ: number, models: Group[]): Meteolite => {
         ? models[Math.floor(Math.random() * models.length)].clone()
         : undefined
   })
-  console.log(meteo)
   meteo.setRandomPosition(
     CAMERA_DISTANCE * ASPECT_RATIO,
     CAMERA_DISTANCE,
@@ -146,34 +147,18 @@ const initMeteo = (mateoZ: number, models: Group[]): Meteolite => {
  * Init
  */
 const init = async () => {
-  await spaceShip.init()
   /**
    * generate space ship
    */
+  const spaceShipModel = await loadSpaceShipModel()
+  spaceShip = new SpaceShip({ model: spaceShipModel })
+  setSpaceShipGUI()
   scene.add(spaceShip)
 
   /**
    * generate box
    */
-  meteolitesModel = await Promise.all([
-    loadObject3D({
-      texturePath: require('./object/Meteolite/models/textures/Meteolite1.png'),
-      objectPath: require('./object/Meteolite/models/Meteolite1.obj')
-    }),
-    loadObject3D({
-      texturePath: require('./object/Meteolite/models/textures/Meteolite2.png'),
-      objectPath: require('./object/Meteolite/models/Meteolite2.obj')
-    }),
-    loadObject3D({
-      texturePath: require('./object/Meteolite/models/textures/Meteolite3.png'),
-      objectPath: require('./object/Meteolite/models/Meteolite3.obj')
-    }),
-    loadObject3D({
-      texturePath: require('./object/Meteolite/models/textures/Meteolite4.png'),
-      objectPath: require('./object/Meteolite/models/Meteolite4.obj')
-    })
-  ])
-  console.log(meteolitesModel)
+  meteolitesModel = await loadMeteolitesModel()
   generateMeteolites()
   scene.add(...meteolites)
   /**

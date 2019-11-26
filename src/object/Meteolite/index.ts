@@ -39,11 +39,31 @@ const initMaterial = (): Material => {
   return material
 }
 
+export const loadMeteolitesModel = (): Promise<Group[]> =>
+  Promise.all([
+    loadObject3D({
+      texturePath: require('./models/textures/Meteolite1.png'),
+      objectPath: require('./models/Meteolite1.obj')
+    }),
+    loadObject3D({
+      texturePath: require('./models/textures/Meteolite2.png'),
+      objectPath: require('./models/Meteolite2.obj')
+    }),
+    loadObject3D({
+      texturePath: require('./models/textures/Meteolite3.png'),
+      objectPath: require('./models/Meteolite3.obj')
+    }),
+    loadObject3D({
+      texturePath: require('./models/textures/Meteolite4.png'),
+      objectPath: require('./models/Meteolite4.obj')
+    })
+  ])
+
 interface MeteoLiteOption {
   size?: number
   model?: Object3D
 }
-export class Meteolite extends Group {
+export default class Meteolite extends Group {
   public isRotation: boolean = false
   constructor({ size, model }: MeteoLiteOption = {}) {
     super()

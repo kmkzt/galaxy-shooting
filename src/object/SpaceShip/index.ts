@@ -1,43 +1,34 @@
-import {
-  Mesh,
-  Geometry,
-  Material,
-  BoxGeometry,
-  MeshNormalMaterial,
-  BufferGeometry,
-  Object3D,
-  Group
-} from 'three'
+import { Mesh, BoxGeometry, MeshNormalMaterial, Object3D, Group } from 'three'
 import { loadObject3D } from '@/utils/loadObject3d'
 
-export class SpaceShip extends Group {
+const genDammySpaceShip = (): Mesh =>
+  new Mesh(new BoxGeometry(1, 0.2, 0.2), new MeshNormalMaterial())
+
+export const loadSpaceShipModel = async (): Promise<Group> => {
+  const obj = await loadObject3D({
+    texturePath: require('./models/textures/F15A.jpg'),
+    objectPath: require('./models/spaceShip.obj')
+  })
+  obj.rotateX(3)
+  obj.scale.x /= 2
+  obj.scale.y /= 2
+  obj.scale.z /= 2
+  return obj
+}
+interface SpaceShipOption {
+  model?: Object3D
+}
+export default class SpaceShip extends Group {
   public isRotation: boolean = false
   public isClashed: boolean = false
   public flightSpeed: number = 0.5
-  constructor() {
+  constructor({ model }: SpaceShipOption = {}) {
     super()
-    this.init = this.init.bind(this)
     this.switchRotate = this.switchRotate.bind(this)
     this.checkVector = this.checkVector.bind(this)
+    this.add(model || genDammySpaceShip())
   }
 
-  public async init(): Promise<void> {
-    try {
-      const obj = await loadObject3D({
-        texturePath: require('./models/textures/F15A.jpg'),
-        objectPath: require('./models/spaceShip.obj')
-      })
-      obj.rotateX(3)
-      obj.scale.x /= 2
-      obj.scale.y /= 2
-      obj.scale.z /= 2
-      this.add(obj)
-    } catch (err) {
-      const geometry: Geometry | BufferGeometry = new BoxGeometry(1, 0.2, 0.2)
-      const material: Material | Material[] = new MeshNormalMaterial()
-      this.add(new Mesh(geometry, material))
-    }
-  }
   public switchRotate() {
     this.isRotation = !this.isRotation
   }
