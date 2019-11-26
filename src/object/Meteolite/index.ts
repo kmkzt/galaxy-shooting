@@ -7,7 +7,8 @@ import {
   MeshPhongMaterial,
   VertexColors,
   Color,
-  Float32BufferAttribute
+  Float32BufferAttribute,
+  Object3D
 } from 'three'
 import { loadObject3D } from '@/utils/loadObject3d'
 
@@ -40,28 +41,16 @@ const initMaterial = (): Material => {
 
 interface MeteoLiteOption {
   size?: number
+  model?: Object3D
 }
 export class Meteolite extends Group {
   public isRotation: boolean = false
-  private option: MeteoLiteOption
-  constructor(option: MeteoLiteOption = {}) {
+  constructor({ size, model }: MeteoLiteOption = {}) {
     super()
-    this.option = option
     this.setRandomPosition = this.setRandomPosition.bind(this)
+    this.add(model || new Mesh(initGeoMetry(size), initMaterial()))
   }
 
-  public async init(): Promise<void> {
-    try {
-      const obj = await loadObject3D({
-        texturePath: require('./models/textures/Meteolite1.png'),
-        objectPath: require('./models/Meteolite1.obj')
-      })
-      this.add(obj)
-    } catch (err) {
-      const { size } = this.option
-      this.add(new Mesh(initGeoMetry(size), initMaterial()))
-    }
-  }
   public setRandomPosition(x: number, y: number, z: number) {
     this.position.x = (Math.random() - 0.5) * x
     this.position.y = (Math.random() - 0.5) * y

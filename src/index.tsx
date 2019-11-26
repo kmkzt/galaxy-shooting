@@ -7,7 +7,9 @@ import {
   HemisphereLight,
   Vector2,
   Raycaster,
-  Intersection
+  Intersection,
+  Object3D,
+  Group
 } from 'three'
 import React, { Fragment } from 'react'
 import styled from 'styled-components'
@@ -24,6 +26,7 @@ import { POINT_INC, POINT_RESET } from './store/Score'
 import { Menu } from './components/Menu'
 import { Start } from './components/Start'
 import { PLAY_MENU_TOGGLE } from './store/Play'
+import { loadObject3D } from './utils/loadObject3d'
 
 /**
  * DEV TOOLS
@@ -102,30 +105,35 @@ spaceShipGUI.onChange((val: string) => (spaceShip.rotation.x = Number(val)))
  * Generate box
  */
 let meteolites: Meteolite[] = []
-
+let meteolitesModel: Group[] = []
 interface GenerateMeteolitesOption {
   quauntity: number
   base_z: number
 }
 
 const generateMeteolitesDefaultOption: GenerateMeteolitesOption = {
-  quauntity: 5,
+  quauntity: 100,
   base_z: FAR
 }
 
-const generateMeteolites = async (option?: GenerateMeteolitesOption) => {
+const generateMeteolites = (option?: Partial<GenerateMeteolitesOption>) => {
   const { quauntity, base_z }: GenerateMeteolitesOption = {
     ...generateMeteolitesDefaultOption,
     ...(option || {})
   }
   for (var i = 0; i < quauntity; i++) {
-    meteolites.push(await initMeteo(base_z))
+    meteolites.push(initMeteo(base_z, meteolitesModel))
   }
 }
 
-const initMeteo = async (mateoZ: number): Promise<Meteolite> => {
-  const meteo = new Meteolite()
-  await meteo.init()
+const initMeteo = (mateoZ: number, models: Group[]): Meteolite => {
+  const meteo = new Meteolite({
+    model:
+      models.length !== 0
+        ? models[Math.floor(Math.random() * models.length)].clone()
+        : undefined
+  })
+  console.log(meteo)
   meteo.setRandomPosition(
     CAMERA_DISTANCE * ASPECT_RATIO,
     CAMERA_DISTANCE,
@@ -147,7 +155,26 @@ const init = async () => {
   /**
    * generate box
    */
-  await generateMeteolites()
+  meteolitesModel = await Promise.all([
+    loadObject3D({
+      texturePath: require('./object/Meteolite/models/textures/Meteolite1.png'),
+      objectPath: require('./object/Meteolite/models/Meteolite1.obj')
+    }),
+    loadObject3D({
+      texturePath: require('./object/Meteolite/models/textures/Meteolite2.png'),
+      objectPath: require('./object/Meteolite/models/Meteolite2.obj')
+    }),
+    loadObject3D({
+      texturePath: require('./object/Meteolite/models/textures/Meteolite3.png'),
+      objectPath: require('./object/Meteolite/models/Meteolite3.obj')
+    }),
+    loadObject3D({
+      texturePath: require('./object/Meteolite/models/textures/Meteolite4.png'),
+      objectPath: require('./object/Meteolite/models/Meteolite4.obj')
+    })
+  ])
+  console.log(meteolitesModel)
+  generateMeteolites()
   scene.add(...meteolites)
   /**
    * DEV TOOLS
