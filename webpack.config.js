@@ -9,6 +9,30 @@ const config = devMode
   ? require('./webpack.dev.config')
   : require('./webpack.prod.config')
 
+const optimizeImageLoader = {
+  loader: 'image-webpack-loader',
+  options: {
+    mozjpeg: {
+      progressive: true,
+      quality: 65
+    },
+    // optipng.enabled: false will disable optipng
+    optipng: {
+      enabled: false
+    },
+    pngquant: {
+      quality: [0.65, 0.9],
+      speed: 4
+    },
+    gifsicle: {
+      interlaced: false
+    },
+    // the webp option will enable WEBP
+    webp: {
+      quality: 75
+    }
+  }
+}
 /** @type {import('webpack').Configuration} */
 const common = {
   entry: resolve(__dirname, 'src/index'),
@@ -61,7 +85,8 @@ const common = {
             options: {
               outputPath: 'assets/textures'
             }
-          }
+          },
+          optimizeImageLoader
         ]
       },
       {
@@ -83,7 +108,8 @@ const common = {
             options: {
               outputPath: 'assets/images'
             }
-          }
+          },
+          optimizeImageLoader
         ]
       },
       { test: /\.html$/, use: 'html-loader' }
