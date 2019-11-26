@@ -75,7 +75,7 @@ renderer.setSize(FRAME_X, FRAME_Y)
 const ASPECT_RATIO = FRAME_X / FRAME_Y
 const FOV = 60
 const NEAR = 9
-const FAR = 2000
+const FAR = 200
 const CAMERA_DISTANCE = NEAR + 5
 const camera = new PerspectiveCamera(FOV, ASPECT_RATIO, NEAR, FAR)
 camera.position.z = CAMERA_DISTANCE
@@ -112,7 +112,7 @@ interface GenerateMeteolitesOption {
 }
 
 const generateMeteolitesDefaultOption: GenerateMeteolitesOption = {
-  quauntity: 100,
+  quauntity: 20,
   base_z: FAR
 }
 

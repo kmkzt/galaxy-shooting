@@ -13,7 +13,7 @@ import { loadObject3D } from '@/utils/loadObject3d'
 export class SpaceShip extends Group {
   public isRotation: boolean = false
   public isClashed: boolean = false
-  public flightSpeed: number = 0.2
+  public flightSpeed: number = 0.5
   constructor() {
     super()
     this.init = this.init.bind(this)
