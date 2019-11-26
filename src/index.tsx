@@ -264,19 +264,17 @@ canvasFrame.addEventListener('click', () => {
 /**
  * MOUSEMOVE ACTION
  */
-canvasFrame.addEventListener('mousemove', (e: MouseEvent) => {
-  e.preventDefault()
-  /**
-   * mosemove point
-   */
+const handleMouseMove = (x: number, y: number) => {
   const rect = canvasFrame.getBoundingClientRect()
-
   /**
    * Mouse Point 2D
    */
-  mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1
-  mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1
+  mouse.x = ((x - rect.left) / rect.width) * 2 - 1
+  mouse.y = -((x - rect.top) / rect.height) * 2 + 1
 
+  /**
+   * Rotate the meteorite in front of spaceShip
+   */
   raycaster.setFromCamera(mouse, camera)
 
   raycaster.intersectObjects(meteolites, true).map((inMeteo: Intersection) => {
@@ -292,6 +290,17 @@ canvasFrame.addEventListener('mousemove', (e: MouseEvent) => {
   const mousemove_y = mouse.y / 2
   spaceShip.position.x = mousemove_x * camera.aspect * CAMERA_DISTANCE
   spaceShip.position.y = mousemove_y * CAMERA_DISTANCE
+}
+
+canvasFrame.addEventListener('touchmove', (e: TouchEvent) => {
+  e.preventDefault()
+  const t: Touch = e.touches[0]
+  handleMouseMove(t.clientX, t.clientY)
+})
+
+canvasFrame.addEventListener('mousemove', (e: MouseEvent) => {
+  e.preventDefault()
+  handleMouseMove(e.clientX, e.clientY)
 })
 
 /**
