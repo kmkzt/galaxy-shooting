@@ -255,7 +255,7 @@ const handleMouseMove = (x: number, y: number) => {
    * Mouse Point 2D
    */
   mouse.x = ((x - rect.left) / rect.width) * 2 - 1
-  mouse.y = -((x - rect.top) / rect.height) * 2 + 1
+  mouse.y = -((y - rect.top) / rect.height) * 2 + 1
 
   /**
    * Rotate the meteorite in front of spaceShip
