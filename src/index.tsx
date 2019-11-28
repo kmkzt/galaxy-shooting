@@ -1,28 +1,26 @@
 import {
   Scene,
   PerspectiveCamera,
-  WebGLRenderer,
   Color,
   Fog,
   HemisphereLight,
   Vector2,
   Raycaster,
   Intersection,
-  Object3D,
   Group
 } from 'three'
 import React, { Fragment, useEffect, useRef } from 'react'
+import { Provider, useSelector } from 'react-redux'
 import { Canvas, useFrame, useThree } from 'react-three-fiber'
 import styled from 'styled-components'
 import { hydrate } from 'react-dom'
+import store, { RootStore } from './store'
 import Stats from 'stats.js'
 import dat from 'dat.gui'
 import { Controler } from './components/Controler'
 import { Keyboard } from './enum/keyboard'
 import SpaceShip, { loadSpaceShipModel } from './object/SpaceShip'
 import Meteolite, { loadMeteolitesModel } from './object/Meteolite'
-import { Provider } from 'react-redux'
-import store from './store'
 import { POINT_INC, POINT_RESET } from './store/Score'
 import { Menu } from './components/Menu'
 import { Start } from './components/Start'
@@ -70,7 +68,6 @@ const NEAR = 9
 const FAR = 200
 const CAMERA_DISTANCE = NEAR + 5
 const camera = new PerspectiveCamera(FOV, ASPECT_RATIO, NEAR, FAR)
-camera.position.z = CAMERA_DISTANCE
 
 /**
  * Mouse point
@@ -157,18 +154,9 @@ const init = async (scene: Scene) => {
 }
 
 /**
- * game is active
- */
-const isGameActive = (): boolean =>
-  store.getState().play.active && !store.getState().play.menu
-
-/**
  * Geme behavior
  */
 const gameBehaviorUpdate = () => {
-  if (!isGameActive()) {
-    return
-  }
   /** SpaceShip Move */
   if (spaceShip.isRotation) {
     spaceShip.rotation.z += ROTATE_UNIT
@@ -196,27 +184,8 @@ const gameBehaviorUpdate = () => {
    */
   if (!spaceShip.isClashed) {
     spaceShip.position.z -= spaceShip.flightSpeed
-    camera.position.z -= spaceShip.flightSpeed
     store.dispatch(POINT_INC(1))
   }
-}
-/**
- * 3D animation
- */
-const animate = () => {
-  /**
-   * Game parameter update
-   */
-  gameBehaviorUpdate()
-  /**
-   * stats.js update
-   */
-  stats.update()
-  /**
-   * Render animation
-   */
-  // renderer.render(scene, camera)
-  requestAnimationFrame(animate)
 }
 
 /**
@@ -335,8 +304,10 @@ const Panel = styled.div`
   padding: 12px;
 `
 function Game() {
-  const ref = useRef()
-  const { scene } = useThree()
+  const { scene, camera } = useThree()
+  const active = useSelector<RootStore, boolean>(
+    ({ play }) => play.active && !play.menu
+  )
   /**
    * Scene
    */
@@ -348,24 +319,17 @@ function Game() {
     light.position.set(0.5, 1, 0.75)
     scene.add(light)
     init(scene)
-    animate()
   }, [scene])
-
-  useFrame(
-    () =>
-      ((ref.current as any).rotation.x = (ref.current as any).rotation.y += 0.01)
-  )
-  return (
-    <mesh
-      ref={ref}
-      onClick={(e: any) => console.log('click')}
-      onPointerOver={(e: any) => console.log('hover')}
-      onPointerOut={(e: any) => console.log('unhover')}
-    >
-      <boxBufferGeometry attach="geometry" args={[1, 1, 1]} />
-      <meshNormalMaterial attach="material" />
-    </mesh>
-  )
+  useEffect(() => {
+    camera.position.z = CAMERA_DISTANCE
+  }, [camera])
+  useFrame(() => {
+    if (!active) return
+    camera.position.z -= spaceShip.flightSpeed
+    stats.update()
+    gameBehaviorUpdate()
+  })
+  return <Fragment />
 }
 
 hydrate(
@@ -374,7 +338,9 @@ hydrate(
     camera={camera as any}
     pixelRatio={window.devicePixelRatio}
   >
-    <Game />
+    <Provider store={store}>
+      <Game />
+    </Provider>
   </Canvas>,
   canvasFrame
 )
