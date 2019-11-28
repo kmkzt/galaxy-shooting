@@ -128,6 +128,15 @@ const initMeteo = (mateoZ: number, models: Group[]): Meteolite => {
  */
 const init = async (scene: Scene) => {
   /**
+   * Scene
+   */
+  scene.background = new Color(0x333366)
+  // scene.fog = new Fog(0x000000, 50, 2000)
+  scene.fog = new Fog(0x000000, NEAR, FAR)
+  const light = new HemisphereLight(0xeeeeff, 0x222222, 1)
+  light.position.set(0.5, 1, 0.75)
+  scene.add(light)
+  /**
    * generate space ship
    */
   const spaceShipModel = await loadSpaceShipModel()
@@ -182,10 +191,8 @@ const gameBehaviorUpdate = () => {
   /**
    * Moving SpaceShip
    */
-  if (!spaceShip.isClashed) {
-    spaceShip.position.z -= spaceShip.flightSpeed
-    store.dispatch(POINT_INC(1))
-  }
+  spaceShip.position.z -= spaceShip.flightSpeed
+  store.dispatch(POINT_INC(1))
 }
 
 /**
@@ -312,12 +319,6 @@ function Game() {
    * Scene
    */
   useEffect(() => {
-    scene.background = new Color(0x333366)
-    // scene.fog = new Fog(0x000000, 50, 2000)
-    scene.fog = new Fog(0x000000, NEAR, FAR)
-    const light = new HemisphereLight(0xeeeeff, 0x222222, 1)
-    light.position.set(0.5, 1, 0.75)
-    scene.add(light)
     init(scene)
   }, [scene])
   useEffect(() => {
@@ -325,9 +326,11 @@ function Game() {
   }, [camera])
   useFrame(() => {
     if (!active) return
-    camera.position.z -= spaceShip.flightSpeed
+    if (!spaceShip.isClashed) {
+      camera.position.z -= spaceShip.flightSpeed
+      gameBehaviorUpdate()
+    }
     stats.update()
-    gameBehaviorUpdate()
   })
   return <Fragment />
 }
