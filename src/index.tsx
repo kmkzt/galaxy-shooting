@@ -54,7 +54,7 @@ const gui = new dat.GUI()
 /**
  * Renderer
  */
-const canvasFrame = document.getElementById('drawarea') as HTMLCanvasElement
+const app = document.getElementById('app') as HTMLElement
 const FRAME_X = window.innerWidth
 const FRAME_Y = window.innerHeight
 // const FRAME_X = 500
@@ -191,7 +191,7 @@ const gameBehaviorUpdate = () => {
 /**
  * CLICK ACTION
  */
-canvasFrame.addEventListener('click', () => {
+app.addEventListener('click', () => {
   spaceShip.switchRotate()
 })
 
@@ -199,7 +199,7 @@ canvasFrame.addEventListener('click', () => {
  * MOUSEMOVE ACTION
  */
 const handleMouseMove = (x: number, y: number) => {
-  const rect = canvasFrame.getBoundingClientRect()
+  const rect = app.getBoundingClientRect()
   /**
    * Mouse Point 2D
    */
@@ -226,13 +226,13 @@ const handleMouseMove = (x: number, y: number) => {
   spaceShip.position.y = mousemove_y * CAMERA_DISTANCE
 }
 
-canvasFrame.addEventListener('touchmove', (e: TouchEvent) => {
+app.addEventListener('touchmove', (e: TouchEvent) => {
   e.preventDefault()
   const t: Touch = e.touches[0]
   handleMouseMove(t.clientX, t.clientY)
 })
 
-canvasFrame.addEventListener('mousemove', (e: MouseEvent) => {
+app.addEventListener('mousemove', (e: MouseEvent) => {
   e.preventDefault()
   handleMouseMove(e.clientX, e.clientY)
 })
@@ -333,26 +333,23 @@ function Game() {
 }
 
 hydrate(
-  <Canvas
-    style={{ width: FRAME_X, height: FRAME_Y }}
-    camera={camera as any}
-    pixelRatio={window.devicePixelRatio}
-  >
+  <Fragment>
+    <Canvas
+      style={{ width: FRAME_X, height: FRAME_Y }}
+      camera={camera as any}
+      pixelRatio={window.devicePixelRatio}
+    >
+      <Provider store={store}>
+        <Game />
+      </Provider>
+    </Canvas>
     <Provider store={store}>
-      <Game />
-    </Provider>
-  </Canvas>,
-  canvasFrame
-)
-hydrate(
-  <Provider store={store}>
-    <Fragment>
       <Start />
       <Panel>
         <Menu />
         <Controler onKeyboard={keyboardAction} />
       </Panel>
-    </Fragment>
-  </Provider>,
-  document.getElementById('controler')
+    </Provider>
+  </Fragment>,
+  app
 )
