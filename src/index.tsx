@@ -11,7 +11,8 @@ import {
   Object3D,
   Group
 } from 'three'
-import React, { Fragment } from 'react'
+import React, { Fragment, useEffect, useRef } from 'react'
+import { Canvas, useFrame, useThree } from 'react-three-fiber'
 import styled from 'styled-components'
 import { hydrate } from 'react-dom'
 import Stats from 'stats.js'
@@ -60,14 +61,6 @@ const FRAME_X = window.innerWidth
 const FRAME_Y = window.innerHeight
 // const FRAME_X = 500
 // const FRAME_Y = 500
-
-const renderer = new WebGLRenderer({
-  antialias: true,
-  canvas: canvasFrame
-})
-renderer.setPixelRatio(window.devicePixelRatio)
-renderer.setSize(FRAME_X, FRAME_Y)
-
 /**
  * Camera
  */
@@ -78,16 +71,6 @@ const FAR = 200
 const CAMERA_DISTANCE = NEAR + 5
 const camera = new PerspectiveCamera(FOV, ASPECT_RATIO, NEAR, FAR)
 camera.position.z = CAMERA_DISTANCE
-/**
- * Scene
- */
-const scene = new Scene()
-scene.background = new Color(0x333366)
-// scene.fog = new Fog(0x000000, 50, 2000)
-scene.fog = new Fog(0x000000, NEAR, FAR)
-const light = new HemisphereLight(0xeeeeff, 0x222222, 1)
-light.position.set(0.5, 1, 0.75)
-scene.add(light)
 
 /**
  * Mouse point
@@ -146,7 +129,7 @@ const initMeteo = (mateoZ: number, models: Group[]): Meteolite => {
 /**
  * Init
  */
-const init = async () => {
+const init = async (scene: Scene) => {
   /**
    * generate space ship
    */
@@ -232,12 +215,9 @@ const animate = () => {
   /**
    * Render animation
    */
-  renderer.render(scene, camera)
+  // renderer.render(scene, camera)
   requestAnimationFrame(animate)
 }
-
-init()
-animate()
 
 /**
  * CLICK ACTION
@@ -354,7 +334,50 @@ const Panel = styled.div`
   background: rgba(255, 255, 255, 0.4);
   padding: 12px;
 `
+function Game() {
+  const ref = useRef()
+  const { scene } = useThree()
+  /**
+   * Scene
+   */
+  useEffect(() => {
+    scene.background = new Color(0x333366)
+    // scene.fog = new Fog(0x000000, 50, 2000)
+    scene.fog = new Fog(0x000000, NEAR, FAR)
+    const light = new HemisphereLight(0xeeeeff, 0x222222, 1)
+    light.position.set(0.5, 1, 0.75)
+    scene.add(light)
+    init(scene)
+    animate()
+  }, [scene])
 
+  useFrame(
+    () =>
+      ((ref.current as any).rotation.x = (ref.current as any).rotation.y += 0.01)
+  )
+  return (
+    <mesh
+      ref={ref}
+      onClick={(e: any) => console.log('click')}
+      onPointerOver={(e: any) => console.log('hover')}
+      onPointerOut={(e: any) => console.log('unhover')}
+    >
+      <boxBufferGeometry attach="geometry" args={[1, 1, 1]} />
+      <meshNormalMaterial attach="material" />
+    </mesh>
+  )
+}
+
+hydrate(
+  <Canvas
+    style={{ width: FRAME_X, height: FRAME_Y }}
+    camera={camera as any}
+    pixelRatio={window.devicePixelRatio}
+  >
+    <Game />
+  </Canvas>,
+  canvasFrame
+)
 hydrate(
   <Provider store={store}>
     <Fragment>
