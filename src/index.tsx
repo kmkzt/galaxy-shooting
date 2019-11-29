@@ -1,3 +1,4 @@
+import polyfill from '@juggle/resize-observer'
 import {
   Scene,
   PerspectiveCamera,
@@ -341,6 +342,7 @@ hydrate(
       style={{ width: FRAME_X, height: FRAME_Y }}
       camera={camera as any}
       pixelRatio={window.devicePixelRatio}
+      resize={{ polyfill } as any}
     >
       <Provider store={store}>
         <Game />

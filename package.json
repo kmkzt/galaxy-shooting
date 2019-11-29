@@ -11,6 +11,7 @@
     "lint:fix": "prettier --write ./src/**/*.{ts,tsx}"
   },
   "dependencies": {
+    "@juggle/resize-observer": "2.4.0",
     "apollo-cache-inmemory": "1.6.3",
     "apollo-cache-persist": "0.1.1",
     "apollo-client": "2.6.4",
