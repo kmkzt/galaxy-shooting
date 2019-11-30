@@ -8,9 +8,10 @@ import {
   Vector2,
   Raycaster,
   Intersection,
-  Group
+  Group,
+  Camera
 } from 'three'
-import React, { Fragment, useEffect, useRef } from 'react'
+import React, { Fragment, useEffect, useCallback } from 'react'
 import { Provider, useSelector } from 'react-redux'
 import { Canvas, useFrame, useThree } from 'react-three-fiber'
 import styled from 'styled-components'
@@ -127,7 +128,7 @@ const initMeteo = (mateoZ: number, models: Group[]): Meteolite => {
 /**
  * Init
  */
-const init = async (scene: Scene) => {
+const init = async ({ scene, camera }: { scene: Scene; camera: Camera }) => {
   /**
    * Scene
    */
@@ -137,6 +138,11 @@ const init = async (scene: Scene) => {
   const light = new HemisphereLight(0xeeeeff, 0x222222, 1)
   light.position.set(0.5, 1, 0.75)
   scene.add(light)
+  /**
+   * CAMERA
+   */
+
+  camera.position.z = CAMERA_DISTANCE
   /**
    * generate space ship
    */
@@ -155,7 +161,6 @@ const init = async (scene: Scene) => {
    * DEV TOOLS
    */
   document.body.appendChild(stats.dom)
-
   // TODO: FIX controlable object
   // setDataGui(camera, gui.addFolder('camera'))
   // setDataGui(scene, gui.addFolder('scene'))
@@ -166,33 +171,38 @@ const init = async (scene: Scene) => {
 /**
  * Geme behavior
  */
-const gameBehaviorUpdate = () => {
-  /** SpaceShip Move */
-  if (spaceShip.isRotation) {
-    spaceShip.rotation.z += ROTATE_UNIT
-  }
+const gameBehaviorUpdate = ({ camera }: { camera: Camera }) => {
+  if (spaceShip.isClashed) return
 
   /**
-   * Repeat Meteolites Position
+   * Meteolites Behavior
    */
+  // check meteolite frame out
   meteolites
     .filter((me: Meteolite) => me.position.z > spaceShip.position.z + 10)
     .map((me: Meteolite) => {
       me.position.z -= FAR
     })
 
-  /**
-   * Check Crash
-   */
+  // check clash
   const hitMeteolites = meteolites.find((me: Meteolite) => spaceShip.touch(me))
   if (hitMeteolites) {
     spaceShip.isClashed = true
   }
 
   /**
-   * Moving SpaceShip
+   * SpaceShip Behavior
    */
+  // spaceShip rotation
+  if (spaceShip.isRotation) spaceShip.rotation.z += ROTATE_UNIT
+
+  // spaceShip rotation
   spaceShip.position.z -= spaceShip.flightSpeed
+  camera.position.z -= spaceShip.flightSpeed
+
+  /**
+   * Point Counter
+   */
   store.dispatch(POINT_INC(1))
 }
 
@@ -201,48 +211,6 @@ const gameBehaviorUpdate = () => {
  */
 app.addEventListener('click', () => {
   spaceShip.switchRotate()
-})
-
-/**
- * MOUSEMOVE ACTION
- */
-const handleMouseMove = (x: number, y: number) => {
-  const rect = app.getBoundingClientRect()
-  /**
-   * Mouse Point 2D
-   */
-  mouse.x = ((x - rect.left) / rect.width) * 2 - 1
-  mouse.y = -((y - rect.top) / rect.height) * 2 + 1
-
-  /**
-   * Rotate the meteorite in front of spaceShip
-   */
-  raycaster.setFromCamera(mouse, camera)
-
-  raycaster.intersectObjects(meteolites, true).map((inMeteo: Intersection) => {
-    inMeteo.object.rotateX(3)
-    inMeteo.object.rotateY(3)
-    inMeteo.object.rotateZ(3)
-  })
-  /**
-   * SpaceShip move
-   */
-  // min: -0.5, max: 0.5
-  const mousemove_x = mouse.x / 2
-  const mousemove_y = mouse.y / 2
-  spaceShip.position.x = mousemove_x * camera.aspect * CAMERA_DISTANCE
-  spaceShip.position.y = mousemove_y * CAMERA_DISTANCE
-}
-
-app.addEventListener('touchmove', (e: TouchEvent) => {
-  e.preventDefault()
-  const t: Touch = e.touches[0]
-  handleMouseMove(t.clientX, t.clientY)
-})
-
-app.addEventListener('mousemove', (e: MouseEvent) => {
-  e.preventDefault()
-  handleMouseMove(e.clientX, e.clientY)
 })
 
 /**
@@ -312,28 +280,98 @@ const Panel = styled.div`
   padding: 12px;
 `
 function Game() {
-  const { scene, camera } = useThree()
+  const { scene, camera, raycaster, aspect } = useThree()
   const active = useSelector<RootStore, boolean>(
     ({ play }) => play.active && !play.menu
   )
+
   /**
-   * Scene
+   * HANDLE MOUSE
+   */
+  const handleMouse = useCallback(
+    (x: number, y: number) => {
+      const rect = app.getBoundingClientRect()
+      /**
+       * Mouse Point 2D
+       */
+      mouse.x = ((x - rect.left) / rect.width) * 2 - 1
+      mouse.y = -((y - rect.top) / rect.height) * 2 + 1
+
+      /**
+       * Rotate the meteorite in front of spaceShip
+       */
+      raycaster.setFromCamera(mouse, camera)
+
+      raycaster
+        .intersectObjects(meteolites, true)
+        .map((inMeteo: Intersection) => {
+          inMeteo.object.rotateX(3)
+          inMeteo.object.rotateY(3)
+          inMeteo.object.rotateZ(3)
+        })
+      /**
+       * SpaceShip move
+       */
+      // min: -0.5, max: 0.5
+      const mousemove_x = mouse.x / 2
+      const mousemove_y = mouse.y / 2
+      spaceShip.position.x = mousemove_x * aspect * CAMERA_DISTANCE
+      spaceShip.position.y = mousemove_y * CAMERA_DISTANCE
+    },
+    [raycaster, camera, aspect]
+  )
+  const handlePointerMove = useCallback(
+    (e: PointerEvent | MouseEvent) => {
+      e.preventDefault()
+      handleMouse(e.clientX, e.clientY)
+    },
+    [handleMouse]
+  )
+  const handleTouchMove = useCallback(
+    (e: TouchEvent) => {
+      e.preventDefault()
+      const t: Touch = e.touches[0]
+      handleMouse(t.clientX, t.clientY)
+    },
+    [handleMouse]
+  )
+  /**
+   * Init
    */
   useEffect(() => {
-    init(scene)
-  }, [scene])
+    init({ scene, camera })
+  }, [scene, camera])
+
+  /**
+   * EventListner
+   */
   useEffect(() => {
-    camera.position.z = CAMERA_DISTANCE
-  }, [camera])
+    app.addEventListener('pointermove', handlePointerMove)
+    app.addEventListener('mousemove', handlePointerMove)
+    app.addEventListener('touchmove', handleTouchMove)
+    return () => {
+      app.removeEventListener('pointermove', handlePointerMove)
+      app.removeEventListener('mousemove', handlePointerMove)
+      app.removeEventListener('touchmove', handleTouchMove)
+    }
+  }, [handlePointerMove, handleTouchMove])
+
+  /**
+   * Animation
+   */
   useFrame(() => {
     if (!active) return
-    if (!spaceShip.isClashed) {
-      camera.position.z -= spaceShip.flightSpeed
-      gameBehaviorUpdate()
-    }
+    gameBehaviorUpdate({ camera })
     stats.update()
   })
-  return <Fragment />
+  return (
+    <Fragment>
+      <primitive object={spaceShip} />
+      {meteolites.map((meteo: Meteolite, i: number) => (
+        <primitive key={i} object={meteo} />
+      ))}
+    </Fragment>
+  )
 }
 
 hydrate(
