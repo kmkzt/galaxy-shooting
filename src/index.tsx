@@ -359,7 +359,7 @@ function Game() {
   /**
    * Animation
    */
-  useFrame(() => {
+  useFrame(({ camera }) => {
     if (!active) return
     gameBehaviorUpdate({ camera })
     stats.update()
@@ -378,6 +378,8 @@ hydrate(
   <Fragment>
     <Canvas
       style={{ width: FRAME_X, height: FRAME_Y }}
+      orthographic={false}
+      // https://github.com/react-spring/react-three-fiber/issues/208
       camera={camera as any}
       pixelRatio={window.devicePixelRatio}
       resize={{ polyfill } as any}
