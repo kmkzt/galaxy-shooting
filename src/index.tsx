@@ -11,8 +11,8 @@ import {
   Group,
   Camera
 } from 'three'
-import React, { Fragment, useEffect, useCallback } from 'react'
-import { Provider, useSelector } from 'react-redux'
+import React, { Fragment, useEffect, useCallback, FC, Suspense } from 'react'
+import { Provider, useSelector, useDispatch } from 'react-redux'
 import { Canvas, useFrame, useThree } from 'react-three-fiber'
 import styled from 'styled-components'
 import { hydrate } from 'react-dom'
@@ -21,12 +21,16 @@ import Stats from 'stats.js'
 import dat from 'dat.gui'
 import { Controler } from './components/Controler'
 import { Keyboard } from './enum/keyboard'
-import SpaceShip, { loadSpaceShipModel } from './object/SpaceShip'
+import SpaceShip, {
+  loadSpaceShipModel,
+  SpaceShipComponent
+} from './object/SpaceShip'
 import Meteolite, { loadMeteolitesModel } from './object/Meteolite'
 import { POINT_INC, POINT_RESET } from './store/Score'
 import { Menu } from './components/Menu'
 import { Start } from './components/Start'
 import { PLAY_MENU_TOGGLE } from './store/Play'
+import { SPACESHIP_UPDATE } from './store/SpaceShip'
 
 /**
  * DEV TOOLS
@@ -128,7 +132,7 @@ const initMeteo = (mateoZ: number, models: Group[]): Meteolite => {
 /**
  * Init
  */
-const init = async ({ scene, camera }: { scene: Scene; camera: Camera }) => {
+const init = async ({ scene }: { scene: Scene }) => {
   /**
    * Scene
    */
@@ -141,15 +145,6 @@ const init = async ({ scene, camera }: { scene: Scene; camera: Camera }) => {
   /**
    * CAMERA
    */
-
-  camera.position.z = CAMERA_DISTANCE
-  /**
-   * generate space ship
-   */
-  const spaceShipModel = await loadSpaceShipModel()
-  spaceShip = new SpaceShip({ model: spaceShipModel })
-  setSpaceShipGUI()
-  scene.add(spaceShip)
 
   /**
    * generate box
@@ -167,50 +162,15 @@ const init = async ({ scene, camera }: { scene: Scene; camera: Camera }) => {
   // setDataGui(light, gui.addFolder('light'))
   // setDataGui(spaceShip, gui.addFolder('spaceShip'))
 }
-
-/**
- * Geme behavior
- */
-const gameBehaviorUpdate = ({ camera }: { camera: Camera }) => {
-  if (spaceShip.isClashed) return
-
-  /**
-   * Meteolites Behavior
-   */
-  // check meteolite frame out
-  meteolites
-    .filter((me: Meteolite) => me.position.z > spaceShip.position.z + 10)
-    .map((me: Meteolite) => {
-      me.position.z -= FAR
-    })
-
-  // check clash
-  const hitMeteolites = meteolites.find((me: Meteolite) => spaceShip.touch(me))
-  if (hitMeteolites) {
-    spaceShip.isClashed = true
-  }
-
-  /**
-   * SpaceShip Behavior
-   */
-  // spaceShip rotation
-  if (spaceShip.isRotation) spaceShip.rotation.z += ROTATE_UNIT
-
-  // spaceShip rotation
-  spaceShip.position.z -= spaceShip.flightSpeed
-  camera.position.z -= spaceShip.flightSpeed
-
-  /**
-   * Point Counter
-   */
-  store.dispatch(POINT_INC(1))
-}
-
 /**
  * CLICK ACTION
  */
 app.addEventListener('click', () => {
-  spaceShip.switchRotate()
+  store.dispatch(
+    SPACESHIP_UPDATE({
+      isRotation: !store.getState().spaceShip.isRotation
+    })
+  )
 })
 
 /**
@@ -218,7 +178,6 @@ app.addEventListener('click', () => {
  */
 const TRANSLATE_UNIT = 0.05
 const CAMERA_MOVE_UNIT = 1
-const ROTATE_UNIT = 0.1
 
 const isKeycode = (key: number): key is Keyboard =>
   Object.values(Keyboard).includes(key)
@@ -281,10 +240,14 @@ const Panel = styled.div`
 `
 function Game() {
   const { scene, camera, raycaster, aspect } = useThree()
+  const { flightSpeed, isClashed, isRotation, position } = useSelector(
+    (state: RootStore) => state.spaceShip
+  )
+  const dispatch = useDispatch()
+
   const active = useSelector<RootStore, boolean>(
     ({ play }) => play.active && !play.menu
   )
-
   /**
    * HANDLE MOUSE
    */
@@ -315,10 +278,18 @@ function Game() {
       // min: -0.5, max: 0.5
       const mousemove_x = mouse.x / 2
       const mousemove_y = mouse.y / 2
-      spaceShip.position.x = mousemove_x * aspect * CAMERA_DISTANCE
-      spaceShip.position.y = mousemove_y * CAMERA_DISTANCE
+
+      dispatch(
+        SPACESHIP_UPDATE({
+          position: {
+            ...position,
+            x: mousemove_x * aspect * CAMERA_DISTANCE,
+            y: mousemove_y * CAMERA_DISTANCE
+          }
+        })
+      )
     },
-    [raycaster, camera, aspect]
+    [raycaster, camera, dispatch, position, aspect]
   )
   const handlePointerMove = useCallback(
     (e: PointerEvent | MouseEvent) => {
@@ -339,7 +310,8 @@ function Game() {
    * Init
    */
   useEffect(() => {
-    init({ scene, camera })
+    init({ scene })
+    camera.position.z = CAMERA_DISTANCE
   }, [scene, camera])
 
   /**
@@ -357,44 +329,93 @@ function Game() {
   }, [handlePointerMove, handleTouchMove])
 
   /**
+   * Geme behavior
+   */
+  const gameBehaviorUpdate = useCallback(() => {
+    if (isClashed) return
+
+    /**
+     * Meteolites Behavior
+     */
+    // check meteolite frame out
+    meteolites
+      .filter((me: Meteolite) => me.position.z > position.z + 10)
+      .map((me: Meteolite) => {
+        me.position.z -= FAR
+      })
+
+    // check clash
+    // TODO: FIX storeStatus
+    // const hitMeteolites = meteolites.find((me: Meteolite) =>
+    //   spaceShip.touch(me)
+    // )
+    // if (hitMeteolites) {
+    //   dispatch(SPACESHIP_UPDATE({ isClashed: true }))
+    // }
+
+    /**
+     * Point Counter
+     */
+    dispatch(POINT_INC(1))
+  }, [dispatch, isClashed, position.z])
+  /**
    * Animation
    */
-  useFrame(({ camera }) => {
+  useFrame(() => {
     if (!active) return
-    gameBehaviorUpdate({ camera })
+    gameBehaviorUpdate()
     stats.update()
   })
   return (
     <Fragment>
-      <primitive object={spaceShip} />
-      {meteolites.map((meteo: Meteolite, i: number) => (
-        <primitive key={i} object={meteo} />
-      ))}
+      {active && (
+        <>
+          <Suspense
+            fallback={
+              <mesh
+                onClick={(e: any) => console.log('click')}
+                onPointerOver={(e: any) => console.log('hover')}
+                onPointerOut={(e: any) => console.log('unhover')}
+              >
+                <boxBufferGeometry attach="geometry" args={[1, 1, 1]} />
+                <meshNormalMaterial attach="material" />
+              </mesh>
+            }
+          >
+            <SpaceShipComponent />
+          </Suspense>
+          {meteolites.map((meteo: Meteolite, i: number) => (
+            <primitive key={i} object={meteo} />
+          ))}
+        </>
+      )}
     </Fragment>
   )
 }
 
-hydrate(
-  <Fragment>
-    <Canvas
-      style={{ width: FRAME_X, height: FRAME_Y }}
-      orthographic={false}
-      // https://github.com/react-spring/react-three-fiber/issues/208
-      camera={camera as any}
-      pixelRatio={window.devicePixelRatio}
-      resize={{ polyfill } as any}
-    >
+const App: FC = ({}) => {
+  return (
+    <Fragment>
+      <Canvas
+        style={{ width: FRAME_X, height: FRAME_Y }}
+        orthographic={false}
+        // https://github.com/react-spring/react-three-fiber/issues/208
+        camera={camera as any}
+        pixelRatio={window.devicePixelRatio}
+        resize={{ polyfill } as any}
+      >
+        <Provider store={store}>
+          <Game />
+        </Provider>
+      </Canvas>
       <Provider store={store}>
-        <Game />
+        <Start />
+        <Panel>
+          <Menu />
+          <Controler onKeyboard={keyboardAction} />
+        </Panel>
       </Provider>
-    </Canvas>
-    <Provider store={store}>
-      <Start />
-      <Panel>
-        <Menu />
-        <Controler onKeyboard={keyboardAction} />
-      </Panel>
-    </Provider>
-  </Fragment>,
-  app
-)
+    </Fragment>
+  )
+}
+hydrate(<App />, app)

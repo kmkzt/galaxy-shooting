@@ -1,5 +1,10 @@
+import React, { Suspense, useRef, useEffect } from 'react'
 import { Mesh, BoxGeometry, MeshNormalMaterial, Object3D, Group } from 'three'
+import { useLoader, useFrame } from 'react-three-fiber'
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
 import { loadObject3D } from '@/utils/loadObject3d'
+import { RootStore } from '@/store'
+import { useSelector } from 'react-redux'
 
 const genDammySpaceShip = (): Mesh =>
   new Mesh(new BoxGeometry(1, 0.2, 0.2), new MeshNormalMaterial())
@@ -24,13 +29,8 @@ export default class SpaceShip extends Group {
   public flightSpeed: number = 0.5
   constructor({ model }: SpaceShipOption = {}) {
     super()
-    this.switchRotate = this.switchRotate.bind(this)
     this.checkVector = this.checkVector.bind(this)
     this.add(model || genDammySpaceShip())
-  }
-
-  public switchRotate() {
-    this.isRotation = !this.isRotation
   }
 
   public touch(obj: Object3D): boolean {
@@ -62,4 +62,46 @@ export default class SpaceShip extends Group {
       z < this.position.z + this.scale.z / 2
     )
   }
+}
+
+const ROTATE_UNIT = 0.1
+
+export const SpaceShipComponent = () => {
+  const ref = useRef<Group | null>(null)
+  const obj = useLoader(OBJLoader, require('./models/spaceShip.obj'))
+
+  const {
+    flightSpeed,
+    isRotation,
+    position: { x, y, z }
+  } = useSelector((state: RootStore) => state.spaceShip)
+  const { active } = useSelector((state: RootStore) => state.play)
+
+  /**
+   * FIX OBJECT STYLE
+   */
+  useEffect(() => {
+    obj.rotateX(3)
+    obj.scale.x /= 2
+    obj.scale.y /= 2
+    obj.scale.z /= 2
+  }, [obj])
+
+  /**
+   * SPACESHIP BEHAVIOR
+   */
+  useFrame(({ camera }) => {
+    if (!active) return
+    if (!ref.current) return
+    ref.current.position.x = x
+    ref.current.position.y = y
+
+    // spaceShip rotation
+    if (isRotation) ref.current.rotation.z += ROTATE_UNIT
+
+    // spaceShip rotation
+    ref.current.position.z -= flightSpeed
+    camera.position.z -= flightSpeed
+  })
+  return <primitive ref={ref} object={obj} />
 }
