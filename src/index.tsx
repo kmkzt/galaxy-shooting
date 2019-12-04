@@ -73,7 +73,6 @@ const FOV = 60
 const NEAR = 9
 const FAR = 200
 const CAMERA_DISTANCE = NEAR + 5
-const camera = new PerspectiveCamera(FOV, ASPECT_RATIO, NEAR, FAR)
 
 /**
  * Mouse point
@@ -135,12 +134,7 @@ const init = async ({ scene }: { scene: Scene }) => {
   /**
    * Scene
    */
-  scene.background = new Color(0x333366)
-  // scene.fog = new Fog(0x000000, 50, 2000)
-  scene.fog = new Fog(0x000000, NEAR, FAR)
-  const light = new HemisphereLight(0xeeeeff, 0x222222, 1)
-  light.position.set(0.5, 1, 0.75)
-  scene.add(light)
+
   /**
    * CAMERA
    */
@@ -154,7 +148,6 @@ const init = async ({ scene }: { scene: Scene }) => {
   /**
    * DEV TOOLS
    */
-  document.body.appendChild(stats.dom)
   // TODO: FIX controlable object
   // setDataGui(camera, gui.addFolder('camera'))
   // setDataGui(scene, gui.addFolder('scene'))
@@ -181,54 +174,54 @@ const CAMERA_MOVE_UNIT = 1
 const isKeycode = (key: number): key is Keyboard =>
   Object.values(Keyboard).includes(key)
 
-window.addEventListener('keydown', (ev: KeyboardEvent) => {
-  const keyCode = ev.keyCode
-  if (isKeycode(keyCode)) {
-    keyboardAction(keyCode)
-  }
-})
+// window.addEventListener('keydown', (ev: KeyboardEvent) => {
+//   const keyCode = ev.keyCode
+//   if (isKeycode(keyCode)) {
+//     keyboardAction(keyCode)
+//   }
+// })
 
-const keyboardAction = (key: Keyboard) => {
-  switch (key) {
-    case Keyboard.UP_ARROW:
-      spaceShip.position.y -= TRANSLATE_UNIT
-      break
-    case Keyboard.DOWN_ARROW:
-      spaceShip.position.y += TRANSLATE_UNIT
-      break
-    case Keyboard.RIGHT_ARROW:
-      spaceShip.position.x -= TRANSLATE_UNIT
-      break
-    case Keyboard.LEFT_ARROW:
-      spaceShip.position.x += TRANSLATE_UNIT
-      break
-    case Keyboard.KEY_U:
-      camera.position.y -= CAMERA_MOVE_UNIT
-      break
-    case Keyboard.KEY_D:
-      camera.position.y += CAMERA_MOVE_UNIT
-      break
-    case Keyboard.KEY_L:
-      camera.position.x -= CAMERA_MOVE_UNIT
-      break
-    case Keyboard.KEY_R:
-      camera.position.x += CAMERA_MOVE_UNIT
-      break
-    case Keyboard.KEY_N:
-      camera.position.z -= CAMERA_MOVE_UNIT
-      break
-    case Keyboard.KEY_F:
-      camera.position.z += CAMERA_MOVE_UNIT
-      break
-    case Keyboard.ENTER:
-      spaceShip.isClashed = false
-      store.dispatch(POINT_RESET())
-      break
-    case Keyboard.SPACE:
-      store.dispatch(PLAY_MENU_TOGGLE())
-      break
-  }
-}
+// const keyboardAction = (key: Keyboard) => {
+//   switch (key) {
+//     case Keyboard.UP_ARROW:
+//       spaceShip.position.y -= TRANSLATE_UNIT
+//       break
+//     case Keyboard.DOWN_ARROW:
+//       spaceShip.position.y += TRANSLATE_UNIT
+//       break
+//     case Keyboard.RIGHT_ARROW:
+//       spaceShip.position.x -= TRANSLATE_UNIT
+//       break
+//     case Keyboard.LEFT_ARROW:
+//       spaceShip.position.x += TRANSLATE_UNIT
+//       break
+//     case Keyboard.KEY_U:
+//       camera.position.y -= CAMERA_MOVE_UNIT
+//       break
+//     case Keyboard.KEY_D:
+//       camera.position.y += CAMERA_MOVE_UNIT
+//       break
+//     case Keyboard.KEY_L:
+//       camera.position.x -= CAMERA_MOVE_UNIT
+//       break
+//     case Keyboard.KEY_R:
+//       camera.position.x += CAMERA_MOVE_UNIT
+//       break
+//     case Keyboard.KEY_N:
+//       camera.position.z -= CAMERA_MOVE_UNIT
+//       break
+//     case Keyboard.KEY_F:
+//       camera.position.z += CAMERA_MOVE_UNIT
+//       break
+//     case Keyboard.ENTER:
+//       spaceShip.isClashed = false
+//       store.dispatch(POINT_RESET())
+//       break
+//     case Keyboard.SPACE:
+//       store.dispatch(PLAY_MENU_TOGGLE())
+//       break
+//   }
+// }
 
 const Panel = styled.div`
   position: fixed;
@@ -385,7 +378,21 @@ const App: FC = ({}) => {
         style={{ width: FRAME_X, height: FRAME_Y }}
         orthographic={false}
         // https://github.com/react-spring/react-three-fiber/issues/208
-        camera={camera as any}
+        camera={{
+          position: [0, 0, CAMERA_DISTANCE],
+          near: NEAR,
+          far: FAR,
+          fov: FOV
+        }}
+        onCreated={({ scene }) => {
+          document.body.appendChild(stats.dom)
+          scene.background = new Color(0x333366)
+          // scene.fog = new Fog(0x000000, 50, 2000)
+          scene.fog = new Fog(0x000000, NEAR, FAR)
+          const light = new HemisphereLight(0xeeeeff, 0x222222, 1)
+          light.position.set(0.5, 1, 0.75)
+          scene.add(light)
+        }}
         pixelRatio={window.devicePixelRatio}
         resize={{ polyfill } as any}
       >
@@ -397,7 +404,6 @@ const App: FC = ({}) => {
         <Start />
         <Panel>
           <Menu />
-          <Controler onKeyboard={keyboardAction} />
         </Panel>
       </Provider>
     </Fragment>
