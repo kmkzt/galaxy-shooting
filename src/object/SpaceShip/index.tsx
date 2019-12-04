@@ -1,10 +1,18 @@
 import React, { Suspense, useRef, useEffect } from 'react'
-import { Mesh, BoxGeometry, MeshNormalMaterial, Object3D, Group } from 'three'
+import {
+  Mesh,
+  BoxGeometry,
+  MeshNormalMaterial,
+  Object3D,
+  Group,
+  Vector3
+} from 'three'
 import { useLoader, useFrame } from 'react-three-fiber'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
 import { loadObject3D } from '@/utils/loadObject3d'
 import { RootStore } from '@/store'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { SPACESHIP_UPDATE } from '@/store/SpaceShip'
 
 const genDammySpaceShip = (): Mesh =>
   new Mesh(new BoxGeometry(1, 0.2, 0.2), new MeshNormalMaterial())
@@ -70,13 +78,12 @@ export const SpaceShipComponent = () => {
   const ref = useRef<Group | null>(null)
   const obj = useLoader(OBJLoader, require('./models/spaceShip.obj'))
 
-  const {
-    flightSpeed,
-    isRotation,
-    position: { x, y, z }
-  } = useSelector((state: RootStore) => state.spaceShip)
+  const { flightSpeed, isRotation, position } = useSelector(
+    (state: RootStore) => state.spaceShip
+  )
   const { active } = useSelector((state: RootStore) => state.play)
-
+  const cameraDistance = useSelector((state: RootStore) => state.cam.distance)
+  const dispatch = useDispatch()
   /**
    * FIX OBJECT STYLE
    */
@@ -86,22 +93,30 @@ export const SpaceShipComponent = () => {
     obj.scale.y /= 2
     obj.scale.z /= 2
   }, [obj])
-
+  /**
+   * Update spaceShip
+   */
+  useEffect(() => {
+    if (!ref.current) return
+    const { x, y, z } = position
+    ref.current.position.copy(new Vector3(x, y, z))
+    // spaceShip rotation
+    if (isRotation) ref.current.rotation.z += ROTATE_UNIT
+  }, [isRotation, position])
   /**
    * SPACESHIP BEHAVIOR
    */
-  useFrame(({ camera }) => {
+  useFrame(() => {
     if (!active) return
-    if (!ref.current) return
-    ref.current.position.x = x
-    ref.current.position.y = y
-
-    // spaceShip rotation
-    if (isRotation) ref.current.rotation.z += ROTATE_UNIT
-
-    // spaceShip rotation
-    ref.current.position.z -= flightSpeed
-    camera.position.z -= flightSpeed
+    dispatch(
+      SPACESHIP_UPDATE({
+        position: {
+          ...position,
+          z: position.z - flightSpeed
+        }
+      })
+    )
   })
+
   return <primitive ref={ref} object={obj} />
 }

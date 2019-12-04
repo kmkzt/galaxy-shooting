@@ -78,7 +78,6 @@ const camera = new PerspectiveCamera(FOV, ASPECT_RATIO, NEAR, FAR)
 /**
  * Mouse point
  */
-const raycaster = new Raycaster()
 const mouse = new Vector2()
 /**
  * SpaceShip Configuration
@@ -243,6 +242,9 @@ function Game() {
   const { flightSpeed, isClashed, isRotation, position } = useSelector(
     (state: RootStore) => state.spaceShip
   )
+  const { distance: cameraDistane } = useSelector(
+    (state: RootStore) => state.cam
+  )
   const dispatch = useDispatch()
 
   const active = useSelector<RootStore, boolean>(
@@ -311,8 +313,7 @@ function Game() {
    */
   useEffect(() => {
     init({ scene })
-    camera.position.z = CAMERA_DISTANCE
-  }, [scene, camera])
+  }, [scene])
 
   /**
    * EventListner
@@ -357,39 +358,23 @@ function Game() {
      * Point Counter
      */
     dispatch(POINT_INC(1))
-  }, [dispatch, isClashed, position.z])
+  }, [dispatch, isClashed, position])
   /**
    * Animation
    */
-  useFrame(() => {
+  useFrame(({ camera }) => {
     if (!active) return
     gameBehaviorUpdate()
+    camera.position.z = position.z + cameraDistane
     stats.update()
   })
   return (
-    <Fragment>
-      {active && (
-        <>
-          <Suspense
-            fallback={
-              <mesh
-                onClick={(e: any) => console.log('click')}
-                onPointerOver={(e: any) => console.log('hover')}
-                onPointerOut={(e: any) => console.log('unhover')}
-              >
-                <boxBufferGeometry attach="geometry" args={[1, 1, 1]} />
-                <meshNormalMaterial attach="material" />
-              </mesh>
-            }
-          >
-            <SpaceShipComponent />
-          </Suspense>
-          {meteolites.map((meteo: Meteolite, i: number) => (
-            <primitive key={i} object={meteo} />
-          ))}
-        </>
-      )}
-    </Fragment>
+    <Suspense fallback={null}>
+      <SpaceShipComponent />
+      {meteolites.map((meteo: Meteolite, i: number) => (
+        <primitive key={i} object={meteo} />
+      ))}
+    </Suspense>
   )
 }
 

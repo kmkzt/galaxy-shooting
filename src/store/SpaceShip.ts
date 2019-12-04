@@ -2,9 +2,8 @@
 import { Action } from 'redux'
 import { isType } from 'typescript-fsa'
 import actionCreatorFactory from 'typescript-fsa'
-import { Vector3 } from 'three'
 
-const score = actionCreatorFactory('SCORE')
+const score = actionCreatorFactory('SPACESHIP')
 
 export const SPACESHIP_UPDATE = score<Partial<State>>('SPACESHIP/UPDATE')
 export const SPACESHIP_RESET = score('SPACESHIP/RESET')
@@ -23,9 +22,6 @@ export interface State {
 }
 
 export const reducer = (state: State = initialState, action: Action): State => {
-  if (isType(action, SPACESHIP_UPDATE)) {
-    return { ...state, ...action.payload }
-  }
   if (isType(action, SPACESHIP_UPDATE)) {
     return { ...state, ...action.payload }
   }
