@@ -3,10 +3,10 @@ import { Action } from 'redux'
 import { isType } from 'typescript-fsa'
 import actionCreatorFactory from 'typescript-fsa'
 
-const score = actionCreatorFactory('CAMERA')
+const cam = actionCreatorFactory('CAMERA')
 
-export const CAMERA_UPDATE = score<Partial<State>>('CAMERA/UPDATE')
-export const CAMERA_RESET = score('CAMERA/RESET')
+export const CAMERA_UPDATE = cam<Partial<State>>('CAMERA/UPDATE')
+export const CAMERA_RESET = cam('CAMERA/RESET')
 
 const initialState: State = {
   near: 9,
