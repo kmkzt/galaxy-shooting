@@ -2,6 +2,7 @@
 import { Action } from 'redux'
 import { isType } from 'typescript-fsa'
 import actionCreatorFactory from 'typescript-fsa'
+import { Obj } from '@/interface/Obj'
 
 const ship = actionCreatorFactory('SPACESHIP')
 
@@ -13,14 +14,13 @@ const initialState: State = {
   isClashed: false,
   isRotation: false,
   position: { x: 0, y: 0, z: 0 },
-  rotation: { x: 0, y: 0, z: 0 }
+  rotation: { x: 0, y: 0, z: 0 },
+  scale: { x: 0, y: 0, z: 0 }
 }
-export interface State {
+export interface State extends Obj {
   flightSpeed: number
   isClashed: boolean
   isRotation: boolean
-  position: { x: number; y: number; z: number }
-  rotation: { x: number; y: number; z: number }
 }
 
 export const reducer = (state: State = initialState, action: Action): State => {
