@@ -1,15 +1,11 @@
 import polyfill from '@juggle/resize-observer'
 import {
   Scene,
-  PerspectiveCamera,
   Color,
   Fog,
   HemisphereLight,
   Vector2,
-  Raycaster,
-  Intersection,
-  Group,
-  Camera
+  Intersection
 } from 'three'
 import React, { Fragment, useEffect, useCallback, FC, Suspense } from 'react'
 import { Provider, useSelector, useDispatch } from 'react-redux'
@@ -21,11 +17,11 @@ import Stats from 'stats.js'
 import dat from 'dat.gui'
 import { Controler } from './components/Controler'
 import { Keyboard } from './enum/keyboard'
-import SpaceShip, {
-  loadSpaceShipModel,
-  SpaceShipComponent
-} from './object/SpaceShip'
-import Meteolite, { loadMeteolitesModel } from './object/Meteolite'
+import SpaceShip from './object/SpaceShip'
+import Meteolite, {
+  loadMeteolitesModel,
+  generateMeteolites
+} from './object/Meteolite'
 import { POINT_INC, POINT_RESET } from './store/Score'
 import { Menu } from './components/Menu'
 import { Start } from './components/Start'
@@ -77,73 +73,29 @@ const CAMERA_DISTANCE = NEAR + 5
 /**
  * Mouse point
  */
-const mouse = new Vector2()
-/**
- * SpaceShip Configuration
- */
-let spaceShip = new SpaceShip()
 
-const setSpaceShipGUI = () => {
-  const spaceShipGUI = gui.add(spaceShip.rotation, 'x')
-  spaceShipGUI.onChange((val: string) => (spaceShip.rotation.x = Number(val)))
-}
 /**
  * Generate box
  */
 let meteolites: Meteolite[] = []
-let meteolitesModel: Group[] = []
-interface GenerateMeteolitesOption {
-  quauntity: number
-  base_z: number
-}
 
-const generateMeteolitesDefaultOption: GenerateMeteolitesOption = {
-  quauntity: 20,
-  base_z: FAR
-}
-
-const generateMeteolites = (option?: Partial<GenerateMeteolitesOption>) => {
-  const { quauntity, base_z }: GenerateMeteolitesOption = {
-    ...generateMeteolitesDefaultOption,
-    ...(option || {})
-  }
-  for (var i = 0; i < quauntity; i++) {
-    meteolites.push(initMeteo(base_z, meteolitesModel))
-  }
-}
-
-const initMeteo = (mateoZ: number, models: Group[]): Meteolite => {
-  const meteo = new Meteolite({
-    model:
-      models.length !== 0
-        ? models[Math.floor(Math.random() * models.length)].clone()
-        : undefined
-  })
-  meteo.setRandomPosition(
-    CAMERA_DISTANCE * ASPECT_RATIO,
-    CAMERA_DISTANCE,
-    mateoZ
-  )
-  meteo.position.z += FAR
-  return meteo
-}
 /**
  * Init
  */
 const init = async ({ scene }: { scene: Scene }) => {
   /**
-   * Scene
-   */
-
-  /**
-   * CAMERA
-   */
-
-  /**
    * generate box
    */
-  meteolitesModel = await loadMeteolitesModel()
-  generateMeteolites()
+  const meteolitesModels = await loadMeteolitesModel()
+  meteolites = generateMeteolites({
+    models: meteolitesModels,
+    basePosition: {
+      x: CAMERA_DISTANCE * ASPECT_RATIO,
+      y: CAMERA_DISTANCE,
+      z: FAR
+    },
+    far: FAR
+  })
   scene.add(...meteolites)
   /**
    * DEV TOOLS
@@ -231,7 +183,7 @@ const Panel = styled.div`
   padding: 12px;
 `
 function Game() {
-  const { scene, camera, raycaster, aspect } = useThree()
+  const { scene, camera, raycaster, aspect, mouse } = useThree()
   const { flightSpeed, isClashed, isRotation, position } = useSelector(
     (state: RootStore) => state.spaceShip
   )
@@ -284,7 +236,7 @@ function Game() {
         })
       )
     },
-    [raycaster, camera, dispatch, position, aspect]
+    [mouse, raycaster, camera, dispatch, position, aspect]
   )
   const handlePointerMove = useCallback(
     (e: PointerEvent | MouseEvent) => {
@@ -363,7 +315,7 @@ function Game() {
   })
   return (
     <Suspense fallback={null}>
-      <SpaceShipComponent />
+      <SpaceShip />
       {meteolites.map((meteo: Meteolite, i: number) => (
         <primitive key={i} object={meteo} />
       ))}

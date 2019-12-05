@@ -78,3 +78,49 @@ export default class Meteolite extends Group {
     return this
   }
 }
+
+export const initMeteo = (
+  models: Group[],
+  { x, y, z, far }: { x: number; y: number; z: number; far: number }
+): Meteolite => {
+  const meteo = new Meteolite({
+    model:
+      models.length !== 0
+        ? models[Math.floor(Math.random() * models.length)].clone()
+        : undefined
+  })
+  meteo.setRandomPosition(x, y, z)
+  meteo.position.z += far
+  return meteo
+}
+
+interface GenerateMeteolitesOption {
+  quauntity: number
+  models: Group[]
+  basePosition: { x: number; y: number; z: number }
+  far: number
+}
+
+const generateMeteolitesDefaultOption: GenerateMeteolitesOption = {
+  quauntity: 20,
+  models: [],
+  basePosition: { x: 0, y: 0, z: 0 },
+  far: 0
+}
+
+export const generateMeteolites = (
+  option?: Partial<GenerateMeteolitesOption>
+) => {
+  const { quauntity, models, basePosition, far }: GenerateMeteolitesOption = {
+    ...generateMeteolitesDefaultOption,
+    ...(option || {})
+  }
+  return Array(quauntity)
+    .fill(null)
+    .map((_: null, i: number) =>
+      initMeteo(models, {
+        ...basePosition,
+        far
+      })
+    )
+}
