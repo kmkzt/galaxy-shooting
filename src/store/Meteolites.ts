@@ -2,6 +2,7 @@
 import { Action } from 'redux'
 import { isType } from 'typescript-fsa'
 import actionCreatorFactory from 'typescript-fsa'
+import { Obj } from '@/interface/Obj'
 
 const meteos = actionCreatorFactory('meteo')
 
@@ -10,11 +11,8 @@ export const METEOS_RESET = meteos('RESET')
 
 const initialState: State = []
 
-type State = Meteo[]
-export interface Meteo {
-  position: { x: number; y: number; z: number }
-  rotation: { x: number; y: number; z: number }
-}
+export type State = Array<Meteo>
+export interface Meteo extends Obj {}
 
 export const reducer = (state: State = initialState, action: Action): State => {
   if (isType(action, METEOS_UPDATE)) {
