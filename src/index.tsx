@@ -266,7 +266,7 @@ function Game() {
   useEffect(() => {
     app.addEventListener('pointermove', handlePointerMove)
     app.addEventListener('mousemove', handlePointerMove)
-    app.addEventListener('touchmove', handleTouchMove)
+    app.addEventListener('touchmove', handleTouchMove, { passive: true })
     return () => {
       app.removeEventListener('pointermove', handlePointerMove)
       app.removeEventListener('mousemove', handlePointerMove)
