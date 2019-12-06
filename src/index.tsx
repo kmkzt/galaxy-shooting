@@ -18,15 +18,15 @@ import dat from 'dat.gui'
 import { Controler } from './components/Controler'
 import { Keyboard } from './enum/keyboard'
 import SpaceShip from './object/SpaceShip'
-import Meteolite, {
-  loadMeteolitesModel,
-  generateMeteolites
-} from './object/Meteolite'
+import { Meteolites } from './object/Meteolite'
 import { POINT_INC, POINT_RESET } from './store/Score'
 import { Menu } from './components/Menu'
 import { Start } from './components/Start'
 import { PLAY_MENU_TOGGLE } from './store/Play'
 import { SPACESHIP_UPDATE } from './store/SpaceShip'
+import { Obj } from './interface/Obj'
+import { METEOS_UPDATE } from './store/Meteolites'
+import { getRandomPosition } from './utils/getRandomPostion'
 
 /**
  * DEV TOOLS
@@ -77,35 +77,6 @@ const CAMERA_DISTANCE = NEAR + 5
 /**
  * Generate box
  */
-let meteolites: Meteolite[] = []
-
-/**
- * Init
- */
-const init = async ({ scene }: { scene: Scene }) => {
-  /**
-   * generate box
-   */
-  const meteolitesModels = await loadMeteolitesModel()
-  meteolites = generateMeteolites({
-    models: meteolitesModels,
-    basePosition: {
-      x: CAMERA_DISTANCE * ASPECT_RATIO,
-      y: CAMERA_DISTANCE,
-      z: FAR
-    },
-    far: FAR
-  })
-  scene.add(...meteolites)
-  /**
-   * DEV TOOLS
-   */
-  // TODO: FIX controlable object
-  // setDataGui(camera, gui.addFolder('camera'))
-  // setDataGui(scene, gui.addFolder('scene'))
-  // setDataGui(light, gui.addFolder('light'))
-  // setDataGui(spaceShip, gui.addFolder('spaceShip'))
-}
 /**
  * CLICK ACTION
  */
@@ -185,6 +156,7 @@ const Panel = styled.div`
 function Game() {
   const { scene, camera, raycaster, aspect, mouse } = useThree()
   const ship = useSelector((state: RootStore) => state.spaceShip)
+  const meteos = useSelector((state: RootStore) => state.meteos)
   const { distance: cameraDistane } = useSelector(
     (state: RootStore) => state.cam
   )
@@ -208,15 +180,15 @@ function Game() {
       /**
        * Rotate the meteorite in front of spaceShip
        */
-      raycaster.setFromCamera(mouse, camera)
+      // raycaster.setFromCamera(mouse, camera)
 
-      raycaster
-        .intersectObjects(meteolites, true)
-        .map((inMeteo: Intersection) => {
-          inMeteo.object.rotateX(3)
-          inMeteo.object.rotateY(3)
-          inMeteo.object.rotateZ(3)
-        })
+      // raycaster
+      //   .intersectObjects(meteolites, true)
+      //   .map((inMeteo: Intersection) => {
+      //     inMeteo.object.rotateX(3)
+      //     inMeteo.object.rotateY(3)
+      //     inMeteo.object.rotateZ(3)
+      //   })
       /**
        * SpaceShip move
        */
@@ -234,7 +206,7 @@ function Game() {
         })
       )
     },
-    [mouse, raycaster, camera, dispatch, ship.position, aspect]
+    [mouse, dispatch, ship.position, aspect]
   )
   const handlePointerMove = useCallback(
     (e: PointerEvent | MouseEvent) => {
@@ -254,10 +226,35 @@ function Game() {
   /**
    * Init
    */
+  useEffect(() => {}, [scene])
   useEffect(() => {
-    init({ scene })
-  }, [scene])
-
+    const meteoData = Array(100)
+      .fill(null)
+      .map((_: null, i) => ({
+        position: getRandomPosition(
+          {
+            x: CAMERA_DISTANCE * ASPECT_RATIO,
+            y: CAMERA_DISTANCE,
+            z: FAR
+          },
+          {
+            z: FAR
+          }
+        ),
+        rotation: {
+          x: 0,
+          y: 0,
+          z: 0
+        },
+        scale: {
+          x: 0,
+          y: 0,
+          z: 0
+        }
+      }))
+    console.log(meteoData)
+    dispatch(METEOS_UPDATE(meteoData))
+  }, [dispatch])
   /**
    * EventListner
    */
@@ -273,47 +270,19 @@ function Game() {
   }, [handlePointerMove, handleTouchMove])
 
   /**
-   * Geme behavior
-   */
-  const gameBehaviorUpdate = useCallback(() => {
-    if (ship.isClashed) return
-
-    /**
-     * Meteolites Behavior
-     */
-    // check meteolite frame out
-    meteolites
-      .filter((me: Meteolite) => me.position.z > ship.position.z + 10)
-      .map((me: Meteolite) => {
-        me.position.z -= FAR
-      })
-
-    // check clash
-    // TODO: FIX storeStatus
-    // const hitMeteolites = meteolites.find((me: Meteolite) =>
-    //   spaceShip.touch(me)
-    // )
-    // if (hitMeteolites) {
-    //   dispatch(SPACESHIP_UPDATE({ isClashed: true }))
-    // }
-
-    /**
-     * Point Counter
-     */
-    dispatch(POINT_INC(1))
-  }, [dispatch, ship.isClashed, ship.position.z])
-  /**
    * Animation
    */
   useFrame(({ camera }) => {
-    if (!active) return
-    gameBehaviorUpdate()
+    if (!active || ship.isClashed) return
 
     // DEV TOOL
     {
       stats.update()
     }
-
+    // Game Status Behavior
+    {
+      dispatch(POINT_INC(1))
+    }
     // CAMERA Behavior
     {
       camera.position.z = ship.position.z + cameraDistane
@@ -338,13 +307,22 @@ function Game() {
         })
       )
     }
+
+    // Meteolites Behavior
+    {
+      const updateMeteos = meteos.map((me: Obj) => {
+        if (me.position.z > ship.position.z + 10) {
+          me.position.z -= FAR
+        }
+        return me
+      })
+      dispatch(METEOS_UPDATE(updateMeteos))
+    }
   })
   return (
     <Suspense fallback={null}>
       <SpaceShip />
-      {meteolites.map((meteo: Meteolite, i: number) => (
-        <primitive key={i} object={meteo} />
-      ))}
+      <Meteolites />
     </Suspense>
   )
 }

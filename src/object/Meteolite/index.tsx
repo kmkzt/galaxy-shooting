@@ -1,3 +1,4 @@
+import React from 'react'
 import {
   Group,
   Mesh,
@@ -10,7 +11,12 @@ import {
   Float32BufferAttribute,
   Object3D
 } from 'three'
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
 import { loadObject3D } from '@/utils/loadObject3d'
+import { useLoader } from 'react-three-fiber'
+import { RootStore } from '@/store'
+import { useSelector } from 'react-redux'
+import { Obj } from '@/interface/Obj'
 
 const initGeoMetry = (size: number = 1): BufferGeometry => {
   const bs = Math.random() * size + 0.5
@@ -78,7 +84,6 @@ export default class Meteolite extends Group {
     return this
   }
 }
-
 export const initMeteo = (
   models: Group[],
   { x, y, z, far }: { x: number; y: number; z: number; far: number }
@@ -123,4 +128,18 @@ export const generateMeteolites = (
         far
       })
     )
+}
+
+export const Meteolites = () => {
+  const obj = useLoader(OBJLoader, require('./models/Meteolite1.obj'))
+  const meteos = useSelector((state: RootStore) => state.meteos)
+  return (
+    <>
+      {meteos.map((me: Obj, i: number) => (
+        <group key={i} position={[me.position.x, me.position.y, me.position.z]}>
+          <primitive object={obj} />
+        </group>
+      ))}
+    </>
+  )
 }
