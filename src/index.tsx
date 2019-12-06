@@ -9,7 +9,7 @@ import {
 } from 'three'
 import React, { Fragment, useEffect, useCallback, FC, Suspense } from 'react'
 import { Provider, useSelector, useDispatch } from 'react-redux'
-import { Canvas, useFrame, useThree } from 'react-three-fiber'
+import { Canvas, useFrame, useThree, useLoader } from 'react-three-fiber'
 import styled from 'styled-components'
 import { hydrate } from 'react-dom'
 import store, { RootStore } from './store'
@@ -18,14 +18,13 @@ import dat from 'dat.gui'
 import { Controler } from './components/Controler'
 import { Keyboard } from './enum/keyboard'
 import SpaceShip from './object/SpaceShip'
-import { Meteolites } from './object/Meteolite'
+import Meteolites from './object/Meteolite'
 import { POINT_INC, POINT_RESET } from './store/Score'
 import { Menu } from './components/Menu'
 import { Start } from './components/Start'
 import { PLAY_MENU_TOGGLE } from './store/Play'
 import { SPACESHIP_UPDATE } from './store/SpaceShip'
-import { Obj } from './interface/Obj'
-import { METEOS_UPDATE } from './store/Meteolites'
+import { METEOS_UPDATE, Meteo } from './store/Meteolites'
 import { getRandomPosition } from './utils/getRandomPostion'
 
 /**
@@ -230,29 +229,32 @@ function Game() {
   useEffect(() => {
     const meteoData = Array(100)
       .fill(null)
-      .map((_: null, i) => ({
-        position: getRandomPosition(
-          {
-            x: CAMERA_DISTANCE * ASPECT_RATIO,
-            y: CAMERA_DISTANCE,
-            z: FAR
+      .map((_: null, i) => {
+        const pattern = Math.floor(Math.random() * 4)
+        return {
+          position: getRandomPosition(
+            {
+              x: CAMERA_DISTANCE * ASPECT_RATIO,
+              y: CAMERA_DISTANCE,
+              z: FAR
+            },
+            {
+              z: FAR
+            }
+          ),
+          rotation: {
+            x: 0,
+            y: 0,
+            z: 0
           },
-          {
-            z: FAR
-          }
-        ),
-        rotation: {
-          x: 0,
-          y: 0,
-          z: 0
-        },
-        scale: {
-          x: 0,
-          y: 0,
-          z: 0
+          scale: {
+            x: 3,
+            y: 3,
+            z: 3
+          },
+          pattern
         }
-      }))
-    console.log(meteoData)
+      })
     dispatch(METEOS_UPDATE(meteoData))
   }, [dispatch])
   /**
@@ -310,7 +312,7 @@ function Game() {
 
     // Meteolites Behavior
     {
-      const updateMeteos = meteos.map((me: Obj) => {
+      const updateMeteos = meteos.map((me: Meteo) => {
         if (me.position.z > ship.position.z + 10) {
           me.position.z -= FAR
         }
@@ -353,7 +355,9 @@ const App: FC = ({}) => {
         resize={{ polyfill } as any}
       >
         <Provider store={store}>
-          <Game />
+          <Suspense fallback={null}>
+            <Game />
+          </Suspense>
         </Provider>
       </Canvas>
       <Provider store={store}>

@@ -1,7 +1,5 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
-  Group,
-  Mesh,
   Material,
   BufferGeometry,
   BoxBufferGeometry,
@@ -9,14 +7,13 @@ import {
   VertexColors,
   Color,
   Float32BufferAttribute,
-  Object3D
+  Group
 } from 'three'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
-import { loadObject3D } from '@/utils/loadObject3d'
 import { useLoader } from 'react-three-fiber'
 import { RootStore } from '@/store'
-import { useSelector } from 'react-redux'
-import { Obj } from '@/interface/Obj'
+import { useSelector, useDispatch } from 'react-redux'
+import { Meteo, METEOS_UPDATE } from '@/store/Meteolites'
 
 const initGeoMetry = (size: number = 1): BufferGeometry => {
   const bs = Math.random() * size + 0.5
@@ -45,101 +42,22 @@ const initMaterial = (): Material => {
   return material
 }
 
-export const loadMeteolitesModel = (): Promise<Group[]> =>
-  Promise.all([
-    loadObject3D({
-      texturePath: require('./models/textures/Meteolite1.png'),
-      objectPath: require('./models/Meteolite1.obj')
-    }),
-    loadObject3D({
-      texturePath: require('./models/textures/Meteolite2.png'),
-      objectPath: require('./models/Meteolite2.obj')
-    }),
-    loadObject3D({
-      texturePath: require('./models/textures/Meteolite3.png'),
-      objectPath: require('./models/Meteolite3.obj')
-    }),
-    loadObject3D({
-      texturePath: require('./models/textures/Meteolite4.png'),
-      objectPath: require('./models/Meteolite4.obj')
-    })
-  ])
-
-interface MeteoLiteOption {
-  size?: number
-  model?: Object3D
-}
-export default class Meteolite extends Group {
-  public isRotation: boolean = false
-  constructor({ size, model }: MeteoLiteOption = {}) {
-    super()
-    this.setRandomPosition = this.setRandomPosition.bind(this)
-    this.add(model || new Mesh(initGeoMetry(size), initMaterial()))
-  }
-
-  public setRandomPosition(x: number, y: number, z: number) {
-    this.position.x = (Math.random() - 0.5) * x
-    this.position.y = (Math.random() - 0.5) * y
-    this.position.z = (Math.random() - 0.5) * z
-    return this
-  }
-}
-export const initMeteo = (
-  models: Group[],
-  { x, y, z, far }: { x: number; y: number; z: number; far: number }
-): Meteolite => {
-  const meteo = new Meteolite({
-    model:
-      models.length !== 0
-        ? models[Math.floor(Math.random() * models.length)].clone()
-        : undefined
-  })
-  meteo.setRandomPosition(x, y, z)
-  meteo.position.z += far
-  return meteo
-}
-
-interface GenerateMeteolitesOption {
-  quauntity: number
-  models: Group[]
-  basePosition: { x: number; y: number; z: number }
-  far: number
-}
-
-const generateMeteolitesDefaultOption: GenerateMeteolitesOption = {
-  quauntity: 20,
-  models: [],
-  basePosition: { x: 0, y: 0, z: 0 },
-  far: 0
-}
-
-export const generateMeteolites = (
-  option?: Partial<GenerateMeteolitesOption>
-) => {
-  const { quauntity, models, basePosition, far }: GenerateMeteolitesOption = {
-    ...generateMeteolitesDefaultOption,
-    ...(option || {})
-  }
-  return Array(quauntity)
-    .fill(null)
-    .map((_: null, i: number) =>
-      initMeteo(models, {
-        ...basePosition,
-        far
-      })
-    )
-}
-
-export const Meteolites = () => {
-  const obj = useLoader(OBJLoader, require('./models/Meteolite1.obj'))
+const Meteolites = () => {
+  const objs = [
+    useLoader(OBJLoader, require('./models/Meteolite1.obj')),
+    useLoader(OBJLoader, require('./models/Meteolite2.obj')),
+    useLoader(OBJLoader, require('./models/Meteolite3.obj')),
+    useLoader(OBJLoader, require('./models/Meteolite4.obj'))
+  ]
   const meteos = useSelector((state: RootStore) => state.meteos)
   return (
     <>
-      {meteos.map((me: Obj, i: number) => (
+      {meteos.map(({ pattern, ...me }: Meteo, i: number) => (
         <group key={i} position={[me.position.x, me.position.y, me.position.z]}>
-          <primitive object={obj} />
+          <primitive object={objs[pattern].clone()} />
         </group>
       ))}
     </>
   )
 }
+export default Meteolites

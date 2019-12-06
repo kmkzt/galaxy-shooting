@@ -12,7 +12,9 @@ export const METEOS_RESET = meteos('RESET')
 const initialState: State = []
 
 export type State = Array<Meteo>
-export interface Meteo extends Obj {}
+export interface Meteo extends Obj {
+  pattern: number
+}
 
 export const reducer = (state: State = initialState, action: Action): State => {
   if (isType(action, METEOS_UPDATE)) {
