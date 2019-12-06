@@ -184,9 +184,7 @@ const Panel = styled.div`
 `
 function Game() {
   const { scene, camera, raycaster, aspect, mouse } = useThree()
-  const { flightSpeed, isClashed, isRotation, position } = useSelector(
-    (state: RootStore) => state.spaceShip
-  )
+  const ship = useSelector((state: RootStore) => state.spaceShip)
   const { distance: cameraDistane } = useSelector(
     (state: RootStore) => state.cam
   )
@@ -229,14 +227,14 @@ function Game() {
       dispatch(
         SPACESHIP_UPDATE({
           position: {
-            ...position,
+            ...ship.position,
             x: mousemove_x * aspect * CAMERA_DISTANCE,
             y: mousemove_y * CAMERA_DISTANCE
           }
         })
       )
     },
-    [mouse, raycaster, camera, dispatch, position, aspect]
+    [mouse, raycaster, camera, dispatch, ship.position, aspect]
   )
   const handlePointerMove = useCallback(
     (e: PointerEvent | MouseEvent) => {
@@ -278,14 +276,14 @@ function Game() {
    * Geme behavior
    */
   const gameBehaviorUpdate = useCallback(() => {
-    if (isClashed) return
+    if (ship.isClashed) return
 
     /**
      * Meteolites Behavior
      */
     // check meteolite frame out
     meteolites
-      .filter((me: Meteolite) => me.position.z > position.z + 10)
+      .filter((me: Meteolite) => me.position.z > ship.position.z + 10)
       .map((me: Meteolite) => {
         me.position.z -= FAR
       })
@@ -303,15 +301,43 @@ function Game() {
      * Point Counter
      */
     dispatch(POINT_INC(1))
-  }, [dispatch, isClashed, position])
+  }, [dispatch, ship.isClashed, ship.position.z])
   /**
    * Animation
    */
   useFrame(({ camera }) => {
     if (!active) return
     gameBehaviorUpdate()
-    camera.position.z = position.z + cameraDistane
-    stats.update()
+
+    // DEV TOOL
+    {
+      stats.update()
+    }
+
+    // CAMERA Behavior
+    {
+      camera.position.z = ship.position.z + cameraDistane
+    }
+
+    // SpaceShip Behavior
+    {
+      const ROTATE_UNIT = 0.1
+      const { position, flightSpeed, isRotation, rotation } = ship
+      dispatch(
+        SPACESHIP_UPDATE({
+          // spaceShip Moving
+          position: {
+            ...position,
+            z: position.z - flightSpeed
+          },
+          // spaceShip rotation
+          rotation: {
+            ...rotation,
+            z: isRotation ? rotation.z + ROTATE_UNIT : rotation.z
+          }
+        })
+      )
+    }
   })
   return (
     <Suspense fallback={null}>
