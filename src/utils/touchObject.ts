@@ -1,6 +1,9 @@
 import { Obj, Xyz } from '@/interface/Obj'
 
-export const touch = (obj1: Obj, obj2: Obj): boolean => {
+export const touchObject = (
+  obj1: any extends Obj ? any : never,
+  obj2: any extends Obj ? any : never
+): boolean => {
   const x1 = obj2.position.x + obj2.scale.x / 2
   const x2 = obj2.position.x - obj2.scale.x / 2
   const y1 = obj2.position.y + obj2.scale.y / 2
@@ -19,7 +22,10 @@ export const touch = (obj1: Obj, obj2: Obj): boolean => {
   )
 }
 
-const checkVector = (obj: Obj, { x, y, z }: Xyz): boolean =>
+const checkVector = (
+  obj: any extends Obj ? any : never,
+  { x, y, z }: Xyz
+): boolean =>
   x > obj.position.x - obj.scale.x / 2 &&
   x < obj.position.x + obj.scale.x / 2 &&
   y > obj.position.y - obj.scale.y / 2 &&

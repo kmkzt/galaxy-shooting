@@ -26,6 +26,7 @@ import { PLAY_MENU_TOGGLE } from './store/Play'
 import { SPACESHIP_UPDATE } from './store/SpaceShip'
 import { METEOS_UPDATE, Meteo } from './store/Meteolites'
 import { getRandomPosition } from './utils/getRandomPostion'
+import { touchObject } from './utils/touchObject'
 
 /**
  * DEV TOOLS
@@ -103,47 +104,51 @@ const isKeycode = (key: number): key is Keyboard =>
 //   }
 // })
 
-// const keyboardAction = (key: Keyboard) => {
-//   switch (key) {
-//     case Keyboard.UP_ARROW:
-//       spaceShip.position.y -= TRANSLATE_UNIT
-//       break
-//     case Keyboard.DOWN_ARROW:
-//       spaceShip.position.y += TRANSLATE_UNIT
-//       break
-//     case Keyboard.RIGHT_ARROW:
-//       spaceShip.position.x -= TRANSLATE_UNIT
-//       break
-//     case Keyboard.LEFT_ARROW:
-//       spaceShip.position.x += TRANSLATE_UNIT
-//       break
-//     case Keyboard.KEY_U:
-//       camera.position.y -= CAMERA_MOVE_UNIT
-//       break
-//     case Keyboard.KEY_D:
-//       camera.position.y += CAMERA_MOVE_UNIT
-//       break
-//     case Keyboard.KEY_L:
-//       camera.position.x -= CAMERA_MOVE_UNIT
-//       break
-//     case Keyboard.KEY_R:
-//       camera.position.x += CAMERA_MOVE_UNIT
-//       break
-//     case Keyboard.KEY_N:
-//       camera.position.z -= CAMERA_MOVE_UNIT
-//       break
-//     case Keyboard.KEY_F:
-//       camera.position.z += CAMERA_MOVE_UNIT
-//       break
-//     case Keyboard.ENTER:
-//       spaceShip.isClashed = false
-//       store.dispatch(POINT_RESET())
-//       break
-//     case Keyboard.SPACE:
-//       store.dispatch(PLAY_MENU_TOGGLE())
-//       break
-//   }
-// }
+const keyboardAction = (key: Keyboard) => {
+  switch (key) {
+    // case Keyboard.UP_ARROW:
+    //   spaceShip.position.y -= TRANSLATE_UNIT
+    //   break
+    // case Keyboard.DOWN_ARROW:
+    //   spaceShip.position.y += TRANSLATE_UNIT
+    //   break
+    // case Keyboard.RIGHT_ARROW:
+    //   spaceShip.position.x -= TRANSLATE_UNIT
+    //   break
+    // case Keyboard.LEFT_ARROW:
+    //   spaceShip.position.x += TRANSLATE_UNIT
+    //   break
+    // case Keyboard.KEY_U:
+    //   camera.position.y -= CAMERA_MOVE_UNIT
+    //   break
+    // case Keyboard.KEY_D:
+    //   camera.position.y += CAMERA_MOVE_UNIT
+    //   break
+    // case Keyboard.KEY_L:
+    //   camera.position.x -= CAMERA_MOVE_UNIT
+    //   break
+    // case Keyboard.KEY_R:
+    //   camera.position.x += CAMERA_MOVE_UNIT
+    //   break
+    // case Keyboard.KEY_N:
+    //   camera.position.z -= CAMERA_MOVE_UNIT
+    //   break
+    // case Keyboard.KEY_F:
+    //   camera.position.z += CAMERA_MOVE_UNIT
+    //   break
+    // case Keyboard.ENTER:
+    //   spaceShip.isClashed = false
+    //   store.dispatch(POINT_RESET())
+    //   break
+    case Keyboard.SPACE:
+      store.dispatch(
+        SPACESHIP_UPDATE({
+          isClashed: false
+        })
+      )
+      break
+  }
+}
 
 const Panel = styled.div`
   position: fixed;
@@ -227,7 +232,7 @@ function Game() {
    */
   useEffect(() => {}, [scene])
   useEffect(() => {
-    const meteoData = Array(100)
+    const meteoData = Array(20)
       .fill(null)
       .map((_: null, i) => {
         const pattern = Math.floor(Math.random() * 4)
@@ -248,9 +253,9 @@ function Game() {
             z: 0
           },
           scale: {
-            x: 3,
-            y: 3,
-            z: 3
+            x: 1,
+            y: 1,
+            z: 1
           },
           pattern
         }
@@ -275,12 +280,11 @@ function Game() {
    * Animation
    */
   useFrame(({ camera }) => {
-    if (!active || ship.isClashed) return
-
     // DEV TOOL
     {
       stats.update()
     }
+    if (!active || ship.isClashed) return
     // Game Status Behavior
     {
       dispatch(POINT_INC(1))
@@ -294,8 +298,11 @@ function Game() {
     {
       const ROTATE_UNIT = 0.1
       const { position, flightSpeed, isRotation, rotation } = ship
+      const isClashed = meteos.some((me: Meteo) => touchObject(me, ship))
+
       dispatch(
         SPACESHIP_UPDATE({
+          isClashed,
           // spaceShip Moving
           position: {
             ...position,
