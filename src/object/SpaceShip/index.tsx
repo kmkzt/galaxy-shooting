@@ -11,7 +11,7 @@ import { SPACESHIP_UPDATE } from '@/store/SpaceShip'
 //   new Mesh(new BoxGeometry(1, 0.2, 0.2), new MeshNormalMaterial())
 
 const SpaceShip = () => {
-  const obj = useLoader(OBJLoader, require('./models/spaceShip.obj'))
+  const obj = useLoader(OBJLoader, require('@/models/SpaceShip/spaceShip.obj'))
 
   const { position, rotation, scale } = useSelector(
     (state: RootStore) => state.spaceShip

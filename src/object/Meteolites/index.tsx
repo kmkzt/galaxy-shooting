@@ -44,10 +44,10 @@ const initMaterial = (): Material => {
 
 const Meteolites = () => {
   const objs = [
-    useLoader(OBJLoader, require('./models/Meteolite1.obj')),
-    useLoader(OBJLoader, require('./models/Meteolite2.obj')),
-    useLoader(OBJLoader, require('./models/Meteolite3.obj')),
-    useLoader(OBJLoader, require('./models/Meteolite4.obj'))
+    useLoader(OBJLoader, require('@/models/Meteolite/Meteolite1.obj')),
+    useLoader(OBJLoader, require('@/models/Meteolite/Meteolite2.obj')),
+    useLoader(OBJLoader, require('@/models/Meteolite/Meteolite3.obj')),
+    useLoader(OBJLoader, require('@/models/Meteolite/Meteolite4.obj'))
   ]
   const meteos = useSelector((state: RootStore) => state.meteos)
   return (
