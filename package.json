@@ -4,8 +4,10 @@
   "private": true,
   "author": "kmkzt",
   "scripts": {
-    "dev": "NODE_ENV=development webpack-dev-server",
-    "build": "rimraf docs && NODE_ENV=production webpack -p",
+    "dev": "assets:public && NODE_ENV=development webpack-dev-server",
+    "assets:docs": "mkdirp docs/libs/draco && cpx \"node_modules/three/examples/js/libs/draco/**\" docs/libs/draco/",
+    "assets:public": "mkdirp public/libs/draco && cpx -r \"node_modules/three/examples/js/libs/draco\" public/libs/draco",
+    "build": "rimraf docs && assets:docs && NODE_ENV=production webpack -p ",
     "test": "jest",
     "lint": "eslint -c .eslintrc.js --fix \"./src/**/**.{ts,tsx}\"",
     "lint:fix": "prettier --write ./src/**/*.{ts,tsx}"
@@ -76,6 +78,7 @@
     "babel-jest": "24.9.0",
     "babel-loader": "8.0.6",
     "babel-preset-es2015": "6.24.1",
+    "cpx": "1.5.0",
     "css-loader": "3.2.0",
     "dotenv-webpack": "1.7.0",
     "enzyme": "3.10.0",
@@ -93,6 +96,7 @@
     "image-webpack-loader": "6.0.0",
     "jest": "24.9.0",
     "jest-styled-components": "6.3.4",
+    "mkdirp": "0.5.1",
     "node-sass": "4.13.0",
     "npm-run-all": "4.1.5",
     "postcss-loader": "3.0.0",

@@ -32,7 +32,7 @@ const common = {
         ]
       },
       {
-        test: /\.tsx?$/,
+        test: /\.(j|t)sx?$/,
         exclude: /node_modules/,
         use: {
           loader: 'ts-loader',
@@ -64,7 +64,7 @@ const common = {
         ]
       },
       {
-        test: /\.(3ds|abc|fbx|mtl|obj|x3d|zip|meta)$/i,
+        test: /\.(3ds|abc|fbx|mtl|obj|x3d|zip|meta|drc)$/i,
         use: [
           {
             loader: 'file-loader',
