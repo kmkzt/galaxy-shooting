@@ -237,6 +237,7 @@ function Game() {
       .map((_: null, i) => {
         const pattern = Math.floor(Math.random() * 4)
         return {
+          guid: i,
           position: getRandomPosition(
             {
               x: CAMERA_DISTANCE * ASPECT_RATIO,
@@ -293,7 +294,6 @@ function Game() {
     {
       camera.position.z = ship.position.z + cameraDistane
     }
-
     // SpaceShip Behavior
     {
       const ROTATE_UNIT = 0.1
@@ -316,7 +316,6 @@ function Game() {
         })
       )
     }
-
     // Meteolites Behavior
     {
       const updateMeteos = meteos.map((me: Meteo) => {
@@ -328,6 +327,7 @@ function Game() {
       dispatch(METEOS_UPDATE(updateMeteos))
     }
   })
+
   return (
     <Suspense fallback={null}>
       <SpaceShip />

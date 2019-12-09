@@ -13,6 +13,7 @@ const initialState: State = []
 
 export type State = Array<Meteo>
 export interface Meteo extends Obj {
+  guid: number
   pattern: number
 }
 
