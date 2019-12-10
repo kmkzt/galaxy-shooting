@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, memo } from 'react'
 import {
   Material,
   BufferGeometry,
@@ -7,10 +7,14 @@ import {
   VertexColors,
   Color,
   Float32BufferAttribute,
-  Group
+  Group,
+  Loader,
+  Vector3,
+  Euler
 } from 'three'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
-import { useLoader } from 'react-three-fiber'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
+import { useLoader, useUpdate, useFrame } from 'react-three-fiber'
 import { RootStore } from '@/store'
 import { useSelector, useDispatch } from 'react-redux'
 import { Meteo, METEOS_UPDATE } from '@/store/Meteolites'
@@ -41,21 +45,65 @@ const initMaterial = (): Material => {
   )
   return material
 }
+const setDracoResourcePath = (loader: Loader) => {
+  if (loader instanceof DRACOLoader) {
+    loader.setDecoderPath('/libs/draco/')
+  }
+}
 
+interface MeteoProps extends Meteo {
+  // obj: Group
+  obj: BufferGeometry
+}
+const Meteo = ({ obj, position, rotation }: MeteoProps) => {
+  return (
+    // LOAD OBJECT
+    // <group position={[me.position.x, me.position.y, me.position.z]}>
+    //   <primitive object={obj.clone()} />
+    // </group>
+    <mesh position={[position.x, position.y, position.z]}>
+      <bufferGeometry attach="geometry" {...obj.clone()} />
+      <meshNormalMaterial attach="material" />
+    </mesh>
+  )
+}
 const Meteolites = () => {
+  // LOAD OBJECT
+  // const objs = [
+  //   useLoader(OBJLoader, require('@/models/Meteolite/Meteolite1.obj')),
+  //   useLoader(OBJLoader, require('@/models/Meteolite/Meteolite2.obj')),
+  //   useLoader(OBJLoader, require('@/models/Meteolite/Meteolite3.obj')),
+  //   useLoader(OBJLoader, require('@/models/Meteolite/Meteolite4.obj'))
+  // ]
+
+  // Load Draco
   const objs = [
-    useLoader(OBJLoader, require('@/models/Meteolite/Meteolite1.obj')),
-    useLoader(OBJLoader, require('@/models/Meteolite/Meteolite2.obj')),
-    useLoader(OBJLoader, require('@/models/Meteolite/Meteolite3.obj')),
-    useLoader(OBJLoader, require('@/models/Meteolite/Meteolite4.obj'))
+    useLoader(
+      DRACOLoader,
+      require('@/models/Meteolite/Meteolite1.drc'),
+      setDracoResourcePath
+    ),
+    useLoader(
+      DRACOLoader,
+      require('@/models/Meteolite/Meteolite2.drc'),
+      setDracoResourcePath
+    ),
+    useLoader(
+      DRACOLoader,
+      require('@/models/Meteolite/Meteolite3.drc'),
+      setDracoResourcePath
+    ),
+    useLoader(
+      DRACOLoader,
+      require('@/models/Meteolite/Meteolite4.drc'),
+      setDracoResourcePath
+    )
   ]
   const meteos = useSelector((state: RootStore) => state.meteos)
   return (
     <>
-      {meteos.map(({ pattern, ...me }: Meteo, i: number) => (
-        <group key={i} position={[me.position.x, me.position.y, me.position.z]}>
-          <primitive object={objs[pattern].clone()} />
-        </group>
+      {Object.values(meteos).map((info: Meteo, i: number) => (
+        <Meteo key={info.guid} obj={objs[info.pattern]} {...info} />
       ))}
     </>
   )

@@ -24,7 +24,12 @@ import { Menu } from './components/Menu'
 import { Start } from './components/Start'
 import { PLAY_MENU_TOGGLE } from './store/Play'
 import { SPACESHIP_UPDATE } from './store/SpaceShip'
-import { METEOS_UPDATE, Meteo } from './store/Meteolites'
+import {
+  METEOS_UPDATE,
+  Meteo,
+  METEO_REPLACE,
+  State as MeteoState
+} from './store/Meteolites'
 import { getRandomPosition } from './utils/getRandomPostion'
 import { touchObject } from './utils/touchObject'
 
@@ -184,33 +189,9 @@ function Game() {
       /**
        * Rotate the meteorite in front of spaceShip
        */
-      // raycaster.setFromCamera(mouse, camera)
-
-      // raycaster
-      //   .intersectObjects(meteolites, true)
-      //   .map((inMeteo: Intersection) => {
-      //     inMeteo.object.rotateX(3)
-      //     inMeteo.object.rotateY(3)
-      //     inMeteo.object.rotateZ(3)
-      //   })
-      /**
-       * SpaceShip move
-       */
-      // min: -0.5, max: 0.5
-      const mousemove_x = mouse.x / 2
-      const mousemove_y = mouse.y / 2
-
-      dispatch(
-        SPACESHIP_UPDATE({
-          position: {
-            ...ship.position,
-            x: mousemove_x * aspect * CAMERA_DISTANCE,
-            y: mousemove_y * CAMERA_DISTANCE
-          }
-        })
-      )
+      raycaster.setFromCamera(mouse, camera)
     },
-    [mouse, dispatch, ship.position, aspect]
+    [camera, mouse, raycaster]
   )
   const handlePointerMove = useCallback(
     (e: PointerEvent | MouseEvent) => {
@@ -232,35 +213,38 @@ function Game() {
    */
   useEffect(() => {}, [scene])
   useEffect(() => {
-    const meteoData = Array(20)
+    const meteoData: MeteoState = Array(20)
       .fill(null)
-      .map((_: null, i) => {
+      .reduce((res: MeteoState, _: null, i: number): MeteoState => {
         const pattern = Math.floor(Math.random() * 4)
         return {
-          guid: i,
-          position: getRandomPosition(
-            {
-              x: CAMERA_DISTANCE * ASPECT_RATIO,
-              y: CAMERA_DISTANCE,
-              z: FAR
+          ...res,
+          [i]: {
+            guid: i,
+            position: getRandomPosition(
+              {
+                x: CAMERA_DISTANCE * ASPECT_RATIO,
+                y: CAMERA_DISTANCE,
+                z: FAR
+              },
+              {
+                z: FAR
+              }
+            ),
+            rotation: {
+              x: 0,
+              y: 0,
+              z: 0
             },
-            {
-              z: FAR
-            }
-          ),
-          rotation: {
-            x: 0,
-            y: 0,
-            z: 0
-          },
-          scale: {
-            x: 1,
-            y: 1,
-            z: 1
-          },
-          pattern
+            scale: {
+              x: 1,
+              y: 1,
+              z: 1
+            },
+            pattern
+          }
         }
-      })
+      }, {})
     dispatch(METEOS_UPDATE(meteoData))
   }, [dispatch])
   /**
@@ -298,7 +282,12 @@ function Game() {
     {
       const ROTATE_UNIT = 0.1
       const { position, flightSpeed, isRotation, rotation } = ship
-      const isClashed = meteos.some((me: Meteo) => touchObject(me, ship))
+      const isClashed = Object.values(meteos).some((me: Meteo) =>
+        touchObject(me, ship)
+      )
+
+      const mousemove_x = mouse.x / 2
+      const mousemove_y = mouse.y / 2
 
       dispatch(
         SPACESHIP_UPDATE({
@@ -306,6 +295,8 @@ function Game() {
           // spaceShip Moving
           position: {
             ...position,
+            x: mousemove_x * aspect * CAMERA_DISTANCE,
+            y: mousemove_y * CAMERA_DISTANCE,
             z: position.z - flightSpeed
           },
           // spaceShip rotation
@@ -318,13 +309,19 @@ function Game() {
     }
     // Meteolites Behavior
     {
-      const updateMeteos = meteos.map((me: Meteo) => {
+      // raycaster
+      //   .intersectObjects(meteolites, true)
+      //   .map((inMeteo: Intersection) => {
+      //     inMeteo.object.rotateX(3)
+      //     inMeteo.object.rotateY(3)
+      //     inMeteo.object.rotateZ(3)
+      //   })
+      Object.values(meteos).map((me: Meteo) => {
         if (me.position.z > ship.position.z + 10) {
           me.position.z -= FAR
+          dispatch(METEO_REPLACE(me))
         }
-        return me
       })
-      dispatch(METEOS_UPDATE(updateMeteos))
     }
   })
 

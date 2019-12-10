@@ -1,4 +1,4 @@
-import React, { Suspense, useRef, useEffect } from 'react'
+import React, { Suspense, useRef, useEffect, memo, useState } from 'react'
 import { Group, Vector3, Euler } from 'three'
 import { useLoader, useFrame, useUpdate } from 'react-three-fiber'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
@@ -12,7 +12,7 @@ import { SPACESHIP_UPDATE } from '@/store/SpaceShip'
 
 const SpaceShip = () => {
   const obj = useLoader(OBJLoader, require('@/models/SpaceShip/spaceShip.obj'))
-
+  const [loaded, setLoaded] = useState(false)
   const { position, rotation, scale } = useSelector(
     (state: RootStore) => state.spaceShip
   )
@@ -20,19 +20,26 @@ const SpaceShip = () => {
   /**
    * Update spaceShip
    */
-  const ref = useUpdate<Group>(
-    ship => {
-      ship.position.copy(new Vector3(position.x, position.y, position.z))
-      ship.rotation.copy(new Euler(rotation.x, rotation.y, rotation.z))
-      // TODO: Fix scale
-      // ref.current.scale.copy(new Vector3(scale.x, scale.y, scale.z))
-    },
-    [position, rotation.x, rotation.y, rotation.z]
-  )
+  // const ref = useUpdate<Group>(
+  //   ship => {
+  //     ship.position.copy(new Vector3(position.x, position.y, position.z))
+  //     ship.rotation.copy(new Euler(rotation.x, rotation.y, rotation.z))
+  //     // TODO: Fix scale
+  //     // ref.current.scale.copy(new Vector3(scale.x, scale.y, scale.z))
+  //   },
+  //   [position, rotation.x, rotation.y, rotation.z]
+  // )
+  const ref = useRef<Group>(null)
+  useFrame(() => {
+    if (!ref.current) return
+    ref.current.position.copy(new Vector3(position.x, position.y, position.z))
+    ref.current.rotation.copy(new Euler(rotation.x, rotation.y, rotation.z))
+  })
   /**
    * SET OBJECT
    */
   useEffect(() => {
+    if (loaded) return
     obj.rotateX(3)
     obj.scale.x /= 2
     obj.scale.y /= 2
@@ -43,7 +50,8 @@ const SpaceShip = () => {
         scale: { x: obj.scale.x, y: obj.scale.y, z: obj.scale.z }
       })
     )
-  }, [dispatch, obj])
+    setLoaded(true)
+  }, [dispatch, loaded, obj])
   return <primitive ref={ref} object={obj} />
 }
 
