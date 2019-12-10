@@ -213,7 +213,7 @@ function Game() {
    */
   useEffect(() => {}, [scene])
   useEffect(() => {
-    const meteoData: MeteoState = Array(20)
+    const meteoData: MeteoState = Array(100)
       .fill(null)
       .reduce((res: MeteoState, _: null, i: number): MeteoState => {
         const pattern = Math.floor(Math.random() * 4)
@@ -316,12 +316,26 @@ function Game() {
       //     inMeteo.object.rotateY(3)
       //     inMeteo.object.rotateZ(3)
       //   })
-      Object.values(meteos).map((me: Meteo) => {
-        if (me.position.z > ship.position.z + 10) {
-          me.position.z -= FAR
-          dispatch(METEO_REPLACE(me))
-        }
-      })
+      const updateMeteos = Object.values(meteos).reduce(
+        (upd: MeteoState, me: Meteo): MeteoState => {
+          if (me.position.z < ship.position.z + 10) return upd
+          return {
+            ...upd,
+            [me.guid]: {
+              ...me,
+              position: {
+                ...me.position,
+                z: me.position.z - FAR
+              }
+            }
+          }
+        },
+        {}
+      )
+
+      if (Object.keys(updateMeteos).length > 0) {
+        dispatch(METEOS_UPDATE(updateMeteos))
+      }
     }
   })
 
@@ -337,6 +351,7 @@ const App: FC = ({}) => {
   return (
     <Fragment>
       <Canvas
+        concurrent
         style={{ width: FRAME_X, height: FRAME_Y }}
         orthographic={false}
         // https://github.com/react-spring/react-three-fiber/issues/208

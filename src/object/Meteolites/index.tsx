@@ -55,7 +55,7 @@ interface MeteoProps extends Meteo {
   // obj: Group
   obj: BufferGeometry
 }
-const Meteo = ({ obj, position, rotation }: MeteoProps) => {
+const Meteo = memo(({ obj, position, rotation }: MeteoProps) => {
   return (
     // LOAD OBJECT
     // <group position={[me.position.x, me.position.y, me.position.z]}>
@@ -66,7 +66,7 @@ const Meteo = ({ obj, position, rotation }: MeteoProps) => {
       <meshNormalMaterial attach="material" />
     </mesh>
   )
-}
+})
 const Meteolites = () => {
   // LOAD OBJECT
   // const objs = [
@@ -99,12 +99,15 @@ const Meteolites = () => {
       setDracoResourcePath
     )
   ]
+
   const meteos = useSelector((state: RootStore) => state.meteos)
   return (
     <>
-      {Object.values(meteos).map((info: Meteo, i: number) => (
-        <Meteo key={info.guid} obj={objs[info.pattern]} {...info} />
-      ))}
+      {Object.values(meteos)
+        .sort((m1: Meteo, m2: Meteo) => (m1.guid > m2.guid ? 1 : -1))
+        .map((info: Meteo, i: number) => (
+          <Meteo key={info.guid} obj={objs[info.pattern]} {...info} />
+        ))}
     </>
   )
 }

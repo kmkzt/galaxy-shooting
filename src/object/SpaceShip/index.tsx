@@ -10,7 +10,7 @@ import { SPACESHIP_UPDATE } from '@/store/SpaceShip'
 // const genDammySpaceShip = (): Mesh =>
 //   new Mesh(new BoxGeometry(1, 0.2, 0.2), new MeshNormalMaterial())
 
-const SpaceShip = () => {
+const SpaceShip = memo(() => {
   const obj = useLoader(OBJLoader, require('@/models/SpaceShip/spaceShip.obj'))
   const [loaded, setLoaded] = useState(false)
   const { position, rotation, scale } = useSelector(
@@ -18,41 +18,33 @@ const SpaceShip = () => {
   )
   const dispatch = useDispatch()
   /**
-   * Update spaceShip
-   */
-  // const ref = useUpdate<Group>(
-  //   ship => {
-  //     ship.position.copy(new Vector3(position.x, position.y, position.z))
-  //     ship.rotation.copy(new Euler(rotation.x, rotation.y, rotation.z))
-  //     // TODO: Fix scale
-  //     // ref.current.scale.copy(new Vector3(scale.x, scale.y, scale.z))
-  //   },
-  //   [position, rotation.x, rotation.y, rotation.z]
-  // )
-  const ref = useRef<Group>(null)
-  useFrame(() => {
-    if (!ref.current) return
-    ref.current.position.copy(new Vector3(position.x, position.y, position.z))
-    ref.current.rotation.copy(new Euler(rotation.x, rotation.y, rotation.z))
-  })
-  /**
    * SET OBJECT
    */
   useEffect(() => {
     if (loaded) return
-    obj.rotateX(3)
+    // obj.rotateX(3)
     obj.scale.x /= 2
     obj.scale.y /= 2
     obj.scale.z /= 2
     dispatch(
       SPACESHIP_UPDATE({
-        rotation: { x: obj.rotation.x, y: obj.rotation.y, z: obj.rotation.z },
+        rotation: {
+          x: obj.rotation.x - Math.PI,
+          y: obj.rotation.y,
+          z: obj.rotation.z
+        },
         scale: { x: obj.scale.x, y: obj.scale.y, z: obj.scale.z }
       })
     )
     setLoaded(true)
   }, [dispatch, loaded, obj])
-  return <primitive ref={ref} object={obj} />
-}
+  return (
+    <primitive
+      object={obj}
+      position={[position.x, position.y, position.z]}
+      rotation={[rotation.x, rotation.y, rotation.z]}
+    />
+  )
+})
 
 export default SpaceShip
