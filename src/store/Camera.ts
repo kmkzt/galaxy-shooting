@@ -8,7 +8,7 @@ const cam = actionCreatorFactory('CAMERA')
 export const CAMERA_UPDATE = cam<Partial<State>>('CAMERA/UPDATE')
 export const CAMERA_RESET = cam('CAMERA/RESET')
 
-const initialState: State = {
+export const initialState: State = {
   near: 9,
   distance: 15
 }

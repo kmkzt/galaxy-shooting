@@ -9,7 +9,7 @@ const ship = actionCreatorFactory('SPACESHIP')
 export const SPACESHIP_UPDATE = ship<Partial<State>>('UPDATE')
 export const SPACESHIP_RESET = ship('RESET')
 
-const initialState: State = {
+export const initialState: State = {
   flightSpeed: 0.5,
   isClashed: false,
   isRotation: false,

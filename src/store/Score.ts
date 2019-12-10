@@ -10,7 +10,7 @@ export const POINT_INC = score<number>('POINT_INC')
 export const POINT_DEC = score<number>('POINT_DEC')
 export const POINT_RESET = score('POINT_RESET')
 
-const initialState = { point: 0 }
+export const initialState = { point: 0 }
 export type State = { point: number }
 
 export const reducer = (state: State = initialState, action: Action): State => {

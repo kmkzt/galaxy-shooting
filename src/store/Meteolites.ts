@@ -10,7 +10,7 @@ export const METEOS_UPDATE = meteos<State>('UPDATE')
 export const METEO_REPLACE = meteos<Meteo>('REPLACE_METEO')
 export const METEOS_RESET = meteos('RESET')
 
-const initialState: State = {}
+export const initialState: State = {}
 
 export type State = {
   [key: number]: Meteo

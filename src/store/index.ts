@@ -1,18 +1,46 @@
-import { createStore, combineReducers } from 'redux'
-import { reducer as score, State as Score } from './Score'
-import { reducer as play, State as Play } from './Play'
-import { reducer as spaceShip, State as SpaceShip } from './SpaceShip'
-import { reducer as cam, State as Camera } from './Camera'
-import { reducer as meteos, State as Meteo } from './Meteolites'
+import { createStore, combineReducers, Action } from 'redux'
+import actionCreatorFactory, { isType } from 'typescript-fsa'
+import * as Score from './Score'
+import * as Play from './Play'
+import * as SpaceShip from './SpaceShip'
+import * as Camera from './Camera'
+import * as Meteolites from './Meteolites'
 
 export type RootStore = {
-  score: Score
-  play: Play
-  spaceShip: SpaceShip
-  cam: Camera
-  meteos: Meteo
+  score: Score.State
+  play: Play.State
+  spaceShip: SpaceShip.State
+  cam: Camera.State
+  meteos: Meteolites.State
 }
 
-export default createStore<RootStore, any, {}, {}>(
-  combineReducers({ score, play, spaceShip, cam, meteos })
-)
+const initialState: RootStore = {
+  score: Score.initialState,
+  play: Play.initialState,
+  spaceShip: SpaceShip.initialState,
+  cam: Camera.initialState,
+  meteos: Meteolites.initialState
+}
+
+const root = actionCreatorFactory('root')
+export const ROOT_UPDATE = root<Partial<RootStore>>('UPDATE')
+const moduleReducer = combineReducers({
+  score: Score.reducer,
+  play: Play.reducer,
+  spaceShip: SpaceShip.reducer,
+  cam: Camera.reducer,
+  meteos: Meteolites.reducer
+})
+const rootReducer = (
+  state: RootStore = initialState,
+  action: Action
+): RootStore => {
+  if (isType(action, ROOT_UPDATE)) {
+    return {
+      ...state,
+      ...action.payload
+    }
+  }
+  return moduleReducer(state, action)
+}
+export default createStore<RootStore, any, {}, {}>(rootReducer)

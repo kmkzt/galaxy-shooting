@@ -9,7 +9,7 @@ export type State = {
   active: boolean
   menu: boolean
 }
-const initialState: State = {
+export const initialState: State = {
   active: false,
   menu: false
 }
