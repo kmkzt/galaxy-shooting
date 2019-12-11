@@ -351,7 +351,7 @@ const App: FC = ({}) => {
   return (
     <Fragment>
       <Canvas
-        concurrent
+        // concurrent={true} // react conncurrentMode
         style={{ width: FRAME_X, height: FRAME_Y }}
         orthographic={false}
         // https://github.com/react-spring/react-three-fiber/issues/208

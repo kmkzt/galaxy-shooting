@@ -56,12 +56,17 @@ interface MeteoProps extends Meteo {
   obj: BufferGeometry
 }
 const Meteo = memo(({ obj, position, rotation }: MeteoProps) => {
+  // LOAD OBJECT
+  // return (
+  //   <group position={[position.x, position.y, position.z]}>
+  //     <primitive object={obj.clone()} />
+  //   </group>
+  // )
   return (
-    // LOAD OBJECT
-    // <group position={[me.position.x, me.position.y, me.position.z]}>
-    //   <primitive object={obj.clone()} />
-    // </group>
-    <mesh position={[position.x, position.y, position.z]}>
+    <mesh
+      position={[position.x, position.y, position.z]}
+      rotation={[rotation.x, rotation.y, rotation.z]}
+    >
       <bufferGeometry attach="geometry" {...obj.clone()} />
       <meshNormalMaterial attach="material" />
     </mesh>

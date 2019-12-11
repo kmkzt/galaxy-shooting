@@ -22,10 +22,6 @@ const SpaceShip = memo(() => {
    */
   useEffect(() => {
     if (loaded) return
-    // obj.rotateX(3)
-    obj.scale.x /= 2
-    obj.scale.y /= 2
-    obj.scale.z /= 2
     dispatch(
       SPACESHIP_UPDATE({
         rotation: {
@@ -33,7 +29,7 @@ const SpaceShip = memo(() => {
           y: obj.rotation.y,
           z: obj.rotation.z
         },
-        scale: { x: obj.scale.x, y: obj.scale.y, z: obj.scale.z }
+        scale: { x: obj.scale.x / 2, y: obj.scale.y / 2, z: obj.scale.z / 2 }
       })
     )
     setLoaded(true)
@@ -43,6 +39,7 @@ const SpaceShip = memo(() => {
       object={obj}
       position={[position.x, position.y, position.z]}
       rotation={[rotation.x, rotation.y, rotation.z]}
+      scale={[scale.x, scale.y, scale.z]}
     />
   )
 })
