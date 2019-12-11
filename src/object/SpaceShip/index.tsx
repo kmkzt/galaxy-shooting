@@ -10,30 +10,11 @@ import { SPACESHIP_UPDATE } from '@/store/SpaceShip'
 // const genDammySpaceShip = (): Mesh =>
 //   new Mesh(new BoxGeometry(1, 0.2, 0.2), new MeshNormalMaterial())
 
-const SpaceShip = memo(() => {
-  const obj = useLoader(OBJLoader, require('@/models/SpaceShip/spaceShip.obj'))
-  const [loaded, setLoaded] = useState(false)
+const SpaceShip = memo(({ obj }: { obj: Group }) => {
   const { position, rotation, scale } = useSelector(
     (state: RootStore) => state.spaceShip
   )
-  const dispatch = useDispatch()
-  /**
-   * SET OBJECT
-   */
-  useEffect(() => {
-    if (loaded) return
-    dispatch(
-      SPACESHIP_UPDATE({
-        rotation: {
-          x: obj.rotation.x - Math.PI,
-          y: obj.rotation.y,
-          z: obj.rotation.z
-        },
-        scale: { x: obj.scale.x / 2, y: obj.scale.y / 2, z: obj.scale.z / 2 }
-      })
-    )
-    setLoaded(true)
-  }, [dispatch, loaded, obj])
+
   return (
     <primitive
       object={obj}

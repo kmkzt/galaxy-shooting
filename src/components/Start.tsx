@@ -24,11 +24,16 @@ export const Start: FC<{}> = () => {
   const active = useSelector<RootStore, boolean>(
     ({ play }) => play.active && !play.menu
   )
+  const load = useSelector((state: RootStore) => state.load)
   const dispatch = useDispatch()
   const handleStartClick = useCallback(() => dispatch(PLAY_START()), [dispatch])
   return active ? null : (
     <Layer>
-      <button onClick={handleStartClick}>START</button>
+      {Object.values(load).some(l => !l) ? (
+        <div>loading...</div>
+      ) : (
+        <button onClick={handleStartClick}>START</button>
+      )}
     </Layer>
   )
 }

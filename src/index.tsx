@@ -5,7 +5,9 @@ import {
   Fog,
   HemisphereLight,
   Vector2,
-  Intersection
+  Intersection,
+  Loader,
+  DefaultLoadingManager
 } from 'three'
 import React, { Fragment, useEffect, useCallback, FC, Suspense } from 'react'
 import { Provider, useSelector, useDispatch } from 'react-redux'
@@ -32,6 +34,9 @@ import {
 } from './store/Meteolites'
 import { getRandomPosition } from './utils/getRandomPostion'
 import { touchObject } from './utils/touchObject'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
+import { LOAD_UPDATE } from './store/Load'
 
 /**
  * DEV TOOLS
@@ -162,10 +167,17 @@ const Panel = styled.div`
   background: rgba(255, 255, 255, 0.4);
   padding: 12px;
 `
+const setDracoResourcePath = (loader: Loader) => {
+  if (loader instanceof DRACOLoader) {
+    loader.setDecoderPath('/libs/draco/')
+  }
+}
+
 function Game() {
   const { scene, camera, raycaster, aspect, mouse } = useThree()
   const ship = useSelector((state: RootStore) => state.spaceShip)
   const meteos = useSelector((state: RootStore) => state.meteos)
+  const load = useSelector((state: RootStore) => state.load)
   const { distance: cameraDistane } = useSelector(
     (state: RootStore) => state.cam
   )
@@ -187,7 +199,7 @@ function Game() {
       mouse.y = -((y - rect.top) / rect.height) * 2 + 1
 
       /**
-       * Rotate the meteorite in front of spaceShip
+       * SET Raycaster
        */
       raycaster.setFromCamera(mouse, camera)
     },
@@ -209,14 +221,40 @@ function Game() {
     [handleMouse]
   )
   /**
-   * Init
+   * LOAD OBJECT
    */
-  useEffect(() => {}, [scene])
+  const shipObj = useLoader(
+    OBJLoader,
+    require('@/models/SpaceShip/spaceShip.obj')
+  )
+  const meteoliteObjs = [
+    useLoader(
+      DRACOLoader,
+      require('@/models/Meteolite/Meteolite1.drc'),
+      setDracoResourcePath
+    ),
+    useLoader(
+      DRACOLoader,
+      require('@/models/Meteolite/Meteolite2.drc'),
+      setDracoResourcePath
+    ),
+    useLoader(
+      DRACOLoader,
+      require('@/models/Meteolite/Meteolite3.drc'),
+      setDracoResourcePath
+    ),
+    useLoader(
+      DRACOLoader,
+      require('@/models/Meteolite/Meteolite4.drc'),
+      setDracoResourcePath
+    )
+  ]
   useEffect(() => {
+    if (load.spaceShip) return
     const meteoData: MeteoState = Array(100)
       .fill(null)
       .reduce((res: MeteoState, _: null, i: number): MeteoState => {
-        const pattern = Math.floor(Math.random() * 4)
+        const pattern = Math.floor(Math.random() * meteoliteObjs.length)
         return {
           ...res,
           [i]: {
@@ -246,7 +284,36 @@ function Game() {
         }
       }, {})
     dispatch(METEOS_UPDATE(meteoData))
-  }, [dispatch])
+    dispatch(
+      LOAD_UPDATE({
+        meteolites: true
+      })
+    )
+  }, [dispatch, load.spaceShip, meteoliteObjs.length])
+
+  useEffect(() => {
+    if (load.spaceShip) return
+    dispatch(
+      SPACESHIP_UPDATE({
+        rotation: {
+          x: shipObj.rotation.x - Math.PI,
+          y: shipObj.rotation.y,
+          z: shipObj.rotation.z
+        },
+        scale: {
+          x: shipObj.scale.x / 2,
+          y: shipObj.scale.y / 2,
+          z: shipObj.scale.z / 2
+        }
+      })
+    )
+    dispatch(
+      LOAD_UPDATE({
+        spaceShip: true
+      })
+    )
+  }, [dispatch, load.spaceShip, shipObj])
+
   /**
    * EventListner
    */
@@ -309,13 +376,6 @@ function Game() {
     }
     // Meteolites Behavior
     {
-      // raycaster
-      //   .intersectObjects(meteolites, true)
-      //   .map((inMeteo: Intersection) => {
-      //     inMeteo.object.rotateX(3)
-      //     inMeteo.object.rotateY(3)
-      //     inMeteo.object.rotateZ(3)
-      //   })
       const updateMeteos = Object.values(meteos).reduce(
         (upd: MeteoState, me: Meteo): MeteoState => {
           if (me.position.z < ship.position.z + 10) return upd
@@ -341,8 +401,8 @@ function Game() {
 
   return (
     <Suspense fallback={null}>
-      <SpaceShip />
-      <Meteolites />
+      <SpaceShip obj={shipObj} />
+      <Meteolites objs={meteoliteObjs} />
     </Suspense>
   )
 }

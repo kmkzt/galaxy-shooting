@@ -5,6 +5,7 @@ import * as Play from './Play'
 import * as SpaceShip from './SpaceShip'
 import * as Camera from './Camera'
 import * as Meteolites from './Meteolites'
+import * as Load from './Load'
 
 export type RootStore = {
   score: Score.State
@@ -12,14 +13,7 @@ export type RootStore = {
   spaceShip: SpaceShip.State
   cam: Camera.State
   meteos: Meteolites.State
-}
-
-const initialState: RootStore = {
-  score: Score.initialState,
-  play: Play.initialState,
-  spaceShip: SpaceShip.initialState,
-  cam: Camera.initialState,
-  meteos: Meteolites.initialState
+  load: Load.State
 }
 
 const root = actionCreatorFactory('root')
@@ -29,10 +23,11 @@ const moduleReducer = combineReducers({
   play: Play.reducer,
   spaceShip: SpaceShip.reducer,
   cam: Camera.reducer,
-  meteos: Meteolites.reducer
+  meteos: Meteolites.reducer,
+  load: Load.reducer
 })
 const rootReducer = (
-  state: RootStore = initialState,
+  state: RootStore = moduleReducer(undefined, { type: '' }),
   action: Action
 ): RootStore => {
   if (isType(action, ROOT_UPDATE)) {

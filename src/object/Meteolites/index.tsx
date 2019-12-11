@@ -1,4 +1,4 @@
-import React, { useEffect, memo } from 'react'
+import React, { useEffect, memo, useRef } from 'react'
 import {
   Material,
   BufferGeometry,
@@ -10,14 +10,15 @@ import {
   Group,
   Loader,
   Vector3,
-  Euler
+  Euler,
+  Intersection
 } from 'three'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
-import { useLoader, useUpdate, useFrame } from 'react-three-fiber'
+import { useLoader, useUpdate, useFrame, useThree } from 'react-three-fiber'
 import { RootStore } from '@/store'
 import { useSelector, useDispatch } from 'react-redux'
-import { Meteo, METEOS_UPDATE } from '@/store/Meteolites'
+import { Meteo, METEOS_UPDATE, METEO_REPLACE } from '@/store/Meteolites'
 
 const initGeoMetry = (size: number = 1): BufferGeometry => {
   const bs = Math.random() * size + 0.5
@@ -45,34 +46,64 @@ const initMaterial = (): Material => {
   )
   return material
 }
-const setDracoResourcePath = (loader: Loader) => {
-  if (loader instanceof DRACOLoader) {
-    loader.setDecoderPath('/libs/draco/')
-  }
-}
 
 interface MeteoProps extends Meteo {
   // obj: Group
   obj: BufferGeometry
 }
-const Meteo = memo(({ obj, position, rotation }: MeteoProps) => {
-  // LOAD OBJECT
-  // return (
-  //   <group position={[position.x, position.y, position.z]}>
-  //     <primitive object={obj.clone()} />
-  //   </group>
-  // )
-  return (
-    <mesh
-      position={[position.x, position.y, position.z]}
-      rotation={[rotation.x, rotation.y, rotation.z]}
-    >
-      <bufferGeometry attach="geometry" {...obj.clone()} />
-      <meshNormalMaterial attach="material" />
-    </mesh>
-  )
-})
-const Meteolites = () => {
+
+const Meteo = memo(
+  ({ obj, position, rotation, ...rest }: MeteoProps) => {
+    // LOAD OBJECT
+    // return (
+    //   <group position={[position.x, position.y, position.z]}>
+    //     <primitive object={obj.clone()} />
+    //   </group>
+    // )
+
+    // TODO: MOUSE OVER METEOLITES ACTION
+    // const ref = useRef<Group>()
+    // const { raycaster } = useThree()
+    // const dispatch = useDispatch()
+    // useFrame(() => {
+    //   if (!ref.current) return
+    //   const isMouseOver =
+    //     raycaster.intersectObject(ref.current, true).length > 0
+
+    //   if (isMouseOver) {
+    //     dispatch(
+    //       METEO_REPLACE({
+    //         ...rest,
+    //         position,
+    //         rotation: {
+    //           x: rotation.x + Math.PI,
+    //           y: rotation.y + Math.PI,
+    //           z: rotation.z + Math.PI
+    //         }
+    //       })
+    //     )
+    //   }
+    // })
+    //
+    return (
+      <mesh
+        position={[position.x, position.y, position.z]}
+        rotation={[rotation.x, rotation.y, rotation.z]}
+      >
+        <bufferGeometry attach="geometry" {...obj.clone()} />
+        <meshNormalMaterial attach="material" />
+      </mesh>
+    )
+  },
+  (prev, next) =>
+    prev.rotation.x === next.rotation.x &&
+    prev.rotation.y === next.rotation.y &&
+    prev.rotation.z === next.rotation.z &&
+    prev.position.x === next.position.x &&
+    prev.position.y === next.position.y &&
+    prev.position.z === next.position.z
+)
+const Meteolites = ({ objs }: { objs: BufferGeometry[] }) => {
   // LOAD OBJECT
   // const objs = [
   //   useLoader(OBJLoader, require('@/models/Meteolite/Meteolite1.obj')),
@@ -82,28 +113,6 @@ const Meteolites = () => {
   // ]
 
   // Load Draco
-  const objs = [
-    useLoader(
-      DRACOLoader,
-      require('@/models/Meteolite/Meteolite1.drc'),
-      setDracoResourcePath
-    ),
-    useLoader(
-      DRACOLoader,
-      require('@/models/Meteolite/Meteolite2.drc'),
-      setDracoResourcePath
-    ),
-    useLoader(
-      DRACOLoader,
-      require('@/models/Meteolite/Meteolite3.drc'),
-      setDracoResourcePath
-    ),
-    useLoader(
-      DRACOLoader,
-      require('@/models/Meteolite/Meteolite4.drc'),
-      setDracoResourcePath
-    )
-  ]
 
   const meteos = useSelector((state: RootStore) => state.meteos)
   return (
