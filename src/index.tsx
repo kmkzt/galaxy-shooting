@@ -1,42 +1,30 @@
 import polyfill from '@juggle/resize-observer'
-import {
-  Scene,
-  Color,
-  Fog,
-  HemisphereLight,
-  Vector2,
-  Intersection,
-  Loader,
-  DefaultLoadingManager
-} from 'three'
+import { Scene, Color, Fog, HemisphereLight, Loader } from 'three'
 import React, { Fragment, useEffect, useCallback, FC, Suspense } from 'react'
 import { Provider, useSelector, useDispatch } from 'react-redux'
 import { Canvas, useFrame, useThree, useLoader } from 'react-three-fiber'
-import styled from 'styled-components'
 import { hydrate } from 'react-dom'
-import store, { RootStore } from './store'
+import styled from 'styled-components'
+import store, { RootStore } from '@/store'
 import Stats from 'stats.js'
 import dat from 'dat.gui'
-import { Controler } from './components/Controler'
-import { Keyboard } from './enum/keyboard'
-import SpaceShip from './object/SpaceShip'
-import Meteolites from './object/Meteolites'
-import { POINT_INC, POINT_RESET } from './store/Score'
-import { Menu } from './components/Menu'
-import { Start } from './components/Start'
-import { PLAY_MENU_TOGGLE } from './store/Play'
-import { SPACESHIP_UPDATE } from './store/SpaceShip'
+import { Keyboard } from '@/enum/keyboard'
+import SpaceShip from '@/object/SpaceShip'
+import Meteolites from '@/object/Meteolites'
+import { POINT_INC, POINT_RESET } from '@/store/Score'
+import { Menu } from '@/components/Menu'
+import { Start } from '@/components/Start'
+import useObject from '@/hooks/useObject'
+import { SPACESHIP_UPDATE } from '@/store/SpaceShip'
 import {
   METEOS_UPDATE,
   Meteo,
   METEO_REPLACE,
   State as MeteoState
-} from './store/Meteolites'
-import { getRandomPosition } from './utils/getRandomPostion'
-import { touchObject } from './utils/touchObject'
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
-import { LOAD_UPDATE } from './store/Load'
+} from '@/store/Meteolites'
+import { getRandomPosition } from '@/utils/getRandomPostion'
+import { touchObject } from '@/utils/touchObject'
+import { LOAD_UPDATE } from '@/store/Load'
 
 /**
  * DEV TOOLS
@@ -74,7 +62,6 @@ const FRAME_Y = window.innerHeight
 /**
  * Camera
  */
-const ASPECT_RATIO = FRAME_X / FRAME_Y
 const FOV = 60
 const NEAR = 9
 const FAR = 200
@@ -167,14 +154,8 @@ const Panel = styled.div`
   background: rgba(255, 255, 255, 0.4);
   padding: 12px;
 `
-const setDracoResourcePath = (loader: Loader) => {
-  if (loader instanceof DRACOLoader) {
-    loader.setDecoderPath('/libs/draco/')
-  }
-}
-
 function Game() {
-  const { scene, camera, raycaster, aspect, mouse } = useThree()
+  const { camera, raycaster, aspect, mouse } = useThree()
   const ship = useSelector((state: RootStore) => state.spaceShip)
   const meteos = useSelector((state: RootStore) => state.meteos)
   const load = useSelector((state: RootStore) => state.load)
@@ -223,96 +204,11 @@ function Game() {
   /**
    * LOAD OBJECT
    */
-  const shipObj = useLoader(
-    OBJLoader,
-    require('@/models/SpaceShip/spaceShip.obj')
-  )
-  const meteoliteObjs = [
-    useLoader(
-      DRACOLoader,
-      require('@/models/Meteolite/Meteolite1.drc'),
-      setDracoResourcePath
-    ),
-    useLoader(
-      DRACOLoader,
-      require('@/models/Meteolite/Meteolite2.drc'),
-      setDracoResourcePath
-    ),
-    useLoader(
-      DRACOLoader,
-      require('@/models/Meteolite/Meteolite3.drc'),
-      setDracoResourcePath
-    ),
-    useLoader(
-      DRACOLoader,
-      require('@/models/Meteolite/Meteolite4.drc'),
-      setDracoResourcePath
-    )
-  ]
-  useEffect(() => {
-    if (load.spaceShip) return
-    const meteoData: MeteoState = Array(100)
-      .fill(null)
-      .reduce((res: MeteoState, _: null, i: number): MeteoState => {
-        const pattern = Math.floor(Math.random() * meteoliteObjs.length)
-        return {
-          ...res,
-          [i]: {
-            guid: i,
-            position: getRandomPosition(
-              {
-                x: CAMERA_DISTANCE * ASPECT_RATIO,
-                y: CAMERA_DISTANCE,
-                z: FAR
-              },
-              {
-                z: FAR
-              }
-            ),
-            rotation: {
-              x: 0,
-              y: 0,
-              z: 0
-            },
-            scale: {
-              x: 1,
-              y: 1,
-              z: 1
-            },
-            pattern
-          }
-        }
-      }, {})
-    dispatch(METEOS_UPDATE(meteoData))
-    dispatch(
-      LOAD_UPDATE({
-        meteolites: true
-      })
-    )
-  }, [dispatch, load.spaceShip, meteoliteObjs.length])
-
-  useEffect(() => {
-    if (load.spaceShip) return
-    dispatch(
-      SPACESHIP_UPDATE({
-        rotation: {
-          x: shipObj.rotation.x - Math.PI,
-          y: shipObj.rotation.y,
-          z: shipObj.rotation.z
-        },
-        scale: {
-          x: shipObj.scale.x / 2,
-          y: shipObj.scale.y / 2,
-          z: shipObj.scale.z / 2
-        }
-      })
-    )
-    dispatch(
-      LOAD_UPDATE({
-        spaceShip: true
-      })
-    )
-  }, [dispatch, load.spaceShip, shipObj])
+  const { ship: shipObj, meteos: meteoliteObjs } = useObject({
+    meteosOption: {
+      num: 100
+    }
+  })
 
   /**
    * EventListner
