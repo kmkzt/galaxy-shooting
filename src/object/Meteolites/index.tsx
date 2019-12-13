@@ -1,9 +1,10 @@
-import React, { useEffect, memo, useRef } from 'react'
+import React, { memo, useRef } from 'react'
 import { BufferGeometry, Group } from 'three'
-import { useFrame, useThree } from 'react-three-fiber'
+import { useThree } from 'react-three-fiber'
 import { RootStore } from '@/store'
 import { useSelector, useDispatch } from 'react-redux'
 import { Meteo, METEO_REPLACE } from '@/store/Meteolites'
+import useGameFrame from '@/hooks/useGameFrame'
 
 interface MeteoProps extends Meteo {
   obj: BufferGeometry
@@ -15,7 +16,7 @@ const Meteo = memo(
     const { raycaster, camera } = useThree()
     const dispatch = useDispatch()
 
-    useFrame(() => {
+    useGameFrame(() => {
       if (!ref.current) return
       const isMouseOver =
         raycaster.intersectObject(ref.current, true).length > 0

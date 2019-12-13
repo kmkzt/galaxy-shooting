@@ -1,11 +1,12 @@
 import React, { memo } from 'react'
 import { Group } from 'three'
-import { useFrame, useThree } from 'react-three-fiber'
+import { useThree } from 'react-three-fiber'
 import { RootStore } from '@/store'
 import { useSelector, useDispatch } from 'react-redux'
 import { SPACESHIP_UPDATE } from '@/store/SpaceShip'
 import { touchObject } from '@/utils/touchObject'
 import { Meteo } from '@/store/Meteolites'
+import useGameFrame from '@/hooks/useGameFrame'
 
 const SpaceShip = memo(({ obj }: { obj: Group }) => {
   const { mouse, aspect } = useThree()
@@ -14,7 +15,7 @@ const SpaceShip = memo(({ obj }: { obj: Group }) => {
   const dispatch = useDispatch()
 
   // SpaceShip Behavior
-  useFrame(() => {
+  useGameFrame(() => {
     const ROTATE_UNIT = 0.1
     const { position, flightSpeed, isRotation, rotation, isClashed } = ship
     if (isClashed) return

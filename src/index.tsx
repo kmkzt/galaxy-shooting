@@ -2,13 +2,11 @@ import polyfill from '@juggle/resize-observer'
 import { Scene, Color, Fog, HemisphereLight, Loader } from 'three'
 import React, { Fragment, useEffect, useCallback, FC, Suspense } from 'react'
 import { Provider, useSelector, useDispatch } from 'react-redux'
-import { Canvas, useFrame, useThree, useLoader } from 'react-three-fiber'
+import { Canvas, useFrame, useThree } from 'react-three-fiber'
 import { hydrate } from 'react-dom'
 import styled from 'styled-components'
 import store, { RootStore } from '@/store'
 import Stats from 'stats.js'
-import dat from 'dat.gui'
-import { Keyboard } from '@/enum/keyboard'
 import SpaceShip from '@/object/SpaceShip'
 import Meteolites from '@/object/Meteolites'
 import { POINT_INC, POINT_RESET } from '@/store/Score'
@@ -16,41 +14,12 @@ import { Menu } from '@/components/Menu'
 import { Start } from '@/components/Start'
 import useObject from '@/hooks/useObject'
 import { SPACESHIP_UPDATE } from '@/store/SpaceShip'
-import {
-  METEOS_UPDATE,
-  Meteo,
-  METEO_REPLACE,
-  State as MeteoState
-} from '@/store/Meteolites'
-import { getRandomPosition } from '@/utils/getRandomPostion'
-import { touchObject } from '@/utils/touchObject'
-import { LOAD_UPDATE } from '@/store/Load'
+import useGameFrame from './hooks/useGameFrame'
 
 /**
  * DEV TOOLS
  */
 const stats = new Stats()
-const gui = new dat.GUI()
-// TODO: add onChange
-// const setDataGui = (data: object, g: dat.GUI) => {
-//   for (let key in data) {
-//     switch (typeof data[key]) {
-//       case 'object':
-//         // console.log(key, typeof spaceShip[key])
-//         let paramGui = g.addFolder(key)
-//         for (let param in data[key]) {
-//           if (typeof data[key][param] === 'function') continue
-//           if (typeof data[key][param] === 'object') continue
-//           paramGui.add(data[key], param)
-//         }
-//         break
-//       case 'number':
-//       case 'string':
-//         g.add(data, key)
-//         break
-//     }
-//   }
-// }
 /**
  * Renderer
  */
@@ -85,68 +54,6 @@ app.addEventListener('click', () => {
   )
 })
 
-/**
- * Keyboard parameter
- */
-const TRANSLATE_UNIT = 0.05
-const CAMERA_MOVE_UNIT = 1
-
-const isKeycode = (key: number): key is Keyboard =>
-  Object.values(Keyboard).includes(key)
-
-// window.addEventListener('keydown', (ev: KeyboardEvent) => {
-//   const keyCode = ev.keyCode
-//   if (isKeycode(keyCode)) {
-//     keyboardAction(keyCode)
-//   }
-// })
-
-const keyboardAction = (key: Keyboard) => {
-  switch (key) {
-    // case Keyboard.UP_ARROW:
-    //   spaceShip.position.y -= TRANSLATE_UNIT
-    //   break
-    // case Keyboard.DOWN_ARROW:
-    //   spaceShip.position.y += TRANSLATE_UNIT
-    //   break
-    // case Keyboard.RIGHT_ARROW:
-    //   spaceShip.position.x -= TRANSLATE_UNIT
-    //   break
-    // case Keyboard.LEFT_ARROW:
-    //   spaceShip.position.x += TRANSLATE_UNIT
-    //   break
-    // case Keyboard.KEY_U:
-    //   camera.position.y -= CAMERA_MOVE_UNIT
-    //   break
-    // case Keyboard.KEY_D:
-    //   camera.position.y += CAMERA_MOVE_UNIT
-    //   break
-    // case Keyboard.KEY_L:
-    //   camera.position.x -= CAMERA_MOVE_UNIT
-    //   break
-    // case Keyboard.KEY_R:
-    //   camera.position.x += CAMERA_MOVE_UNIT
-    //   break
-    // case Keyboard.KEY_N:
-    //   camera.position.z -= CAMERA_MOVE_UNIT
-    //   break
-    // case Keyboard.KEY_F:
-    //   camera.position.z += CAMERA_MOVE_UNIT
-    //   break
-    // case Keyboard.ENTER:
-    //   spaceShip.isClashed = false
-    //   store.dispatch(POINT_RESET())
-    //   break
-    case Keyboard.SPACE:
-      store.dispatch(
-        SPACESHIP_UPDATE({
-          isClashed: false
-        })
-      )
-      break
-  }
-}
-
 const Panel = styled.div`
   position: fixed;
   bottom: 0;
@@ -157,16 +64,11 @@ const Panel = styled.div`
 function Game() {
   const { camera, raycaster, aspect, mouse } = useThree()
   const ship = useSelector((state: RootStore) => state.spaceShip)
-  const meteos = useSelector((state: RootStore) => state.meteos)
-  const load = useSelector((state: RootStore) => state.load)
   const { distance: cameraDistane } = useSelector(
     (state: RootStore) => state.cam
   )
   const dispatch = useDispatch()
 
-  const active = useSelector<RootStore, boolean>(
-    ({ play }) => play.active && !play.menu
-  )
   /**
    * HANDLE MOUSE
    */
@@ -225,24 +127,22 @@ function Game() {
   }, [handlePointerMove, handleTouchMove])
 
   /**
-   * Animation
+   * COMMON FRAME BEHAVIOR
    */
   useFrame(({ camera }) => {
     // DEV TOOL
     {
       stats.update()
     }
-    if (!active || ship.isClashed) return
-    // Game Status Behavior
-    {
-      dispatch(POINT_INC(1))
-    }
-    // CAMERA Behavior
+    // CAMERA BEHAVIOR
     {
       camera.position.z = ship.position.z + cameraDistane
     }
   })
-
+  /**
+   * POINT COUNT
+   */
+  useGameFrame(() => dispatch(POINT_INC(1)))
   return (
     <Suspense fallback={null}>
       <SpaceShip obj={shipObj} />
