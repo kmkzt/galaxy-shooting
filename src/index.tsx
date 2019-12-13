@@ -241,58 +241,6 @@ function Game() {
     {
       camera.position.z = ship.position.z + cameraDistane
     }
-    // SpaceShip Behavior
-    {
-      const ROTATE_UNIT = 0.1
-      const { position, flightSpeed, isRotation, rotation } = ship
-      const isClashed = Object.values(meteos).some((me: Meteo) =>
-        touchObject(me, ship)
-      )
-
-      const mousemove_x = mouse.x / 2
-      const mousemove_y = mouse.y / 2
-
-      dispatch(
-        SPACESHIP_UPDATE({
-          isClashed,
-          // spaceShip Moving
-          position: {
-            ...position,
-            x: mousemove_x * aspect * CAMERA_DISTANCE,
-            y: mousemove_y * CAMERA_DISTANCE,
-            z: position.z - flightSpeed
-          },
-          // spaceShip rotation
-          rotation: {
-            ...rotation,
-            z: isRotation ? rotation.z + ROTATE_UNIT : rotation.z
-          }
-        })
-      )
-    }
-    // Meteolites Behavior
-    {
-      const updateMeteos = Object.values(meteos).reduce(
-        (upd: MeteoState, me: Meteo): MeteoState => {
-          if (me.position.z < ship.position.z + 10) return upd
-          return {
-            ...upd,
-            [me.guid]: {
-              ...me,
-              position: {
-                ...me.position,
-                z: me.position.z - FAR
-              }
-            }
-          }
-        },
-        {}
-      )
-
-      if (Object.keys(updateMeteos).length > 0) {
-        dispatch(METEOS_UPDATE(updateMeteos))
-      }
-    }
   })
 
   return (

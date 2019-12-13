@@ -1,94 +1,53 @@
 import React, { useEffect, memo, useRef } from 'react'
-import {
-  Material,
-  BufferGeometry,
-  BoxBufferGeometry,
-  MeshPhongMaterial,
-  VertexColors,
-  Color,
-  Float32BufferAttribute,
-  Group,
-  Loader,
-  Vector3,
-  Euler,
-  Intersection
-} from 'three'
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
-import { useLoader, useUpdate, useFrame, useThree } from 'react-three-fiber'
+import { BufferGeometry, Group } from 'three'
+import { useFrame, useThree } from 'react-three-fiber'
 import { RootStore } from '@/store'
 import { useSelector, useDispatch } from 'react-redux'
-import { Meteo, METEOS_UPDATE, METEO_REPLACE } from '@/store/Meteolites'
-
-const initGeoMetry = (size: number = 1): BufferGeometry => {
-  const bs = Math.random() * size + 0.5
-  const geometry = new BoxBufferGeometry(bs, bs, bs).toNonIndexed()
-  const colors: number[] = []
-  const color = new Color()
-  for (let i = 0, l = geometry.attributes.position.count; i < l; i++) {
-    color.setHSL(Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75)
-    colors.push(color.r, color.g, color.b)
-  }
-  geometry.addAttribute('color', new Float32BufferAttribute(colors, 3))
-  return geometry
-}
-
-const initMaterial = (): Material => {
-  const material = new MeshPhongMaterial({
-    specular: 0xffffff,
-    flatShading: true,
-    vertexColors: VertexColors
-  })
-  material.color.setHSL(
-    Math.random() * 0.2 + 0.5,
-    0.75,
-    Math.random() * 0.25 + 0.75
-  )
-  return material
-}
+import { Meteo, METEO_REPLACE } from '@/store/Meteolites'
 
 interface MeteoProps extends Meteo {
-  // obj: Group
   obj: BufferGeometry
 }
 
 const Meteo = memo(
-  ({ obj, position, rotation, ...rest }: MeteoProps) => {
-    // LOAD OBJECT
-    // return (
-    //   <group position={[position.x, position.y, position.z]}>
-    //     <primitive object={obj.clone()} />
-    //   </group>
-    // )
+  ({ obj, position, rotation, scale, ...rest }: MeteoProps) => {
+    const ref = useRef<Group>()
+    const { raycaster, camera } = useThree()
+    const dispatch = useDispatch()
 
-    // TODO: MOUSE OVER METEOLITES ACTION
-    // const ref = useRef<Group>()
-    // const { raycaster } = useThree()
-    // const dispatch = useDispatch()
-    // useFrame(() => {
-    //   if (!ref.current) return
-    //   const isMouseOver =
-    //     raycaster.intersectObject(ref.current, true).length > 0
+    useFrame(() => {
+      if (!ref.current) return
+      const isMouseOver =
+        raycaster.intersectObject(ref.current, true).length > 0
+      const isFrameOut = ref.current.position.z > camera.position.z
+      if (!isMouseOver && !isFrameOut) return
+      dispatch(
+        METEO_REPLACE({
+          ...rest,
+          scale,
+          position: isFrameOut
+            ? {
+                ...position,
+                z: position.z - camera.far
+              }
+            : position,
+          rotation: isMouseOver
+            ? {
+                x: rotation.x + Math.PI * 0.05,
+                y: rotation.y + Math.PI * 0.05,
+                z: rotation.z + Math.PI * 0.05
+              }
+            : rotation
+        })
+      )
+    })
 
-    //   if (isMouseOver) {
-    //     dispatch(
-    //       METEO_REPLACE({
-    //         ...rest,
-    //         position,
-    //         rotation: {
-    //           x: rotation.x + Math.PI,
-    //           y: rotation.y + Math.PI,
-    //           z: rotation.z + Math.PI
-    //         }
-    //       })
-    //     )
-    //   }
-    // })
-    //
     return (
       <mesh
+        ref={ref}
         position={[position.x, position.y, position.z]}
         rotation={[rotation.x, rotation.y, rotation.z]}
+        scale={[scale.x, scale.y, scale.z]}
       >
         <bufferGeometry attach="geometry" {...obj.clone()} />
         <meshNormalMaterial attach="material" />
@@ -104,16 +63,6 @@ const Meteo = memo(
     prev.position.z === next.position.z
 )
 const Meteolites = ({ objs }: { objs: BufferGeometry[] }) => {
-  // LOAD OBJECT
-  // const objs = [
-  //   useLoader(OBJLoader, require('@/models/Meteolite/Meteolite1.obj')),
-  //   useLoader(OBJLoader, require('@/models/Meteolite/Meteolite2.obj')),
-  //   useLoader(OBJLoader, require('@/models/Meteolite/Meteolite3.obj')),
-  //   useLoader(OBJLoader, require('@/models/Meteolite/Meteolite4.obj'))
-  // ]
-
-  // Load Draco
-
   const meteos = useSelector((state: RootStore) => state.meteos)
   return (
     <>
