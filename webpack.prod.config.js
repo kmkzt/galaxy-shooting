@@ -6,7 +6,7 @@ const config = {
   mode: 'production',
   devtool: false,
   output: {
-    path: resolve('docs')
+    path: resolve('dist')
   },
   module: {
     rules: [

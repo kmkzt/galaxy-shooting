@@ -9,6 +9,7 @@
 # production,distfile
 /build
 /public
+/dist
 
 # misc
 .DS_Store
@@ -24,4 +25,3 @@ yarn.lock
 package-lock.json
 .vscode
 
-docs

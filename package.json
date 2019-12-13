@@ -5,9 +5,9 @@
   "author": "kmkzt",
   "scripts": {
     "dev": "yarn assets:public && NODE_ENV=development webpack-dev-server",
-    "assets:docs": "mkdirp docs/libs/draco && cpx \"node_modules/three/examples/js/libs/draco/**\" docs/libs/draco/",
+    "assets:dist": "mkdirp dist/libs/draco && cpx \"node_modules/three/examples/js/libs/draco/**\" dist/libs/draco/",
     "assets:public": "mkdirp public/libs/draco && cpx \"node_modules/three/examples/js/libs/draco\" public/libs/draco",
-    "build": "rimraf docs && yarn assets:docs && NODE_ENV=production webpack -p ",
+    "build": "rimraf dist && yarn assets:dist && NODE_ENV=production webpack -p ",
     "test": "jest",
     "lint": "eslint -c .eslintrc.js --fix \"./src/**/**.{ts,tsx}\"",
     "lint:fix": "prettier --write ./src/**/*.{ts,tsx}"
