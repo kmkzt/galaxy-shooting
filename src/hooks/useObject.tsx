@@ -12,7 +12,7 @@ import { LOAD_UPDATE } from '@/store/Load'
 
 const setDracoResourcePath = (loader: Loader) => {
   if (loader instanceof DRACOLoader) {
-    loader.setDecoderPath('/libs/draco/')
+    loader.setDecoderPath('./libs/draco/')
   }
 }
 
