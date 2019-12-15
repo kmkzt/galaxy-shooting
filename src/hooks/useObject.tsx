@@ -1,5 +1,12 @@
 import React, { useEffect, useCallback, FC, Suspense } from 'react'
-import { Loader, BufferGeometry, Group } from 'three'
+import {
+  Loader,
+  BufferGeometry,
+  Group,
+  Mesh,
+  TextureLoader,
+  Texture
+} from 'three'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { useSelector, useDispatch } from 'react-redux'
@@ -10,10 +17,11 @@ import { METEOS_UPDATE, State as MeteoState } from '@/store/Meteolites'
 import { getRandomPosition } from '@/utils/getRandomPostion'
 import { LOAD_UPDATE } from '@/store/Load'
 
-const setDracoResourcePath = (loader: Loader) => {
+const setResourcePath = (loader: Loader) => {
   if (loader instanceof DRACOLoader) {
     loader.setDecoderPath('./libs/draco/')
   }
+  loader.setResourcePath('./assets/textures')
 }
 
 interface UseObjectOption {
@@ -34,10 +42,20 @@ export default function useObject({
    */
   const shipObj = useLoader(
     OBJLoader,
-    require('@/models/SpaceShip/spaceShip.obj')
+    require('@/models/SpaceShip/spaceShip.obj'),
+    setResourcePath
   )
+
   useEffect(() => {
-    if (load.spaceShip) return
+    if (!shipObj || load.spaceShip) return
+    const texture: Texture = new TextureLoader().load(
+      require('@/models/SpaceShip/textures/F15D.jpg')
+    )
+    shipObj.traverse(child => {
+      if ((child as any).isMesh) {
+        ;((child as Mesh).material as any).normalMap = texture
+      }
+    })
     dispatch(
       SPACESHIP_UPDATE({
         rotation: {
@@ -66,26 +84,29 @@ export default function useObject({
     useLoader(
       DRACOLoader,
       require('@/models/Meteolite/Meteolite1.drc'),
-      setDracoResourcePath
+      setResourcePath
     ),
     useLoader(
       DRACOLoader,
       require('@/models/Meteolite/Meteolite2.drc'),
-      setDracoResourcePath
+      setResourcePath
     ),
     useLoader(
       DRACOLoader,
       require('@/models/Meteolite/Meteolite3.drc'),
-      setDracoResourcePath
+      setResourcePath
     ),
     useLoader(
       DRACOLoader,
       require('@/models/Meteolite/Meteolite4.drc'),
-      setDracoResourcePath
+      setResourcePath
     )
   ]
   useEffect(() => {
-    if (load.spaceShip) return
+    if (!meteoliteObjs || load.meteolites) return
+    meteoliteObjs.map((obj: BufferGeometry, i: number) => {
+      obj
+    })
     const meteoData: MeteoState = Array(meteosOption.num)
       .fill(null)
       .reduce((res: MeteoState, _: null, i: number): MeteoState => {
@@ -130,7 +151,8 @@ export default function useObject({
     camera.far,
     camera.near,
     dispatch,
-    load.spaceShip,
+    load.meteolites,
+    meteoliteObjs,
     meteoliteObjs.length,
     meteosOption.num
   ])
