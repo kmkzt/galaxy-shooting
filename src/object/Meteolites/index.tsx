@@ -1,6 +1,6 @@
-import React, { memo, useRef } from 'react'
-import { BufferGeometry, Group } from 'three'
-import { useThree } from 'react-three-fiber'
+import React, { memo, useRef, useEffect, Suspense, useMemo } from 'react'
+import { BufferGeometry, Group, TextureLoader, Texture } from 'three'
+import { useThree, useLoader } from 'react-three-fiber'
 import { RootStore } from '@/store'
 import { useSelector, useDispatch } from 'react-redux'
 import { Meteo, METEO_REPLACE } from '@/store/Meteolites'
@@ -8,10 +8,11 @@ import useGameFrame from '@/hooks/useGameFrame'
 
 interface MeteoProps extends Meteo {
   obj: BufferGeometry
+  texture: Texture
 }
 
 const Meteo = memo(
-  ({ obj, position, rotation, scale, ...rest }: MeteoProps) => {
+  ({ obj, texture, position, rotation, scale, ...rest }: MeteoProps) => {
     const ref = useRef<Group>()
     const { raycaster, camera } = useThree()
     const dispatch = useDispatch()
@@ -51,7 +52,7 @@ const Meteo = memo(
         scale={[scale.x, scale.y, scale.z]}
       >
         <bufferGeometry attach="geometry" {...obj.clone()} />
-        <meshNormalMaterial attach="material" />
+        <meshStandardMaterial attach="material" map={texture} />
       </mesh>
     )
   },
@@ -65,12 +66,34 @@ const Meteo = memo(
 )
 const Meteolites = ({ objs }: { objs: BufferGeometry[] }) => {
   const meteos = useSelector((state: RootStore) => state.meteos)
+  // const textures = useLoader(TextureLoader, [
+  //   require('@/models/Meteolite/textures/Meteolite1.png'),
+  //   require('@/models/Meteolite/textures/Meteolite2.png'),
+  //   require('@/models/Meteolite/textures/Meteolite3.png'),
+  //   require('@/models/Meteolite/textures/Meteolite4.png')
+  // ])
+  const textures: Texture[] = useMemo(
+    () =>
+      [
+        require('@/models/Meteolite/textures/Meteolite1.png'),
+        require('@/models/Meteolite/textures/Meteolite2.png'),
+        require('@/models/Meteolite/textures/Meteolite3.png'),
+        require('@/models/Meteolite/textures/Meteolite4.png')
+      ].map(texturePath => new TextureLoader().load(texturePath)),
+    []
+  )
+
   return (
     <>
       {Object.values(meteos)
         .sort((m1: Meteo, m2: Meteo) => (m1.guid > m2.guid ? 1 : -1))
         .map((info: Meteo, i: number) => (
-          <Meteo key={info.guid} obj={objs[info.pattern]} {...info} />
+          <Meteo
+            key={info.guid}
+            obj={objs[info.pattern]}
+            texture={textures[info.pattern]}
+            {...info}
+          />
         ))}
     </>
   )
