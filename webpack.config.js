@@ -52,18 +52,6 @@ const common = {
         ]
       },
       {
-        test: /\.(png|jpe?g|gif)$/i,
-        include: /textures/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              outputPath: 'assets/textures'
-            }
-          }
-        ]
-      },
-      {
         test: /\.(3ds|abc|fbx|mtl|obj|x3d|zip|meta|drc)$/i,
         use: [
           {
@@ -76,6 +64,19 @@ const common = {
       },
       {
         test: /\.(png|jpe?g|gif)$/i,
+        include: /textures/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              outputPath: 'assets/textures'
+            }
+          }
+        ]
+      },
+      {
+        test: /\.(png|jpe?g|gif)$/i,
+        exclude: /textures/,
         use: [
           {
             loader: 'file-loader',
