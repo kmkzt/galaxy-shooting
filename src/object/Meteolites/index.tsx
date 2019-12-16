@@ -70,23 +70,24 @@ const Meteo = memo(
 )
 const Meteolites = ({ objs }: { objs: BufferGeometry[] }) => {
   const meteos = useSelector((state: RootStore) => state.meteos)
-  // const textures = useLoader(TextureLoader, [
-  //   require('@/models/Meteolite/textures/Meteolite1.png'),
-  //   require('@/models/Meteolite/textures/Meteolite2.png'),
-  //   require('@/models/Meteolite/textures/Meteolite3.png'),
-  //   require('@/models/Meteolite/textures/Meteolite4.png')
-  // ])
-  // const textures: Texture[] = useMemo(
-  //   () =>
-  //     [
-  //       require('@/models/Meteolite/textures/Meteolite1.png'),
-  //       require('@/models/Meteolite/textures/Meteolite2.png'),
-  //       require('@/models/Meteolite/textures/Meteolite3.png'),
-  //       require('@/models/Meteolite/textures/Meteolite4.png')
-  //     ].map(texturePath => new TextureLoader().load(texturePath)),
-  //   []
-  // )
-
+  const textures = [
+    useLoader(
+      TextureLoader,
+      require('@/models/Meteolite/textures/Meteolite1.png')
+    ),
+    useLoader(
+      TextureLoader,
+      require('@/models/Meteolite/textures/Meteolite2.png')
+    ),
+    useLoader(
+      TextureLoader,
+      require('@/models/Meteolite/textures/Meteolite3.png')
+    ),
+    useLoader(
+      TextureLoader,
+      require('@/models/Meteolite/textures/Meteolite4.png')
+    )
+  ]
   return (
     <>
       {Object.values(meteos)
@@ -95,7 +96,7 @@ const Meteolites = ({ objs }: { objs: BufferGeometry[] }) => {
           <Meteo
             key={info.guid}
             obj={objs[info.pattern]}
-            // texture={textures[info.pattern]}
+            texture={textures[info.pattern]}
             {...info}
           />
         ))}
