@@ -1,4 +1,10 @@
-import React, { useEffect, useCallback, FC, Suspense } from 'react'
+import React, {
+  useEffect,
+  useCallback,
+  FC,
+  Suspense,
+  useLayoutEffect
+} from 'react'
 import {
   Loader,
   BufferGeometry,
@@ -46,7 +52,7 @@ export default function useObject({
     setResourcePath
   )
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!shipObj || load.spaceShip) return
     new TextureLoader().load(
       require('@/models/SpaceShip/textures/F15D.jpg'),
@@ -109,7 +115,7 @@ export default function useObject({
       setResourcePath
     )
   ]
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!meteoliteObjs || load.meteolites) return
     const meteoData: MeteoState = Array(meteosOption.num)
       .fill(null)
