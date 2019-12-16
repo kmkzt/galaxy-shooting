@@ -49,13 +49,17 @@ export default function useObject({
   useEffect(() => {
     if (!shipObj || load.spaceShip) return
     new TextureLoader().load(
-      require('@/models/SpaceShip/textures/F15A.jpg'),
+      require('@/models/SpaceShip/textures/F15D.jpg'),
       tx => {
         shipObj.traverse(child => {
           if ((child as any).isMesh) {
             ;((child as Mesh).material as any).normalMap = tx
           }
         })
+      },
+      undefined,
+      err => {
+        console.error(err)
       }
     )
 
