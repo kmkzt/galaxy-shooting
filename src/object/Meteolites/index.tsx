@@ -8,7 +8,7 @@ import useGameFrame from '@/hooks/useGameFrame'
 
 interface MeteoProps extends Meteo {
   obj: BufferGeometry
-  texture: Texture
+  texture?: Texture
 }
 
 const Meteo = memo(
@@ -52,7 +52,11 @@ const Meteo = memo(
         scale={[scale.x, scale.y, scale.z]}
       >
         <bufferGeometry attach="geometry" {...obj.clone()} />
-        <meshStandardMaterial attach="material" map={texture} />
+        {texture ? (
+          <meshStandardMaterial attach="material" map={texture} />
+        ) : (
+          <meshStandardMaterial attach="material" color="hotpink" transparent />
+        )}
       </mesh>
     )
   },
