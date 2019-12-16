@@ -48,14 +48,17 @@ export default function useObject({
 
   useEffect(() => {
     if (!shipObj || load.spaceShip) return
-    const texture: Texture = new TextureLoader().load(
-      require('@/models/SpaceShip/textures/F15A.jpg')
-    )
-    shipObj.traverse(child => {
-      if ((child as any).isMesh) {
-        ;((child as Mesh).material as any).normalMap = texture
+    new TextureLoader().load(
+      require('@/models/SpaceShip/textures/F15A.jpg'),
+      tx => {
+        shipObj.traverse(child => {
+          if ((child as any).isMesh) {
+            ;((child as Mesh).material as any).normalMap = tx
+          }
+        })
       }
-    })
+    )
+
     dispatch(
       SPACESHIP_UPDATE({
         rotation: {
@@ -104,9 +107,6 @@ export default function useObject({
   ]
   useEffect(() => {
     if (!meteoliteObjs || load.meteolites) return
-    meteoliteObjs.map((obj: BufferGeometry, i: number) => {
-      obj
-    })
     const meteoData: MeteoState = Array(meteosOption.num)
       .fill(null)
       .reduce((res: MeteoState, _: null, i: number): MeteoState => {
