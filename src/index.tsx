@@ -26,8 +26,6 @@ const stats = new Stats()
 const app = document.getElementById('app') as HTMLElement
 const FRAME_X = window.innerWidth
 const FRAME_Y = window.innerHeight
-// const FRAME_X = 500
-// const FRAME_Y = 500
 /**
  * Camera
  */
@@ -36,13 +34,6 @@ const NEAR = 9
 const FAR = 200
 const CAMERA_DISTANCE = NEAR + 5
 
-/**
- * Mouse point
- */
-
-/**
- * Generate box
- */
 /**
  * CLICK ACTION
  */

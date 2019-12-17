@@ -24,7 +24,7 @@ import { getRandomPosition } from '@/utils/getRandomPostion'
 import { LOAD_UPDATE } from '@/store/Load'
 
 const loaderExtend = (loader: Loader) => {
-  loader.setResourcePath('./assets/models/')
+  loader.setResourcePath('./assets/textures/')
 }
 const dracoLoaderExtend = (loader: Loader) => {
   if (loader instanceof DRACOLoader) {
