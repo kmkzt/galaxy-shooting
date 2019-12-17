@@ -23,11 +23,14 @@ import { METEOS_UPDATE, State as MeteoState } from '@/store/Meteolites'
 import { getRandomPosition } from '@/utils/getRandomPostion'
 import { LOAD_UPDATE } from '@/store/Load'
 
-const setResourcePath = (loader: Loader) => {
+const loaderExtend = (loader: Loader) => {
+  loader.setResourcePath('./assets/textures')
+}
+const dracoLoaderExtend = (loader: Loader) => {
   if (loader instanceof DRACOLoader) {
     loader.setDecoderPath('./libs/draco/')
   }
-  loader.setResourcePath('./assets/textures')
+  loaderExtend(loader)
 }
 
 interface UseObjectOption {
@@ -49,7 +52,7 @@ export default function useObject({
   const shipObj = useLoader(
     OBJLoader,
     require('@/models/SpaceShip/spaceShip.obj'),
-    setResourcePath
+    loaderExtend
   )
 
   useLayoutEffect(() => {
@@ -90,22 +93,22 @@ export default function useObject({
     useLoader(
       DRACOLoader,
       require('@/models/Meteolite/Meteolite1.drc'),
-      setResourcePath
+      dracoLoaderExtend
     ),
     useLoader(
       DRACOLoader,
       require('@/models/Meteolite/Meteolite2.drc'),
-      setResourcePath
+      dracoLoaderExtend
     ),
     useLoader(
       DRACOLoader,
       require('@/models/Meteolite/Meteolite3.drc'),
-      setResourcePath
+      dracoLoaderExtend
     ),
     useLoader(
       DRACOLoader,
       require('@/models/Meteolite/Meteolite4.drc'),
-      setResourcePath
+      dracoLoaderExtend
     )
   ]
   useLayoutEffect(() => {
