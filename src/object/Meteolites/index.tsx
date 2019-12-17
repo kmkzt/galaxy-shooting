@@ -1,5 +1,5 @@
 import React, { memo, useRef, useEffect, Suspense, useMemo } from 'react'
-import { BufferGeometry, Group, TextureLoader, Texture } from 'three'
+import { BufferGeometry, Group, TextureLoader, Texture, Loader } from 'three'
 import { useThree, useLoader } from 'react-three-fiber'
 import { RootStore } from '@/store'
 import { useSelector, useDispatch } from 'react-redux'
@@ -68,24 +68,31 @@ const Meteo = memo(
     prev.position.y === next.position.y &&
     prev.position.z === next.position.z
 )
+const loaderTextureExtend = (loader: Loader) => {
+  loader.setResourcePath('./assets/textures/')
+}
 const Meteolites = ({ objs }: { objs: BufferGeometry[] }) => {
   const meteos = useSelector((state: RootStore) => state.meteos)
   const textures = [
     useLoader(
       TextureLoader,
-      require('@/models/Meteolite/textures/Meteolite1.png')
+      require('@/models/Meteolite/textures/Meteolite1.png'),
+      loaderTextureExtend
     ),
     useLoader(
       TextureLoader,
-      require('@/models/Meteolite/textures/Meteolite2.png')
+      require('@/models/Meteolite/textures/Meteolite2.png'),
+      loaderTextureExtend
     ),
     useLoader(
       TextureLoader,
-      require('@/models/Meteolite/textures/Meteolite3.png')
+      require('@/models/Meteolite/textures/Meteolite3.png'),
+      loaderTextureExtend
     ),
     useLoader(
       TextureLoader,
-      require('@/models/Meteolite/textures/Meteolite4.png')
+      require('@/models/Meteolite/textures/Meteolite4.png'),
+      loaderTextureExtend
     )
   ]
   return (

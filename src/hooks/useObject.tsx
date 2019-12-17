@@ -24,7 +24,7 @@ import { getRandomPosition } from '@/utils/getRandomPostion'
 import { LOAD_UPDATE } from '@/store/Load'
 
 const loaderExtend = (loader: Loader) => {
-  loader.setResourcePath('./assets/textures')
+  loader.setResourcePath('./assets/models/')
 }
 const dracoLoaderExtend = (loader: Loader) => {
   if (loader instanceof DRACOLoader) {
@@ -57,7 +57,9 @@ export default function useObject({
 
   useLayoutEffect(() => {
     if (!shipObj || load.spaceShip) return
-    const texture: Texture = new TextureLoader().load(
+    const loader = new TextureLoader()
+    loader.setResourcePath('./assets/textures/')
+    const texture: Texture = loader.load(
       require('@/models/SpaceShip/textures/F15A.jpg')
     )
     shipObj.traverse(child => {
