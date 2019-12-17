@@ -73,28 +73,16 @@ const loaderTextureExtend = (loader: Loader) => {
 }
 const Meteolites = ({ objs }: { objs: BufferGeometry[] }) => {
   const meteos = useSelector((state: RootStore) => state.meteos)
-  const textures = [
-    useLoader(
-      TextureLoader,
+  const textures: Texture[] = useLoader<any>(
+    TextureLoader,
+    [
       require('@/models/Meteolite/textures/Meteolite1.png'),
-      loaderTextureExtend
-    ),
-    useLoader(
-      TextureLoader,
       require('@/models/Meteolite/textures/Meteolite2.png'),
-      loaderTextureExtend
-    ),
-    useLoader(
-      TextureLoader,
       require('@/models/Meteolite/textures/Meteolite3.png'),
-      loaderTextureExtend
-    ),
-    useLoader(
-      TextureLoader,
-      require('@/models/Meteolite/textures/Meteolite4.png'),
-      loaderTextureExtend
-    )
-  ]
+      require('@/models/Meteolite/textures/Meteolite4.png')
+    ],
+    loaderTextureExtend
+  )
   return (
     <>
       {Object.values(meteos)

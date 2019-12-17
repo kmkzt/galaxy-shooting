@@ -24,7 +24,7 @@ import { getRandomPosition } from '@/utils/getRandomPostion'
 import { LOAD_UPDATE } from '@/store/Load'
 
 const loaderExtend = (loader: Loader) => {
-  loader.setResourcePath('./assets/textures/')
+  // loader.setResourcePath('./assets/textures/')
 }
 const dracoLoaderExtend = (loader: Loader) => {
   if (loader instanceof DRACOLoader) {
@@ -58,7 +58,6 @@ export default function useObject({
   useLayoutEffect(() => {
     if (!shipObj || load.spaceShip) return
     const loader = new TextureLoader()
-    loader.setResourcePath('./assets/textures/')
     const texture: Texture = loader.load(
       require('@/models/SpaceShip/textures/F15A.jpg')
     )
@@ -91,28 +90,16 @@ export default function useObject({
   /**
    * LOAD METEOLITES
    */
-  const meteoliteObjs = [
-    useLoader(
-      DRACOLoader,
+  const meteoliteObjs: BufferGeometry[] = useLoader<any>(
+    DRACOLoader,
+    [
       require('@/models/Meteolite/Meteolite1.drc'),
-      dracoLoaderExtend
-    ),
-    useLoader(
-      DRACOLoader,
       require('@/models/Meteolite/Meteolite2.drc'),
-      dracoLoaderExtend
-    ),
-    useLoader(
-      DRACOLoader,
       require('@/models/Meteolite/Meteolite3.drc'),
-      dracoLoaderExtend
-    ),
-    useLoader(
-      DRACOLoader,
-      require('@/models/Meteolite/Meteolite4.drc'),
-      dracoLoaderExtend
-    )
-  ]
+      require('@/models/Meteolite/Meteolite4.drc')
+    ],
+    dracoLoaderExtend
+  )
   useLayoutEffect(() => {
     if (!meteoliteObjs || load.meteolites) return
     meteoliteObjs.map((obj: BufferGeometry, i: number) => {
