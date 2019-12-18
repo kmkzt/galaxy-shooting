@@ -49,7 +49,7 @@ export default function useObject({
   /**
    * LOAD SPACESHIP
    */
-  const shipObj = useLoader(
+  const shipObj = useLoader<Group>(
     OBJLoader,
     require('@/models/SpaceShip/spaceShip.obj'),
     loaderExtend
@@ -57,15 +57,16 @@ export default function useObject({
 
   useLayoutEffect(() => {
     if (!shipObj || load.spaceShip) return
-    const loader = new TextureLoader()
-    const texture: Texture = loader.load(
-      require('@/models/SpaceShip/textures/F15A.jpg')
-    )
-    shipObj.traverse(child => {
-      if ((child as any).isMesh) {
-        ;((child as Mesh).material as any).normalMap = texture
-      }
-    })
+    // TODO: Fix texture loader
+    // const loader = new TextureLoader()
+    // const texture: Texture = loader.load(
+    //   require('@/models/SpaceShip/textures/F15A.jpg')
+    // )
+    // shipObj.traverse(child => {
+    //   if ((child as any).isMesh) {
+    //     ;((child as Mesh).material as any).normalMap = texture
+    //   }
+    // })
     dispatch(
       SPACESHIP_UPDATE({
         rotation: {
@@ -90,7 +91,7 @@ export default function useObject({
   /**
    * LOAD METEOLITES
    */
-  const meteoliteObjs: BufferGeometry[] = useLoader<any>(
+  const meteoliteObjs: BufferGeometry[] = useLoader<BufferGeometry[]>(
     DRACOLoader,
     [
       require('@/models/Meteolite/Meteolite1.drc'),

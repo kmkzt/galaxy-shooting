@@ -68,21 +68,23 @@ const Meteo = memo(
     prev.position.y === next.position.y &&
     prev.position.z === next.position.z
 )
-const loaderTextureExtend = (loader: Loader) => {
-  loader.setResourcePath('./assets/textures/')
-}
+// TODO: Fix Texture loader
+// const loaderTextureExtend = (loader: Loader) => {
+//   loader.setResourcePath('./assets/textures/')
+// }
 const Meteolites = ({ objs }: { objs: BufferGeometry[] }) => {
   const meteos = useSelector((state: RootStore) => state.meteos)
-  const textures: Texture[] = useLoader<any>(
-    TextureLoader,
-    [
-      require('@/models/Meteolite/textures/Meteolite1.png'),
-      require('@/models/Meteolite/textures/Meteolite2.png'),
-      require('@/models/Meteolite/textures/Meteolite3.png'),
-      require('@/models/Meteolite/textures/Meteolite4.png')
-    ],
-    loaderTextureExtend
-  )
+  // TODO: Fix Texture loader
+  // const textures: Texture[] = useLoader<any>(
+  //   TextureLoader,
+  //   [
+  //     require('@/models/Meteolite/textures/Meteolite1.png'),
+  //     require('@/models/Meteolite/textures/Meteolite2.png'),
+  //     require('@/models/Meteolite/textures/Meteolite3.png'),
+  //     require('@/models/Meteolite/textures/Meteolite4.png')
+  //   ],
+  //   loaderTextureExtend
+  // )
   return (
     <>
       {Object.values(meteos)
@@ -91,7 +93,7 @@ const Meteolites = ({ objs }: { objs: BufferGeometry[] }) => {
           <Meteo
             key={info.guid}
             obj={objs[info.pattern]}
-            texture={textures[info.pattern]}
+            // texture={textures[info.pattern]}
             {...info}
           />
         ))}
