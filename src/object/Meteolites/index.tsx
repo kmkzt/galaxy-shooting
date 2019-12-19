@@ -7,12 +7,12 @@ import { Meteo, METEO_REPLACE } from '@/store/Meteolites'
 import useGameFrame from '@/hooks/useGameFrame'
 
 interface MeteoProps extends Meteo {
-  obj: BufferGeometry
+  geometry: BufferGeometry
   texture?: Texture
 }
 
 const Meteo = memo(
-  ({ obj, texture, position, rotation, scale, ...rest }: MeteoProps) => {
+  ({ geometry, texture, position, rotation, scale, ...rest }: MeteoProps) => {
     const ref = useRef<Group>()
     const { raycaster, camera } = useThree()
     const dispatch = useDispatch()
@@ -51,7 +51,7 @@ const Meteo = memo(
         rotation={[rotation.x, rotation.y, rotation.z]}
         scale={[scale.x, scale.y, scale.z]}
       >
-        <bufferGeometry attach="geometry" {...obj.clone()} />
+        <bufferGeometry attach="geometry" {...geometry} />
         {texture ? (
           <meshStandardMaterial attach="material" map={texture} />
         ) : (
@@ -72,7 +72,7 @@ const Meteo = memo(
 // const loaderTextureExtend = (loader: Loader) => {
 //   loader.setResourcePath('./assets/textures/')
 // }
-const Meteolites = ({ objs }: { objs: BufferGeometry[] }) => {
+const Meteolites = ({ geometries }: { geometries: BufferGeometry[] }) => {
   const meteos = useSelector((state: RootStore) => state.meteos)
   // TODO: Fix Texture loader
   // const textures: Texture[] = useLoader<any>(
@@ -92,7 +92,7 @@ const Meteolites = ({ objs }: { objs: BufferGeometry[] }) => {
         .map((info: Meteo, i: number) => (
           <Meteo
             key={info.guid}
-            obj={objs[info.pattern]}
+            geometry={geometries[info.pattern]}
             // texture={textures[info.pattern]}
             {...info}
           />

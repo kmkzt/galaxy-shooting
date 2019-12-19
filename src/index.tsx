@@ -97,7 +97,10 @@ function Game() {
   /**
    * LOAD OBJECT
    */
-  const { ship: shipObj, meteos: meteoliteObjs } = useObject({
+  const {
+    ship: shipObj,
+    meteos: { geometries: meteoliteGeometries }
+  } = useObject({
     meteosOption: {
       num: 100
     }
@@ -137,7 +140,7 @@ function Game() {
   return (
     <Suspense fallback={null}>
       <SpaceShip obj={shipObj} />
-      <Meteolites objs={meteoliteObjs} />
+      <Meteolites geometries={meteoliteGeometries} />
     </Suspense>
   )
 }

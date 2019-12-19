@@ -39,9 +39,15 @@ interface UseObjectOption {
   }
 }
 
+interface UseObjectResult {
+  ship: Group
+  meteos: {
+    geometries: BufferGeometry[]
+  }
+}
 export default function useObject({
   meteosOption
-}: UseObjectOption): { ship: Group; meteos: BufferGeometry[] } {
+}: UseObjectOption): UseObjectResult {
   const { camera, aspect } = useThree()
   const load = useSelector((state: RootStore) => state.load)
   const dispatch = useDispatch()
@@ -156,5 +162,10 @@ export default function useObject({
     meteosOption.num
   ])
 
-  return { ship: shipObj, meteos: meteoliteObjs }
+  return {
+    ship: shipObj,
+    meteos: {
+      geometries: meteoliteObjs
+    }
+  }
 }
