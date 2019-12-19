@@ -1,6 +1,13 @@
 import polyfill from '@juggle/resize-observer'
 import { Scene, Color, Fog, HemisphereLight, Loader } from 'three'
-import React, { Fragment, useEffect, useCallback, FC, Suspense } from 'react'
+import React, {
+  Fragment,
+  useEffect,
+  useCallback,
+  FC,
+  Suspense,
+  useRef
+} from 'react'
 import { Provider, useSelector, useDispatch } from 'react-redux'
 import { Canvas, useFrame, useThree } from 'react-three-fiber'
 import { hydrate } from 'react-dom'
@@ -105,7 +112,7 @@ function Game() {
       num: 100
     }
   })
-
+  const ref = useRef()
   /**
    * EventListner
    */
@@ -113,6 +120,13 @@ function Game() {
     app.addEventListener('pointermove', handlePointerMove)
     app.addEventListener('mousemove', handlePointerMove)
     app.addEventListener('touchmove', handleTouchMove, { passive: true })
+    app.addEventListener(
+      'drag',
+      function(event) {
+        event.preventDefault()
+      },
+      false
+    )
     return () => {
       app.removeEventListener('pointermove', handlePointerMove)
       app.removeEventListener('mousemove', handlePointerMove)
@@ -144,45 +158,49 @@ function Game() {
     </Suspense>
   )
 }
-
+const DisplayArea = styled.div`
+  width: 100vw;
+  height: 100vh;
+`
 const App: FC = ({}) => {
   return (
     <Fragment>
-      <Canvas
-        // concurrent={true} // react conncurrentMode
-        style={{ width: FRAME_X, height: FRAME_Y }}
-        orthographic={false}
-        // https://github.com/react-spring/react-three-fiber/issues/208
-        camera={{
-          position: [0, 0, CAMERA_DISTANCE],
-          near: NEAR,
-          far: FAR,
-          fov: FOV
-        }}
-        onCreated={({ scene }) => {
-          document.body.appendChild(stats.dom)
-          scene.background = new Color(0x333366)
-          // scene.fog = new Fog(0x000000, 50, 2000)
-          scene.fog = new Fog(0x000000, NEAR, FAR)
-          const light = new HemisphereLight(0xeeeeff, 0x222222, 1)
-          light.position.set(0.5, 1, 0.75)
-          scene.add(light)
-        }}
-        pixelRatio={window.devicePixelRatio}
-        resize={{ polyfill } as any}
-      >
+      <DisplayArea>
+        <Canvas
+          // concurrent={true} // react conncurrentMode
+          orthographic={false}
+          // https://github.com/react-spring/react-three-fiber/issues/208
+          camera={{
+            position: [0, 0, CAMERA_DISTANCE],
+            near: NEAR,
+            far: FAR,
+            fov: FOV
+          }}
+          onCreated={({ scene }) => {
+            document.body.appendChild(stats.dom)
+            scene.background = new Color(0x333366)
+            // scene.fog = new Fog(0x000000, 50, 2000)
+            scene.fog = new Fog(0x000000, NEAR, FAR)
+            const light = new HemisphereLight(0xeeeeff, 0x222222, 1)
+            light.position.set(0.5, 1, 0.75)
+            scene.add(light)
+          }}
+          pixelRatio={window.devicePixelRatio}
+          resize={{ polyfill } as any}
+        >
+          <Provider store={store}>
+            <Suspense fallback={null}>
+              <Game />
+            </Suspense>
+          </Provider>
+        </Canvas>
         <Provider store={store}>
-          <Suspense fallback={null}>
-            <Game />
-          </Suspense>
+          <Start />
+          <Panel>
+            <Menu />
+          </Panel>
         </Provider>
-      </Canvas>
-      <Provider store={store}>
-        <Start />
-        <Panel>
-          <Menu />
-        </Panel>
-      </Provider>
+      </DisplayArea>
     </Fragment>
   )
 }
