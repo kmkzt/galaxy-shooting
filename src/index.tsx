@@ -152,10 +152,17 @@ function Game() {
    */
   useGameFrame(() => dispatch(POINT_INC(1)))
   return (
-    <Suspense fallback={null}>
-      <SpaceShip obj={shipObj} />
-      <Meteolites geometries={meteoliteGeometries} />
-    </Suspense>
+    <Fragment>
+      <hemisphereLight
+        args={[0xeeeeff, 0x222222, 1]}
+        position={[0, 0, 10]}
+        intensity={0.6}
+      />
+      <Suspense fallback={null}>
+        <SpaceShip obj={shipObj} />
+        <Meteolites geometries={meteoliteGeometries} />
+      </Suspense>
+    </Fragment>
   )
 }
 const DisplayArea = styled.div`
@@ -179,11 +186,7 @@ const App: FC = ({}) => {
           onCreated={({ scene }) => {
             document.body.appendChild(stats.dom)
             scene.background = new Color(0x333366)
-            // scene.fog = new Fog(0x000000, 50, 2000)
             scene.fog = new Fog(0x000000, NEAR, FAR)
-            const light = new HemisphereLight(0xeeeeff, 0x222222, 1)
-            light.position.set(0.5, 1, 0.75)
-            scene.add(light)
           }}
           pixelRatio={window.devicePixelRatio}
           resize={{ polyfill } as any}
