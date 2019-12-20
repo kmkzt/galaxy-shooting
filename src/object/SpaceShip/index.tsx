@@ -1,4 +1,4 @@
-import React, { memo } from 'react'
+import React, { memo, Fragment } from 'react'
 import { Group } from 'three'
 import { useThree } from 'react-three-fiber'
 import { RootStore } from '@/store'
@@ -45,12 +45,19 @@ const SpaceShip = memo(({ obj }: { obj: Group }) => {
   })
   const { position, rotation, scale } = ship
   return (
-    <primitive
-      object={obj}
-      position={[position.x, position.y, position.z]}
-      rotation={[rotation.x, rotation.y, rotation.z]}
-      scale={[scale.x, scale.y, scale.z]}
-    />
+    <Fragment>
+      <primitive
+        object={obj}
+        position={[position.x, position.y, position.z]}
+        rotation={[rotation.x, rotation.y, rotation.z]}
+        scale={[scale.x, scale.y, scale.z]}
+      />
+      <pointLight
+        position={[position.x, position.y, position.z + 100]}
+        distance={100}
+        intensity={10}
+      />
+    </Fragment>
   )
 })
 
