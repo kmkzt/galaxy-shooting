@@ -60,7 +60,25 @@ export default function useObject({
     require('@/models/SpaceShip/spaceShip.obj'),
     loaderExtend
   )
-
+  const fixSpaceShipObject = useCallback(
+    (obj: Group) => {
+      dispatch(
+        SPACESHIP_UPDATE({
+          rotation: {
+            x: obj.rotation.x - Math.PI,
+            y: obj.rotation.y,
+            z: obj.rotation.z
+          },
+          scale: {
+            x: obj.scale.x / 2,
+            y: obj.scale.y / 2,
+            z: obj.scale.z / 2
+          }
+        })
+      )
+    },
+    [dispatch]
+  )
   useLayoutEffect(() => {
     if (!shipObj || load.spaceShip) return
     // TODO: Fix texture loader
@@ -73,26 +91,13 @@ export default function useObject({
     //     ;((child as Mesh).material as any).normalMap = texture
     //   }
     // })
-    dispatch(
-      SPACESHIP_UPDATE({
-        rotation: {
-          x: shipObj.rotation.x - Math.PI,
-          y: shipObj.rotation.y,
-          z: shipObj.rotation.z
-        },
-        scale: {
-          x: shipObj.scale.x / 2,
-          y: shipObj.scale.y / 2,
-          z: shipObj.scale.z / 2
-        }
-      })
-    )
+    fixSpaceShipObject(shipObj)
     dispatch(
       LOAD_UPDATE({
         spaceShip: true
       })
     )
-  }, [dispatch, load.spaceShip, shipObj])
+  }, [dispatch, fixSpaceShipObject, load.spaceShip, shipObj])
 
   /**
    * LOAD METEOLITES
@@ -107,11 +112,7 @@ export default function useObject({
     ],
     dracoLoaderExtend
   )
-  useLayoutEffect(() => {
-    if (!meteoliteObjs || load.meteolites) return
-    meteoliteObjs.map((obj: BufferGeometry, i: number) => {
-      obj
-    })
+  const createMeteosData = useCallback(() => {
     const meteoData: MeteoState = Array(meteosOption.num)
       .fill(null)
       .reduce((res: MeteoState, _: null, i: number): MeteoState => {
@@ -146,21 +147,26 @@ export default function useObject({
         }
       }, {})
     dispatch(METEOS_UPDATE(meteoData))
-    dispatch(
-      LOAD_UPDATE({
-        meteolites: true
-      })
-    )
   }, [
     aspect,
     camera.far,
     camera.near,
     dispatch,
-    load.meteolites,
-    meteoliteObjs,
     meteoliteObjs.length,
     meteosOption.num
   ])
+  useLayoutEffect(() => {
+    if (!meteoliteObjs || load.meteolites) return
+    meteoliteObjs.map((obj: BufferGeometry, i: number) => {
+      obj
+    })
+    createMeteosData()
+    dispatch(
+      LOAD_UPDATE({
+        meteolites: true
+      })
+    )
+  }, [aspect, createMeteosData, dispatch, load.meteolites, meteoliteObjs])
 
   return {
     ship: shipObj,

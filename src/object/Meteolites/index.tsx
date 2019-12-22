@@ -1,6 +1,6 @@
-import React, { memo, useRef, useEffect, Suspense, useMemo } from 'react'
+import React, { memo, useRef } from 'react'
 import { BufferGeometry, Group, TextureLoader, Texture, Loader } from 'three'
-import { useThree, useLoader } from 'react-three-fiber'
+import { useThree } from 'react-three-fiber'
 import { RootStore } from '@/store'
 import { useSelector, useDispatch } from 'react-redux'
 import { Meteo, METEO_REPLACE } from '@/store/Meteolites'
@@ -87,16 +87,14 @@ const Meteolites = ({ geometries }: { geometries: BufferGeometry[] }) => {
   // )
   return (
     <>
-      {Object.values(meteos)
-        .sort((m1: Meteo, m2: Meteo) => (m1.guid > m2.guid ? 1 : -1))
-        .map((info: Meteo, i: number) => (
-          <Meteo
-            key={info.guid}
-            geometry={geometries[info.pattern]}
-            // texture={textures[info.pattern]}
-            {...info}
-          />
-        ))}
+      {Object.values(meteos).map((info: Meteo, i: number) => (
+        <Meteo
+          key={info.guid}
+          geometry={geometries[info.pattern]}
+          // texture={textures[info.pattern]}
+          {...info}
+        />
+      ))}
     </>
   )
 }
