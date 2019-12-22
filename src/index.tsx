@@ -120,13 +120,6 @@ function Game() {
     app.addEventListener('pointermove', handlePointerMove)
     app.addEventListener('mousemove', handlePointerMove)
     app.addEventListener('touchmove', handleTouchMove, { passive: true })
-    app.addEventListener(
-      'drag',
-      function(event) {
-        event.preventDefault()
-      },
-      false
-    )
     return () => {
       app.removeEventListener('pointermove', handlePointerMove)
       app.removeEventListener('mousemove', handlePointerMove)
