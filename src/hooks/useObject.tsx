@@ -97,7 +97,7 @@ export default function useObject({
   /**
    * LOAD METEOLITES
    */
-  const meteoliteObjs: BufferGeometry[] = useLoader<BufferGeometry[]>(
+  const meteoliteObjs: BufferGeometry[] = useLoader<any>(
     DRACOLoader,
     [
       require('@/models/Meteolite/Meteolite1.drc'),
