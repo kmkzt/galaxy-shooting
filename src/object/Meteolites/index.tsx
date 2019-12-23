@@ -5,6 +5,7 @@ import { RootStore } from '@/store'
 import { useSelector, useDispatch } from 'react-redux'
 import { Meteo, METEO_REPLACE, METEO_REMOVE } from '@/store/Meteolites'
 import useGameFrame from '@/hooks/useGameFrame'
+import { getRandom } from '@/utils/getRandom'
 
 interface MeteoProps extends Meteo {
   geometry: BufferGeometry
@@ -22,7 +23,7 @@ const Meteo = memo(
     ...rest
   }: MeteoProps) => {
     const ref = useRef<Group>()
-    const { raycaster, camera } = useThree()
+    const { raycaster, camera, aspect } = useThree()
     const dispatch = useDispatch()
 
     useGameFrame(() => {
@@ -31,14 +32,29 @@ const Meteo = memo(
         raycaster.intersectObject(ref.current, true).length > 0
       const isFrameOut = ref.current.position.z > camera.position.z
       if (!isMouseOver && !isFrameOut) return
+      const CAMERA_DISTANCE = camera.near + 5
+      const randomScale = getRandom({ min: 0.5, max: 2 })
       dispatch(
         METEO_REPLACE({
           ...rest,
           guid,
-          scale,
+          scale: isFrameOut
+            ? {
+                x: randomScale,
+                y: randomScale,
+                z: randomScale
+              }
+            : scale,
           position: isFrameOut
             ? {
-                ...position,
+                x: getRandom({
+                  min: (-CAMERA_DISTANCE * aspect) / 2,
+                  max: (CAMERA_DISTANCE * aspect) / 2
+                }),
+                y: getRandom({
+                  min: -CAMERA_DISTANCE / 2,
+                  max: CAMERA_DISTANCE / 2
+                }),
                 z: position.z - camera.far
               }
             : position,
@@ -63,6 +79,7 @@ const Meteo = memo(
         rotation={[rotation.x, rotation.y, rotation.z]}
         scale={[scale.x, scale.y, scale.z]}
         onClick={handleClick}
+        // onPointerEnter={handleClick}
       >
         <bufferGeometry attach="geometry" {...geometry} />
         {texture ? (

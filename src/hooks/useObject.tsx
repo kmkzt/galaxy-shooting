@@ -20,7 +20,7 @@ import { useThree, useLoader } from 'react-three-fiber'
 import { RootStore } from '@/store'
 import { SPACESHIP_UPDATE } from '@/store/SpaceShip'
 import { METEOS_UPDATE, State as MeteoState } from '@/store/Meteolites'
-import { getRandomPosition } from '@/utils/getRandomPostion'
+import { getRandom } from '@/utils/getRandom'
 import { LOAD_UPDATE } from '@/store/Load'
 
 const loaderExtend = (loader: Loader) => {
@@ -118,29 +118,31 @@ export default function useObject({
       .reduce((res: MeteoState, _: null, i: number): MeteoState => {
         const CAMERA_DISTANCE = camera.near + 5
         const pattern = Math.floor(Math.random() * meteoliteObjs.length)
+        const randomScale = getRandom({ min: 0.5, max: 2 })
         return {
           ...res,
           [i]: {
             guid: i,
-            position: getRandomPosition(
-              {
-                x: CAMERA_DISTANCE * aspect,
-                y: CAMERA_DISTANCE,
-                z: camera.far
-              },
-              {
-                z: camera.far
-              }
-            ),
+            position: {
+              x: getRandom({
+                min: (-CAMERA_DISTANCE * aspect) / 2,
+                max: (CAMERA_DISTANCE * aspect) / 2
+              }),
+              y: getRandom({
+                min: -CAMERA_DISTANCE / 2,
+                max: CAMERA_DISTANCE / 2
+              }),
+              z: getRandom({ min: camera.far, max: camera.far * 2 })
+            },
             rotation: {
               x: 0,
               y: 0,
               z: 0
             },
             scale: {
-              x: 1,
-              y: 1,
-              z: 1
+              x: randomScale,
+              y: randomScale,
+              z: randomScale
             },
             pattern
           }

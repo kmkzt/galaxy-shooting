@@ -112,7 +112,6 @@ function Game() {
       num: 100
     }
   })
-  const ref = useRef()
   /**
    * EventListner
    */
