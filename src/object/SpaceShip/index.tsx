@@ -8,25 +8,38 @@ import { touchObject } from '@/utils/touchObject'
 import { Meteo } from '@/store/Meteolites'
 import useGameFrame from '@/hooks/useGameFrame'
 
+/**
+ * SPACE_CHIP CONSTANT
+ */
+const ROTATE_UNIT = 0.1
+
 const SpaceShip = memo(({ obj }: { obj: Group }) => {
   const { mouse, aspect } = useThree()
-  const ship = useSelector((state: RootStore) => state.spaceShip)
+  const {
+    position,
+    rotation,
+    scale,
+    flightSpeed,
+    isRotation,
+    isClashed
+  } = useSelector((state: RootStore) => state.spaceShip)
   const meteos = useSelector((state: RootStore) => state.meteos)
   const dispatch = useDispatch()
 
   // SpaceShip Behavior
   useGameFrame(() => {
-    const ROTATE_UNIT = 0.1
-    const { position, flightSpeed, isRotation, rotation, isClashed } = ship
     if (isClashed) return
 
     const mousemove_x = mouse.x / 2
     const mousemove_y = mouse.y / 2
-
     dispatch(
       SPACESHIP_UPDATE({
         isClashed: Object.values(meteos).some((me: Meteo) =>
-          touchObject(me, ship)
+          touchObject(me, {
+            position,
+            rotation,
+            scale
+          })
         ),
         // spaceShip Moving
         position: {
@@ -43,7 +56,6 @@ const SpaceShip = memo(({ obj }: { obj: Group }) => {
       })
     )
   })
-  const { position, rotation, scale } = ship
   return (
     <Fragment>
       <primitive
