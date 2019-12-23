@@ -8,6 +8,7 @@ const meteos = actionCreatorFactory('meteo')
 
 export const METEOS_UPDATE = meteos<State>('UPDATE')
 export const METEO_REPLACE = meteos<Meteo>('REPLACE_METEO')
+export const METEO_REMOVE = meteos<number>('REMOVE_METEO')
 export const METEOS_RESET = meteos('RESET')
 
 export const initialState: State = {}
@@ -35,6 +36,11 @@ export const reducer = (state: State = initialState, action: Action): State => {
         ...action.payload
       }
     }
+  }
+  if (isType(action, METEO_REMOVE)) {
+    const guid = action.payload
+    const { [guid]: _remove, ...update } = state
+    return update
   }
   if (isType(action, METEOS_RESET)) {
     return initialState

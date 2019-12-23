@@ -1,9 +1,9 @@
-import React, { memo, useRef } from 'react'
+import React, { memo, useRef, useCallback } from 'react'
 import { BufferGeometry, Group, TextureLoader, Texture, Loader } from 'three'
 import { useThree } from 'react-three-fiber'
 import { RootStore } from '@/store'
 import { useSelector, useDispatch } from 'react-redux'
-import { Meteo, METEO_REPLACE } from '@/store/Meteolites'
+import { Meteo, METEO_REPLACE, METEO_REMOVE } from '@/store/Meteolites'
 import useGameFrame from '@/hooks/useGameFrame'
 
 interface MeteoProps extends Meteo {
@@ -12,7 +12,15 @@ interface MeteoProps extends Meteo {
 }
 
 const Meteo = memo(
-  ({ geometry, texture, position, rotation, scale, ...rest }: MeteoProps) => {
+  ({
+    guid,
+    geometry,
+    texture,
+    position,
+    rotation,
+    scale,
+    ...rest
+  }: MeteoProps) => {
     const ref = useRef<Group>()
     const { raycaster, camera } = useThree()
     const dispatch = useDispatch()
@@ -26,6 +34,7 @@ const Meteo = memo(
       dispatch(
         METEO_REPLACE({
           ...rest,
+          guid,
           scale,
           position: isFrameOut
             ? {
@@ -43,6 +52,9 @@ const Meteo = memo(
         })
       )
     })
+    const handleClick = useCallback(() => {
+      dispatch(METEO_REMOVE(guid))
+    }, [dispatch, guid])
 
     return (
       <mesh
@@ -50,6 +62,7 @@ const Meteo = memo(
         position={[position.x, position.y, position.z]}
         rotation={[rotation.x, rotation.y, rotation.z]}
         scale={[scale.x, scale.y, scale.z]}
+        onClick={handleClick}
       >
         <bufferGeometry attach="geometry" {...geometry} />
         {texture ? (
