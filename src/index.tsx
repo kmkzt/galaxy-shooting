@@ -16,6 +16,7 @@ import store, { RootStore } from '@/store'
 import Stats from 'stats.js'
 import SpaceShip from '@/object/SpaceShip'
 import Meteolites from '@/object/Meteolites'
+import Laser from '@/object/Laser'
 import { POINT_INC, POINT_RESET } from '@/store/Score'
 import { Menu } from '@/components/Menu'
 import { Start } from '@/components/Start'
@@ -153,6 +154,7 @@ function Game() {
       <Suspense fallback={null}>
         <SpaceShip obj={shipObj} />
         <Meteolites geometries={meteoliteGeometries} />
+        <Laser />
       </Suspense>
     </Fragment>
   )
