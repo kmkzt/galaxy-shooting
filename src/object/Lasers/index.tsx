@@ -6,28 +6,19 @@ import useGameFrame from '@/hooks/useGameFrame'
 import { BoxBufferGeometry, Color, MeshBasicMaterial } from 'three'
 import { Meteo, METEO_REMOVE } from '@/store/Meteolites'
 import { touchObject } from '@/utils/touchObject'
+import { Obj } from '@/interface/Obj'
+import { Laser, LASER_REPLACE, LASER_ADD } from '@/store/Lasers'
 
 const geometry = new BoxBufferGeometry(0.3, 0.3, 10)
 const material = new MeshBasicMaterial({ color: new Color('lightgreen') })
 
-const Laser = () => {
+const Laser = ({ guid, position, rotation, scale }: Laser) => {
   const { camera } = useThree()
-  const [position, setPosition] = useState({ x: 0, y: 0, z: 0 })
   const { position: shipPosition, flightSpeed, isClashed } = useSelector(
     (state: RootStore) => state.spaceShip
   )
   const meteos = useSelector((state: RootStore) => state.meteos)
-  const handleClick = useCallback(() => {
-    const { x, y, z } = shipPosition
-    setPosition({ x, y, z })
-  }, [shipPosition])
   const dispatch = useDispatch()
-  useEffect(() => {
-    window.addEventListener('click', handleClick)
-    return () => {
-      window.removeEventListener('click', handleClick)
-    }
-  }, [handleClick])
   useGameFrame(() => {
     if (isClashed) return
     const breakMeteo = Object.values(meteos).find((me: Meteo) =>
@@ -49,7 +40,12 @@ const Laser = () => {
       dispatch(METEO_REMOVE(breakMeteo.guid))
     }
     if (shipPosition.z + camera.far > position.z) {
-      setPosition({ ...position, z: position.z - flightSpeed - 5 })
+      dispatch(
+        LASER_REPLACE({
+          guid,
+          position: { ...position, z: position.z - flightSpeed - 5 }
+        })
+      )
     }
   })
   return (
@@ -61,4 +57,37 @@ const Laser = () => {
   )
 }
 
-export default Laser
+const Lasers = () => {
+  const { position: shipPosition } = useSelector(
+    (state: RootStore) => state.spaceShip
+  )
+  const dispatch = useDispatch()
+  const handleClick = useCallback(() => {
+    dispatch(
+      LASER_ADD({
+        position: shipPosition,
+        scale: {
+          x: 0.3,
+          y: 0.3,
+          z: 10
+        }
+      } as any)
+    )
+  }, [dispatch, shipPosition])
+  useEffect(() => {
+    window.addEventListener('click', handleClick)
+    return () => {
+      window.removeEventListener('click', handleClick)
+    }
+  }, [handleClick])
+
+  const lasers = useSelector((state: RootStore) => state.lasers)
+  return (
+    <>
+      {Object.values(lasers).map(({ guid, ...info }) => (
+        <Laser key={guid} guid={guid} {...info} />
+      ))}
+    </>
+  )
+}
+export default Lasers
