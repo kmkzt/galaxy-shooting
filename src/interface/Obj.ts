@@ -8,6 +8,6 @@ export interface Xyz {
 export interface Obj {
   position: Xyz
   scale: Xyz
-  rotation?: Xyz
+  rotation: Xyz
   color?: Color
 }
