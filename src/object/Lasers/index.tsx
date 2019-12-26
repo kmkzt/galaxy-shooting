@@ -1,13 +1,12 @@
-import React, { memo, Fragment, useCallback, useEffect, useState } from 'react'
+import React, { memo, Fragment, useCallback, useEffect } from 'react'
 import { useThree } from 'react-three-fiber'
-import { RootStore } from '@/store'
 import { useSelector, useDispatch } from 'react-redux'
+import { RootStore } from '@/store'
 import useGameFrame from '@/hooks/useGameFrame'
 import { BoxBufferGeometry, Color, MeshBasicMaterial } from 'three'
 import { Meteo, METEO_REMOVE } from '@/store/Meteolites'
 import { touchObject } from '@/utils/touchObject'
-import { Obj } from '@/interface/Obj'
-import { Laser, LASER_REPLACE, LASER_ADD } from '@/store/Lasers'
+import { Laser, LASER_REPLACE, LASER_ADD, LASER_REMOVE } from '@/store/Lasers'
 
 const geometry = new BoxBufferGeometry(0.3, 0.3, 10)
 const material = new MeshBasicMaterial({ color: new Color('lightgreen') })
@@ -19,8 +18,18 @@ const Laser = ({ guid, position, rotation, scale }: Laser) => {
   )
   const meteos = useSelector((state: RootStore) => state.meteos)
   const dispatch = useDispatch()
+
   useGameFrame(() => {
-    if (isClashed) return
+    /**
+     * Laser Frame Out
+     */
+    if (shipPosition.z - camera.far > position.z) {
+      dispatch(LASER_REMOVE(guid))
+      return
+    }
+    /**
+     * Break Meteolites
+     */
     const breakMeteo = Object.values(meteos).find((me: Meteo) =>
       touchObject(me, {
         position,
@@ -38,15 +47,19 @@ const Laser = ({ guid, position, rotation, scale }: Laser) => {
     )
     if (breakMeteo) {
       dispatch(METEO_REMOVE(breakMeteo.guid))
+      dispatch(LASER_REMOVE(guid))
+      return
     }
-    if (shipPosition.z + camera.far > position.z) {
-      dispatch(
-        LASER_REPLACE({
-          guid,
-          position: { ...position, z: position.z - flightSpeed - 5 }
-        })
-      )
-    }
+    /**
+     * Laser Move
+     */
+    const updatePosition = { ...position, z: position.z - flightSpeed - 5 }
+    dispatch(
+      LASER_REPLACE({
+        guid,
+        position: updatePosition
+      })
+    )
   })
   return (
     <mesh
@@ -82,6 +95,13 @@ const Lasers = () => {
   }, [handleClick])
 
   const lasers = useSelector((state: RootStore) => state.lasers)
+  /**
+   * Laser Count Debug
+   */
+  // const debug = useMemo(() => Object.keys(lasers).length, [lasers])
+  // useEffect(() => {
+  //   console.log(lasers)
+  // }, [debug, lasers])
   return (
     <>
       {Object.values(lasers).map(({ guid, ...info }) => (
