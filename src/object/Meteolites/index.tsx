@@ -31,6 +31,7 @@ const Meteo = memo(
       const isMouseOver =
         raycaster.intersectObject(ref.current, true).length > 0
       const isFrameOut = ref.current.position.z > camera.position.z
+
       if (!isMouseOver && !isFrameOut) return
       const CAMERA_DISTANCE = camera.near + 5
       const randomScale = getRandom({ min: 0.5, max: 2 })

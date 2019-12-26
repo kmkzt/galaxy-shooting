@@ -1,4 +1,4 @@
-import { Object3D } from 'three'
+import { Object3D, Color } from 'three'
 
 export interface Xyz {
   x: number
@@ -7,6 +7,7 @@ export interface Xyz {
 }
 export interface Obj {
   position: Xyz
-  rotation: Xyz
   scale: Xyz
+  rotation: Xyz
+  color?: Color
 }

@@ -5,6 +5,7 @@ import * as Play from './Play'
 import * as SpaceShip from './SpaceShip'
 import * as Camera from './Camera'
 import * as Meteolites from './Meteolites'
+import * as Lasers from './Lasers'
 import * as Load from './Load'
 
 export type RootStore = {
@@ -13,6 +14,7 @@ export type RootStore = {
   spaceShip: SpaceShip.State
   cam: Camera.State
   meteos: Meteolites.State
+  lasers: Lasers.State
   load: Load.State
 }
 
@@ -24,6 +26,7 @@ const moduleReducer = combineReducers({
   spaceShip: SpaceShip.reducer,
   cam: Camera.reducer,
   meteos: Meteolites.reducer,
+  lasers: Lasers.reducer,
   load: Load.reducer
 })
 const rootReducer = (
