@@ -69,9 +69,6 @@ const Meteo = memo(
         })
       )
     })
-    const handleClick = useCallback(() => {
-      dispatch(METEO_REMOVE(guid))
-    }, [dispatch, guid])
 
     return (
       <mesh
@@ -79,8 +76,6 @@ const Meteo = memo(
         position={[position.x, position.y, position.z]}
         rotation={[rotation.x, rotation.y, rotation.z]}
         scale={[scale.x, scale.y, scale.z]}
-        onClick={handleClick}
-        // onPointerEnter={handleClick}
       >
         <bufferGeometry attach="geometry" {...geometry} />
         {texture ? (
