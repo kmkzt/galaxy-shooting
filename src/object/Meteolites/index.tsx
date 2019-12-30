@@ -35,37 +35,35 @@ const Meteo = memo(
       if (!isMouseOver && !isFrameOut) return
       const CAMERA_DISTANCE = camera.near + 5
       const randomScale = getRandom({ min: 0.5, max: 2 })
+      const updateScale = {
+        x: randomScale,
+        y: randomScale,
+        z: randomScale
+      }
+
+      const updatePosition = {
+        x: getRandom({
+          min: (-CAMERA_DISTANCE * aspect) / 2,
+          max: (CAMERA_DISTANCE * aspect) / 2
+        }),
+        y: getRandom({
+          min: -CAMERA_DISTANCE / 2,
+          max: CAMERA_DISTANCE / 2
+        }),
+        z: position.z - camera.far
+      }
+      const updateRotation = {
+        x: rotation.x + Math.PI * 0.05,
+        y: rotation.y + Math.PI * 0.05,
+        z: rotation.z + Math.PI * 0.05
+      }
       dispatch(
         METEO_REPLACE({
           ...rest,
           guid,
-          scale: isFrameOut
-            ? {
-                x: randomScale,
-                y: randomScale,
-                z: randomScale
-              }
-            : scale,
-          position: isFrameOut
-            ? {
-                x: getRandom({
-                  min: (-CAMERA_DISTANCE * aspect) / 2,
-                  max: (CAMERA_DISTANCE * aspect) / 2
-                }),
-                y: getRandom({
-                  min: -CAMERA_DISTANCE / 2,
-                  max: CAMERA_DISTANCE / 2
-                }),
-                z: position.z - camera.far
-              }
-            : position,
-          rotation: isMouseOver
-            ? {
-                x: rotation.x + Math.PI * 0.05,
-                y: rotation.y + Math.PI * 0.05,
-                z: rotation.z + Math.PI * 0.05
-              }
-            : rotation
+          scale: isFrameOut ? updateScale : scale,
+          position: isFrameOut ? updatePosition : position,
+          rotation: isMouseOver ? updateRotation : rotation
         })
       )
     })
