@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { RootStore } from '@/store'
 import useGameFrame from '@/hooks/useGameFrame'
 import { BoxBufferGeometry, Color, MeshBasicMaterial } from 'three'
-import { Meteo, METEO_REMOVE } from '@/store/Meteolites'
+import { Meteo, METEO_REMOVE, METEO_REPLACE } from '@/store/Meteolites'
 import { touchObject } from '@/utils/touchObject'
 import { Laser, LASER_REPLACE, LASER_ADD, LASER_REMOVE } from '@/store/Lasers'
 
@@ -46,7 +46,15 @@ const Laser = ({ guid, position, rotation, scale }: Laser) => {
       })
     )
     if (breakMeteo) {
-      dispatch(METEO_REMOVE(breakMeteo.guid))
+      dispatch(
+        METEO_REPLACE({
+          ...breakMeteo,
+          color: new Color('red')
+        })
+      )
+      setTimeout(() => {
+        dispatch(METEO_REMOVE(breakMeteo.guid))
+      }, 300)
       dispatch(LASER_REMOVE(guid))
       return
     }

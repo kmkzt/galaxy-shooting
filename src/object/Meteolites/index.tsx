@@ -20,6 +20,7 @@ const Meteo = memo(
     position,
     rotation,
     scale,
+    color,
     ...rest
   }: MeteoProps) => {
     const ref = useRef<Group>()
@@ -76,11 +77,11 @@ const Meteo = memo(
         scale={[scale.x, scale.y, scale.z]}
       >
         <bufferGeometry attach="geometry" {...geometry} />
-        {texture ? (
-          <meshStandardMaterial attach="material" map={texture} />
-        ) : (
-          <meshStandardMaterial attach="material" color="hotpink" transparent />
-        )}
+        <meshStandardMaterial
+          attach="material"
+          color={color || 'hotpink'}
+          transparent
+        />
       </mesh>
     )
   },
@@ -90,7 +91,8 @@ const Meteo = memo(
     prev.rotation.z === next.rotation.z &&
     prev.position.x === next.position.x &&
     prev.position.y === next.position.y &&
-    prev.position.z === next.position.z
+    prev.position.z === next.position.z &&
+    prev.color === next.color
 )
 // TODO: Fix Texture loader
 // const loaderTextureExtend = (loader: Loader) => {
