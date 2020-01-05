@@ -1,6 +1,8 @@
 const { resolve } = require('path')
 const { smart } = require('webpack-merge')
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
+const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const Dotenv = require('dotenv-webpack')
 
@@ -32,23 +34,18 @@ const common = {
         ]
       },
       {
-        test: /\.(j|t)sx?$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'ts-loader',
-          options: {
-            transpileOnly: !devMode
-          }
-        }
-      },
-      {
-        test: /\.s?css$/,
+        test: /\.[jt]sx?$/,
         exclude: /node_modules/,
         use: [
-          'style-loader',
-          'css-loader?modules&importLoaders=1&localIdentName=[path]___[name]__[local]___[hash:base64:5]',
-          'resolve-url-loader',
-          'sass-loader'
+          {
+            loader: 'babel-loader'
+          },
+          {
+            loader: 'ts-loader',
+            options: {
+              transpileOnly: true
+            }
+          }
         ]
       },
       {
@@ -97,10 +94,7 @@ const common = {
     },
     plugins: [
       new TsconfigPathsPlugin({
-        configFile: resolve(
-          __dirname,
-          devMode ? 'tsconfig.json' : 'tsconfig.prod.json'
-        )
+        configFile: resolve(__dirname, 'tsconfig.json')
       })
     ]
   },
@@ -109,6 +103,10 @@ const common = {
     new Dotenv({
       path: 'production.env',
       safe: false
+    }),
+    new CaseSensitivePathsPlugin(),
+    new ForkTsCheckerWebpackPlugin({
+      reportFiles: ['src/**/*.{ts,tsx}']
     }),
     new HtmlWebpackPlugin({
       template: resolve('template.html')
