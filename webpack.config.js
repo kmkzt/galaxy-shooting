@@ -105,7 +105,9 @@ const common = {
       safe: false
     }),
     new CaseSensitivePathsPlugin(),
-    new ForkTsCheckerWebpackPlugin(),
+    new ForkTsCheckerWebpackPlugin({
+      reportFiles: ['src/**/*.{ts,tsx}']
+    }),
     new HtmlWebpackPlugin({
       template: resolve('template.html')
     })
