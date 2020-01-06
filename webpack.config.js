@@ -15,6 +15,7 @@ const config = devMode
 const common = {
   entry: resolve(__dirname, 'src/index'),
   output: {
+    path: resolve('dist'),
     filename: '[name].bundle.js'
   },
   module: {

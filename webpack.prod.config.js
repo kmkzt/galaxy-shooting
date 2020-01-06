@@ -5,9 +5,6 @@ const Dotenv = require('dotenv-webpack')
 const config = {
   mode: 'production',
   devtool: false,
-  output: {
-    path: resolve('dist')
-  },
   module: {
     rules: [
       {
