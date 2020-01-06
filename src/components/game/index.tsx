@@ -11,10 +11,8 @@ import { Provider, useSelector } from 'react-redux'
 import { Canvas, useFrame, useThree } from 'react-three-fiber'
 import store, { RootStore } from '@/store'
 import useObject from '@/hooks/useObject'
-import Lasers from './Lasers'
 import StatsDom from './StatsDom'
-import SpaceShip from './SpaceShip'
-import Meteolites from './Meteolites'
+import Models from './Models'
 import Point from './Point'
 
 /**
@@ -68,17 +66,6 @@ function Game() {
     [handleMouse]
   )
   /**
-   * LOAD OBJECT
-   */
-  const {
-    ship: shipObj,
-    meteos: { geometries: meteoliteGeometries }
-  } = useObject({
-    meteosOption: {
-      num: 100
-    }
-  })
-  /**
    * EventListner
    */
   useLayoutEffect(() => {
@@ -106,11 +93,7 @@ function Game() {
         intensity={0.6}
       />
       <Point />
-      <Suspense fallback={null}>
-        <SpaceShip obj={shipObj} />
-        <Meteolites geometries={meteoliteGeometries} />
-        <Lasers />
-      </Suspense>
+      <Models />
     </Fragment>
   )
 }
