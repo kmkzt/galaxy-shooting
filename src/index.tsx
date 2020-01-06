@@ -52,14 +52,6 @@ app.addEventListener('click', () => {
     })
   )
 })
-
-const Panel = styled.div`
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  background: rgba(255, 255, 255, 0.4);
-  padding: 12px;
-`
 function Game() {
   const { camera, raycaster, aspect, mouse } = useThree()
   const ship = useSelector((state: RootStore) => state.spaceShip)
@@ -193,9 +185,7 @@ const App: FC = ({}) => {
         </Canvas>
         <Provider store={store}>
           <Start />
-          <Panel>
-            <Menu />
-          </Panel>
+          <Menu />
         </Provider>
       </DisplayArea>
     </Fragment>

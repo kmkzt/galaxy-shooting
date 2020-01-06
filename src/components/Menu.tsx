@@ -26,4 +26,9 @@ const Wrap = styled.div`
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
+  position: fixed;
+  background: rgba(255, 255, 255, 0.4);
+  bottom: 0;
+  right: 0;
+  padding: 12px;
 `
