@@ -202,3 +202,13 @@ const App: FC = ({}) => {
   )
 }
 hydrate(<App />, app)
+
+// https://github.com/gaearon/react-hot-loader#appcontainer
+// webpack Hot Module Replacement API
+if ((module as any).hot) {
+  // keep in mind - here you are configuring HMR to accept CHILDREN MODULE
+  // while `hot` would configure HMR for the CURRENT module
+  ;(module as any).hot.accept('', () => {
+    hydrate(<App />, app)
+  })
+}

@@ -4,7 +4,7 @@ module.exports = {
   mode: 'development',
   devtool: 'source-map',
   devServer: {
-    contentBase: join(__dirname, 'public'),
+    contentBase: join(__dirname, 'dist'),
     compress: true,
     port: 9000
   }

@@ -11,9 +11,12 @@ const config = devMode
   ? require('./webpack.dev.config')
   : require('./webpack.prod.config')
 
+const jsEntry = resolve(__dirname, 'src/index')
 /** @type {import('webpack').Configuration} */
 const common = {
-  entry: resolve(__dirname, 'src/index'),
+  entry: {
+    app: devMode ? ['react-hot-loader/patch', jsEntry] : jsEntry
+  },
   output: {
     path: resolve('dist'),
     filename: '[name].bundle.js'
