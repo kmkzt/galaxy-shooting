@@ -15,7 +15,7 @@ export const Menu: FC<{}> = ({}) => {
   ])
   return (
     <Wrap>
-      <div>POINT: {point}</div>
+      <div>POINTS: {point}</div>
       <div>METEOLITES: {meteosCount}</div>
       <button onClick={handleClickMenu}>MENU</button>
     </Wrap>
