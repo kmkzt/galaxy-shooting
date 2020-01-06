@@ -90,9 +90,6 @@ const common = {
 
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.json'],
-    alias: {
-      '@': resolve(__dirname, 'src')
-    },
     plugins: [
       new TsconfigPathsPlugin({
         configFile: resolve(__dirname, 'tsconfig.json')
