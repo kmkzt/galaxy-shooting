@@ -1,4 +1,4 @@
-import React, { memo, Fragment } from 'react'
+import React, { memo, Fragment, useLayoutEffect, useCallback } from 'react'
 import { Group } from 'three'
 import { useThree } from 'react-three-fiber'
 import { RootStore } from '@/store'
@@ -26,6 +26,19 @@ const SpaceShip = memo(({ obj }: { obj: Group }) => {
   const meteos = useSelector((state: RootStore) => state.meteos)
   const dispatch = useDispatch()
 
+  const handleClick = useCallback(() => {
+    dispatch(
+      SPACESHIP_UPDATE({
+        isRotation: !isRotation
+      })
+    )
+  }, [dispatch, isRotation])
+  useLayoutEffect(() => {
+    window.addEventListener('click', handleClick)
+    return () => {
+      window.removeEventListener('click', handleClick)
+    }
+  }, [handleClick])
   // SpaceShip Behavior
   useGameFrame(() => {
     if (isClashed) return

@@ -1,4 +1,4 @@
-import React, { memo, Fragment, useCallback, useEffect } from 'react'
+import React, { useCallback, useLayoutEffect } from 'react'
 import { useThree } from 'react-three-fiber'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootStore } from '@/store'
@@ -95,7 +95,7 @@ const Lasers = () => {
       } as any)
     )
   }, [dispatch, shipPosition])
-  useEffect(() => {
+  useLayoutEffect(() => {
     window.addEventListener('click', handleClick)
     return () => {
       window.removeEventListener('click', handleClick)
