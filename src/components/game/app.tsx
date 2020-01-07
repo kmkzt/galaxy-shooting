@@ -40,14 +40,7 @@ function GameApp() {
     },
     [handleMouse]
   )
-  const handleTouchMove = useCallback(
-    (e: TouchEvent) => {
-      e.preventDefault()
-      const t: Touch = e.touches[0]
-      handleMouse(t.clientX, t.clientY)
-    },
-    [handleMouse]
-  )
+  const handleTouchMove = useCallback((e: TouchEvent) => e.preventDefault(), [])
   useLayoutEffect(() => {
     app.addEventListener('pointermove', handlePointerMove)
     app.addEventListener('mousemove', handlePointerMove)
