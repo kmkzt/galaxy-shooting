@@ -1,18 +1,5 @@
-import React, {
-  useEffect,
-  useCallback,
-  FC,
-  Suspense,
-  useLayoutEffect
-} from 'react'
-import {
-  Loader,
-  BufferGeometry,
-  Group,
-  Mesh,
-  TextureLoader,
-  Texture
-} from 'three'
+import React, { useCallback, useLayoutEffect } from 'react'
+import { Loader, BufferGeometry, Group } from 'three'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { useSelector, useDispatch } from 'react-redux'
