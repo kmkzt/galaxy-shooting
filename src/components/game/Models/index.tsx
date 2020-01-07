@@ -1,7 +1,8 @@
-import React, { Suspense } from 'react'
-import Lasers from './Lasers'
-import SpaceShip from './SpaceShip'
-import Meteolites from './Meteolites'
+import React, { Suspense, lazy } from 'react'
+
+const SpaceShip = lazy(() => import('./SpaceShip'))
+const Meteolites = lazy(() => import('./Meteolites'))
+const Lasers = lazy(() => import('./Lasers'))
 
 const Models = () => (
   <Suspense fallback={null}>
