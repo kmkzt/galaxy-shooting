@@ -51,7 +51,7 @@ function GameApp() {
   useLayoutEffect(() => {
     app.addEventListener('pointermove', handlePointerMove)
     app.addEventListener('mousemove', handlePointerMove)
-    app.addEventListener('touchmove', handleTouchMove, { passive: true })
+    app.addEventListener('touchmove', handleTouchMove, { passive: false })
     return () => {
       app.removeEventListener('pointermove', handlePointerMove)
       app.removeEventListener('mousemove', handlePointerMove)
