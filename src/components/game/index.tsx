@@ -5,7 +5,7 @@ import { Provider } from 'react-redux'
 import { Canvas } from 'react-three-fiber'
 import store from '@/store'
 import StatsDom from './StatsDom'
-import App from './app'
+import GameApp from './app'
 
 /**
  * Camera
@@ -36,7 +36,7 @@ const GamePanel: FC = () => {
     >
       <Provider store={store}>
         <Suspense fallback={null}>
-          <App />
+          <GameApp />
           <StatsDom />
         </Suspense>
       </Provider>

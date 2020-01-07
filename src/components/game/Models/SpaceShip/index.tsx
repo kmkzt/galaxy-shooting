@@ -1,19 +1,30 @@
-import React, { memo, Fragment, useLayoutEffect, useCallback } from 'react'
-import { Group } from 'three'
-import { useThree } from 'react-three-fiber'
+import React, {
+  memo,
+  Fragment,
+  useLayoutEffect,
+  useCallback,
+  Suspense
+} from 'react'
+import { Loader, BufferGeometry, Group } from 'three'
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
+import { useThree, useLoader } from 'react-three-fiber'
 import { RootStore } from '@/store'
 import { useSelector, useDispatch } from 'react-redux'
 import { SPACESHIP_UPDATE } from '@/store/SpaceShip'
 import { touchObject } from '@/utils/touchObject'
 import { Meteo } from '@/store/Meteolites'
 import useGameFrame from '@/hooks/useGameFrame'
+import { LOAD_UPDATE } from '@/store/Load'
 
+const loaderExtend = (loader: Loader) => {
+  // loader.setResourcePath('./assets/textures/')
+}
 /**
  * SPACE_CHIP CONSTANT
  */
 const ROTATE_UNIT = 0.1
 
-const SpaceShip = memo(({ obj }: { obj: Group }) => {
+const SpaceShip = memo(() => {
   const { mouse, aspect } = useThree()
   const {
     position,
@@ -25,7 +36,7 @@ const SpaceShip = memo(({ obj }: { obj: Group }) => {
   } = useSelector((state: RootStore) => state.spaceShip)
   const meteos = useSelector((state: RootStore) => state.meteos)
   const dispatch = useDispatch()
-
+  const load = useSelector((state: RootStore) => state.load.spaceShip)
   const handleClick = useCallback(() => {
     dispatch(
       SPACESHIP_UPDATE({
@@ -39,6 +50,54 @@ const SpaceShip = memo(({ obj }: { obj: Group }) => {
       window.removeEventListener('click', handleClick)
     }
   }, [handleClick])
+
+  /**
+   * LOAD SPACESHIP
+   */
+  const shipObj = useLoader<Group>(
+    OBJLoader,
+    require('@/models/SpaceShip/spaceShip.obj'),
+    loaderExtend
+  )
+  const fixSpaceShipObject = useCallback(
+    (obj: Group) => {
+      dispatch(
+        SPACESHIP_UPDATE({
+          rotation: {
+            x: obj.rotation.x - Math.PI,
+            y: obj.rotation.y,
+            z: obj.rotation.z
+          },
+          scale: {
+            x: obj.scale.x / 2,
+            y: obj.scale.y / 2,
+            z: obj.scale.z / 2
+          }
+        })
+      )
+    },
+    [dispatch]
+  )
+  useLayoutEffect(() => {
+    if (!shipObj || load) return
+    // TODO: Fix texture loader
+    // const loader = new TextureLoader()
+    // const texture: Texture = loader.load(
+    //   require('@/models/SpaceShip/textures/F15A.jpg')
+    // )
+    // shipObj.traverse(child => {
+    //   if ((child as any).isMesh) {
+    //     ;((child as Mesh).material as any).normalMap = texture
+    //   }
+    // })
+    fixSpaceShipObject(shipObj)
+    dispatch(
+      LOAD_UPDATE({
+        spaceShip: true
+      })
+    )
+  }, [dispatch, fixSpaceShipObject, load, shipObj])
+
   // SpaceShip Behavior
   useGameFrame(() => {
     if (isClashed) return
@@ -71,17 +130,19 @@ const SpaceShip = memo(({ obj }: { obj: Group }) => {
   })
   return (
     <Fragment>
-      <primitive
-        object={obj}
-        position={[position.x, position.y, position.z]}
-        rotation={[rotation.x, rotation.y, rotation.z]}
-        scale={[scale.x, scale.y, scale.z]}
-      />
-      <pointLight
-        position={[position.x, position.y, position.z + 100]}
-        distance={100}
-        intensity={10}
-      />
+      <Suspense fallback={null}>
+        <primitive
+          object={shipObj}
+          position={[position.x, position.y, position.z]}
+          rotation={[rotation.x, rotation.y, rotation.z]}
+          scale={[scale.x, scale.y, scale.z]}
+        />
+        <pointLight
+          position={[position.x, position.y, position.z + 100]}
+          distance={100}
+          intensity={10}
+        />
+      </Suspense>
     </Fragment>
   )
 })

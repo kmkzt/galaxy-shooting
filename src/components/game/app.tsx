@@ -7,7 +7,7 @@ import Point from './Point'
 
 const app = document.getElementById('app') as HTMLElement
 
-function Game() {
+function GameApp() {
   const { camera, raycaster, mouse } = useThree()
   const ship = useSelector((state: RootStore) => state.spaceShip)
   const { distance: cameraDistane } = useSelector(
@@ -78,4 +78,4 @@ function Game() {
   )
 }
 
-export default Game
+export default GameApp
