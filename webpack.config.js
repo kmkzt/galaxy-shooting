@@ -19,7 +19,7 @@ const common = {
   },
   output: {
     path: resolve('dist'),
-    filename: '[name].bundle.js'
+    filename: '[name].[hash].bundle.js'
   },
   module: {
     rules: [
@@ -112,7 +112,31 @@ const common = {
     new HtmlWebpackPlugin({
       template: resolve('template.html')
     })
-  ]
+  ],
+
+  optimization: {
+    splitChunks: {
+      chunks: 'async',
+      minSize: 30000,
+      maxSize: 0,
+      minChunks: 1,
+      maxAsyncRequests: 6,
+      maxInitialRequests: 4,
+      automaticNameDelimiter: '~',
+      cacheGroups: {
+        vendors: {
+          name: 'vendors',
+          test: /[\\/]node_modules[\\/]/,
+          priority: -10
+        },
+        default: {
+          minChunks: 2,
+          priority: -20,
+          reuseExistingChunk: true
+        }
+      }
+    }
+  }
 }
 
 module.exports = smart(common, config)
