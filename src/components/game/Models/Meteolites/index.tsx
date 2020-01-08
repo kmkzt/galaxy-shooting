@@ -125,10 +125,10 @@ const Meteolites = ({ num }: { num: number }) => {
   const geometries: BufferGeometry[] = useLoader<any>(
     DRACOLoader,
     [
-      require('@/models/Meteolite/Meteolite1.drc'),
-      require('@/models/Meteolite/Meteolite2.drc'),
-      require('@/models/Meteolite/Meteolite3.drc'),
-      require('@/models/Meteolite/Meteolite4.drc')
+      require('./drc/Meteolite1.drc'),
+      require('./drc/Meteolite2.drc'),
+      require('./drc/Meteolite3.drc'),
+      require('./drc/Meteolite4.drc')
     ],
     dracoLoaderExtend
   )

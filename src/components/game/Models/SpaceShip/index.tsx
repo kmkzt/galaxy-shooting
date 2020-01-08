@@ -5,7 +5,7 @@ import React, {
   useCallback,
   Suspense
 } from 'react'
-import { Loader, BufferGeometry, Group } from 'three'
+import { Loader, Group } from 'three'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { useThree, useLoader } from 'react-three-fiber'
 import { RootStore } from '@/store'
@@ -56,7 +56,7 @@ const SpaceShip = memo(() => {
    */
   const shipObj = useLoader<Group>(
     OBJLoader,
-    require('@/models/SpaceShip/spaceShip.obj'),
+    require('./obj/spaceShip.obj'),
     loaderExtend
   )
   const fixSpaceShipObject = useCallback(
