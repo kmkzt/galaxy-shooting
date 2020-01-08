@@ -1,6 +1,7 @@
 import React, { FC, lazy, Suspense } from 'react'
 import styled from 'styled-components'
 import { hot } from 'react-hot-loader/root'
+import Menu from '@/components/menu'
 
 const GamePanel = lazy(() => import('@/components/game'))
 const UiPanel = lazy(() => import('@/components/ui'))
@@ -12,6 +13,7 @@ const DisplayArea = styled.div`
 const App: FC = () => {
   return (
     <DisplayArea>
+      <Menu />
       <Suspense fallback={null}>
         <GamePanel />
         <UiPanel />
