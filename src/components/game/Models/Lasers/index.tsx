@@ -7,6 +7,7 @@ import { BoxBufferGeometry, Color, MeshBasicMaterial } from 'three'
 import { Meteo, METEO_REMOVE, METEO_REPLACE } from '@/store/Meteolites'
 import { touchObject } from '@/utils/touchObject'
 import { Laser, LASER_REPLACE, LASER_ADD, LASER_REMOVE } from '@/store/Lasers'
+import { IS_GAME_ACTIVE } from '@/store/selectors'
 
 const geometry = new BoxBufferGeometry(0.3, 0.3, 10)
 const material = new MeshBasicMaterial({ color: new Color('lightgreen') })
@@ -82,6 +83,7 @@ const Lasers = () => {
   const { position: shipPosition } = useSelector(
     (state: RootStore) => state.spaceShip
   )
+  const isActive = useSelector(IS_GAME_ACTIVE)
   const dispatch = useDispatch()
   const handleClick = useCallback(() => {
     dispatch(
@@ -96,11 +98,12 @@ const Lasers = () => {
     )
   }, [dispatch, shipPosition])
   useLayoutEffect(() => {
+    if (isActive) return
     window.addEventListener('click', handleClick)
     return () => {
       window.removeEventListener('click', handleClick)
     }
-  }, [handleClick])
+  }, [handleClick, isActive])
 
   const lasers = useSelector((state: RootStore) => state.lasers)
   /**
