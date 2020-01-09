@@ -98,7 +98,7 @@ const Lasers = () => {
     )
   }, [dispatch, shipPosition])
   useLayoutEffect(() => {
-    if (isActive) return
+    if (!isActive) return
     window.addEventListener('click', handleClick)
     return () => {
       window.removeEventListener('click', handleClick)

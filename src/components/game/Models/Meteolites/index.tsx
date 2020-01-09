@@ -17,6 +17,7 @@ import {
   State as MeteoState
 } from '@/store/Meteolites'
 import useGameFrame from '@/hooks/useGameFrame'
+import useMeteoData from '@/hooks/useMeteoData'
 import { getRandom } from '@/utils/getRandom'
 import { LOAD_UPDATE } from '@/store/Load'
 
@@ -115,10 +116,10 @@ const Meteo = memo(
 )
 
 const Meteolites = ({ num }: { num: number }) => {
-  const { camera, aspect } = useThree()
   const load = useSelector((state: RootStore) => state.load.meteolites)
   const meteos = useSelector((state: RootStore) => state.meteos)
   const dispatch = useDispatch()
+
   /**
    * LOAD METEOLITES
    */
@@ -132,57 +133,23 @@ const Meteolites = ({ num }: { num: number }) => {
     ],
     dracoLoaderExtend
   )
-  const createMeteosData = useCallback(() => {
-    const meteoData: MeteoState = Array(num)
-      .fill(null)
-      .reduce((res: MeteoState, _: null, i: number): MeteoState => {
-        const CAMERA_DISTANCE = camera.near + 5
-        const pattern = Math.floor(Math.random() * geometries.length)
-        const randomScale = getRandom({ min: 0.5, max: 2 })
-        return {
-          ...res,
-          [i]: {
-            guid: i,
-            position: {
-              x: getRandom({
-                min: (-CAMERA_DISTANCE * aspect) / 2,
-                max: (CAMERA_DISTANCE * aspect) / 2
-              }),
-              y: getRandom({
-                min: -CAMERA_DISTANCE / 2,
-                max: CAMERA_DISTANCE / 2
-              }),
-              z: getRandom({ min: camera.far, max: camera.far * 2 })
-            },
-            rotation: {
-              x: 0,
-              y: 0,
-              z: 0
-            },
-            scale: {
-              x: randomScale,
-              y: randomScale,
-              z: randomScale
-            },
-            pattern
-          }
-        }
-      }, {})
-    dispatch(METEOS_UPDATE(meteoData))
-  }, [aspect, camera.far, camera.near, dispatch, geometries.length, num])
+
+  const { set: createMeteosData } = useMeteoData({
+    patternNum: geometries.length
+  })
 
   useLayoutEffect(() => {
     if (!geometries || load) return
     geometries.map((obj: BufferGeometry, i: number) => {
       obj
     })
-    createMeteosData()
+    createMeteosData(num)
     dispatch(
       LOAD_UPDATE({
         meteolites: true
       })
     )
-  }, [createMeteosData, dispatch, load, geometries])
+  }, [createMeteosData, dispatch, load, geometries, num])
   return (
     <>
       {Object.values(meteos).map((info: Meteo, i: number) => (

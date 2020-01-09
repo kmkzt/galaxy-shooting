@@ -7,9 +7,10 @@ import { Obj } from '@/interface/Obj'
 const meteos = actionCreatorFactory('meteo')
 
 export const METEOS_UPDATE = meteos<State>('UPDATE')
+export const METEOS_REPLACE_ALL = meteos<State>('REPLACE')
+export const METEOS_RESET = meteos('RESET')
 export const METEO_REPLACE = meteos<Meteo>('REPLACE_METEO')
 export const METEO_REMOVE = meteos<number>('REMOVE_METEO')
-export const METEOS_RESET = meteos('RESET')
 
 export const initialState: State = {}
 
@@ -22,6 +23,9 @@ export interface Meteo extends Obj {
 }
 
 export const reducer = (state: State = initialState, action: Action): State => {
+  if (isType(action, METEOS_REPLACE_ALL)) {
+    return action.payload
+  }
   if (isType(action, METEOS_UPDATE)) {
     return {
       ...state,
