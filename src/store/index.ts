@@ -41,4 +41,7 @@ const rootReducer = (
   }
   return moduleReducer(state, action)
 }
-export default createStore<RootStore, any, {}, {}>(rootReducer)
+export default createStore<RootStore, any, {}, {}>(
+  rootReducer,
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+)
