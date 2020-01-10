@@ -97,9 +97,9 @@ const Meteo = memo(
         scale={[scale.x, scale.y, scale.z]}
       >
         <bufferGeometry attach="geometry" {...geometry} />
-        <meshStandardMaterial
+        <meshLambertMaterial
           attach="material"
-          color={color || 'hotpink'}
+          color={color || 'lightblue'}
           transparent
         />
       </mesh>
