@@ -4,7 +4,7 @@ import { useFrame, useThree } from 'react-three-fiber'
 import { RootStore } from '@/store'
 import Models from './Models'
 import Point from './Point'
-import useCameraControl from './Cameta'
+import useCameraControl from './Camera'
 
 function GameApp() {
   useCameraControl()
