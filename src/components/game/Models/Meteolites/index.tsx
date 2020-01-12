@@ -6,7 +6,14 @@ import React, {
   Suspense
 } from 'react'
 import { useThree, useLoader } from 'react-three-fiber'
-import { BufferGeometry, Group, TextureLoader, Texture, Loader } from 'three'
+import {
+  BufferGeometry,
+  Group,
+  Texture,
+  Loader,
+  IcosahedronGeometry,
+  Geometry
+} from 'three'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { RootStore } from '@/store'
 import { useSelector, useDispatch } from 'react-redux'
@@ -17,6 +24,7 @@ import {
   State as MeteoState
 } from '@/store/Meteolites'
 import useGameFrame from '@/hooks/useGameFrame'
+import useMeteoData from '@/hooks/useMeteoData'
 import { getRandom } from '@/utils/getRandom'
 import { LOAD_UPDATE } from '@/store/Load'
 
@@ -27,7 +35,7 @@ const dracoLoaderExtend = (loader: Loader) => {
 }
 
 interface MeteoProps extends Meteo {
-  geometry: BufferGeometry
+  geometry: BufferGeometry | Geometry
   texture?: Texture
 }
 
@@ -96,9 +104,9 @@ const Meteo = memo(
         scale={[scale.x, scale.y, scale.z]}
       >
         <bufferGeometry attach="geometry" {...geometry} />
-        <meshStandardMaterial
+        <meshLambertMaterial
           attach="material"
-          color={color || 'hotpink'}
+          color={color || 'lightblue'}
           transparent
         />
       </mesh>
@@ -114,11 +122,12 @@ const Meteo = memo(
     prev.color === next.color
 )
 
+const fallbackGeometry: Geometry = new IcosahedronGeometry()
 const Meteolites = ({ num }: { num: number }) => {
-  const { camera, aspect } = useThree()
   const load = useSelector((state: RootStore) => state.load.meteolites)
   const meteos = useSelector((state: RootStore) => state.meteos)
   const dispatch = useDispatch()
+
   /**
    * LOAD METEOLITES
    */
@@ -132,68 +141,39 @@ const Meteolites = ({ num }: { num: number }) => {
     ],
     dracoLoaderExtend
   )
-  const createMeteosData = useCallback(() => {
-    const meteoData: MeteoState = Array(num)
-      .fill(null)
-      .reduce((res: MeteoState, _: null, i: number): MeteoState => {
-        const CAMERA_DISTANCE = camera.near + 5
-        const pattern = Math.floor(Math.random() * geometries.length)
-        const randomScale = getRandom({ min: 0.5, max: 2 })
-        return {
-          ...res,
-          [i]: {
-            guid: i,
-            position: {
-              x: getRandom({
-                min: (-CAMERA_DISTANCE * aspect) / 2,
-                max: (CAMERA_DISTANCE * aspect) / 2
-              }),
-              y: getRandom({
-                min: -CAMERA_DISTANCE / 2,
-                max: CAMERA_DISTANCE / 2
-              }),
-              z: getRandom({ min: camera.far, max: camera.far * 2 })
-            },
-            rotation: {
-              x: 0,
-              y: 0,
-              z: 0
-            },
-            scale: {
-              x: randomScale,
-              y: randomScale,
-              z: randomScale
-            },
-            pattern
-          }
-        }
-      }, {})
-    dispatch(METEOS_UPDATE(meteoData))
-  }, [aspect, camera.far, camera.near, dispatch, geometries.length, num])
+
+  const { set: createMeteosData } = useMeteoData({
+    patternNum: geometries.length
+  })
 
   useLayoutEffect(() => {
     if (!geometries || load) return
     geometries.map((obj: BufferGeometry, i: number) => {
       obj
     })
-    createMeteosData()
+    createMeteosData(num)
     dispatch(
       LOAD_UPDATE({
         meteolites: true
       })
     )
-  }, [createMeteosData, dispatch, load, geometries])
+  }, [createMeteosData, dispatch, load, geometries, num])
   return (
     <>
-      {Object.values(meteos).map((info: Meteo, i: number) => (
-        <Suspense key={info.guid} fallback={null}>
-          <Meteo
-            geometry={geometries[info.pattern]}
-            // texture={textures[info.pattern]}
-            {...info}
-          />
-        </Suspense>
-      ))}
+      {Object.values(meteos).map((info: Meteo, i: number) => {
+        return (
+          <Suspense
+            key={info.guid}
+            fallback={() => <Meteo geometry={fallbackGeometry} {...info} />}
+          >
+            <Meteo
+              geometry={geometries[info.pattern]}
+              // texture={textures[info.pattern]}
+              {...info}
+            />
+          </Suspense>
+        )
+      })}
     </>
   )
 }

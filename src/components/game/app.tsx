@@ -4,60 +4,10 @@ import { useFrame, useThree } from 'react-three-fiber'
 import { RootStore } from '@/store'
 import Models from './Models'
 import Point from './Point'
-
-const app = document.getElementById('app') as HTMLElement
+import useCameraControl from './Camera'
 
 function GameApp() {
-  const { camera, raycaster, mouse } = useThree()
-  const ship = useSelector((state: RootStore) => state.spaceShip)
-  const { distance: cameraDistane } = useSelector(
-    (state: RootStore) => state.cam
-  )
-
-  /**
-   * HANDLE MOUSE
-   */
-  const handleMouse = useCallback(
-    (x: number, y: number) => {
-      const rect = app.getBoundingClientRect()
-      /**
-       * Mouse Point 2D
-       */
-      mouse.x = ((x - rect.left) / rect.width) * 2 - 1
-      mouse.y = -((y - rect.top) / rect.height) * 2 + 1
-
-      /**
-       * SET Raycaster
-       */
-      raycaster.setFromCamera(mouse, camera)
-    },
-    [camera, mouse, raycaster]
-  )
-  const handlePointerMove = useCallback(
-    (e: PointerEvent | MouseEvent) => {
-      e.preventDefault()
-      handleMouse(e.clientX, e.clientY)
-    },
-    [handleMouse]
-  )
-  const handleTouchMove = useCallback((e: TouchEvent) => e.preventDefault(), [])
-  useLayoutEffect(() => {
-    app.addEventListener('pointermove', handlePointerMove)
-    app.addEventListener('mousemove', handlePointerMove)
-    app.addEventListener('touchmove', handleTouchMove, { passive: false })
-    return () => {
-      app.removeEventListener('pointermove', handlePointerMove)
-      app.removeEventListener('mousemove', handlePointerMove)
-      app.removeEventListener('touchmove', handleTouchMove)
-    }
-  }, [handlePointerMove, handleTouchMove])
-
-  /**
-   * COMMON FRAME BEHAVIOR
-   */
-  useFrame(({ camera }) => {
-    camera.position.z = ship.position.z + cameraDistane
-  })
+  useCameraControl()
   return (
     <Fragment>
       <hemisphereLight
