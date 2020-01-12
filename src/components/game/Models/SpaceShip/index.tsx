@@ -5,7 +5,7 @@ import React, {
   useCallback,
   Suspense
 } from 'react'
-import { Loader, Group } from 'three'
+import { Loader, Group, Mesh, ConeGeometry } from 'three'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { useThree, useLoader } from 'react-three-fiber'
 import { RootStore } from '@/store'
@@ -24,6 +24,7 @@ const loaderExtend = (loader: Loader) => {
  */
 const ROTATE_UNIT = 0.1
 
+const fallbackObject = new Mesh(new ConeGeometry())
 const SpaceShip = memo(() => {
   const { mouse, aspect } = useThree()
   const {
@@ -130,19 +131,19 @@ const SpaceShip = memo(() => {
   })
   return (
     <Fragment>
-      <Suspense fallback={null}>
+      <Suspense fallback={() => <primitive object={fallbackObject} />}>
         <primitive
           object={shipObj}
           position={[position.x, position.y, position.z]}
           rotation={[rotation.x, rotation.y, rotation.z]}
           scale={[scale.x, scale.y, scale.z]}
         />
-        <pointLight
-          position={[position.x, position.y, position.z + 100]}
-          distance={100}
-          intensity={10}
-        />
       </Suspense>
+      <pointLight
+        position={[position.x, position.y, position.z + 100]}
+        distance={100}
+        intensity={10}
+      />
     </Fragment>
   )
 })

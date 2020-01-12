@@ -6,7 +6,14 @@ import React, {
   Suspense
 } from 'react'
 import { useThree, useLoader } from 'react-three-fiber'
-import { BufferGeometry, Group, TextureLoader, Texture, Loader } from 'three'
+import {
+  BufferGeometry,
+  Group,
+  Texture,
+  Loader,
+  IcosahedronGeometry,
+  Geometry
+} from 'three'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { RootStore } from '@/store'
 import { useSelector, useDispatch } from 'react-redux'
@@ -28,7 +35,7 @@ const dracoLoaderExtend = (loader: Loader) => {
 }
 
 interface MeteoProps extends Meteo {
-  geometry: BufferGeometry
+  geometry: BufferGeometry | Geometry
   texture?: Texture
 }
 
@@ -115,6 +122,7 @@ const Meteo = memo(
     prev.color === next.color
 )
 
+const fallbackGeometry: Geometry = new IcosahedronGeometry()
 const Meteolites = ({ num }: { num: number }) => {
   const load = useSelector((state: RootStore) => state.load.meteolites)
   const meteos = useSelector((state: RootStore) => state.meteos)
@@ -152,15 +160,20 @@ const Meteolites = ({ num }: { num: number }) => {
   }, [createMeteosData, dispatch, load, geometries, num])
   return (
     <>
-      {Object.values(meteos).map((info: Meteo, i: number) => (
-        <Suspense key={info.guid} fallback={null}>
-          <Meteo
-            geometry={geometries[info.pattern]}
-            // texture={textures[info.pattern]}
-            {...info}
-          />
-        </Suspense>
-      ))}
+      {Object.values(meteos).map((info: Meteo, i: number) => {
+        return (
+          <Suspense
+            key={info.guid}
+            fallback={() => <Meteo geometry={fallbackGeometry} {...info} />}
+          >
+            <Meteo
+              geometry={geometries[info.pattern]}
+              // texture={textures[info.pattern]}
+              {...info}
+            />
+          </Suspense>
+        )
+      })}
     </>
   )
 }
