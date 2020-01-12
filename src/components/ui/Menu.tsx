@@ -34,7 +34,7 @@ export const Menu: FC<{}> = ({}) => {
       <div>POINTS: {point}</div>
       <div>METEOLITES: {meteosCount}</div>
       <button onClick={handleClickMenu}>MENU</button>
-      <button onClick={handleClickReset}>Reset</button>
+      <button onClick={handleClickReset}>RESET</button>
     </Wrap>
   )
 }
