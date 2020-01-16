@@ -5,6 +5,7 @@ import { Provider } from 'react-redux'
 import { Canvas } from 'react-three-fiber'
 import store from '@/store'
 import StatsDom from './StatsDom'
+import Background from './Background'
 
 const GameApp = lazy(() => import('./app'))
 /**
@@ -28,7 +29,6 @@ const GamePanel: FC = () => {
         fov: FOV
       }}
       onCreated={({ scene }) => {
-        scene.background = new Color(0x333366)
         scene.fog = new Fog(0x000000, NEAR, FAR)
       }}
       pixelRatio={window.devicePixelRatio}
@@ -37,8 +37,9 @@ const GamePanel: FC = () => {
       <Provider store={store}>
         <Suspense fallback={null}>
           <GameApp />
-          <StatsDom />
         </Suspense>
+        <Background background={new Color(0x333366)} />
+        <StatsDom />
       </Provider>
     </Canvas>
   )
