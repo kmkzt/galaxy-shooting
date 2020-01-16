@@ -5,9 +5,7 @@ import Start from './Start'
 import Loading from './Loading'
 
 const Menu = () => {
-  const active = useSelector<RootStore, boolean>(
-    ({ play }) => play.active && !play.menu
-  )
+  const active = useSelector<RootStore, boolean>(({ play }) => play.active)
   if (active) return null
   return (
     <Fragment>

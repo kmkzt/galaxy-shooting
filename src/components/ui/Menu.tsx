@@ -1,8 +1,8 @@
-import React, { FC, useCallback } from 'react'
+import React, { FC, useCallback, useLayoutEffect, useEffect } from 'react'
 import styled from 'styled-components'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootStore } from '@/store'
-import { PLAY_MENU_TOGGLE } from '@/store/Play'
+import { PLAY_STOP } from '@/store/Play'
 import useMeteoData from '@/hooks/useMeteoData'
 import { SPACESHIP_UPDATE } from '@/store/SpaceShip'
 
@@ -13,10 +13,8 @@ export const Menu: FC<{}> = ({}) => {
   )
   const { set } = useMeteoData({ patternNum: 4 })
   const dispatch = useDispatch()
-  const handleClickMenu = useCallback(() => dispatch(PLAY_MENU_TOGGLE()), [
-    dispatch
-  ])
-  const handleClickReset = useCallback(() => {
+  const playStop = useCallback(() => dispatch(PLAY_STOP()), [dispatch])
+  const restart = useCallback(() => {
     dispatch(
       SPACESHIP_UPDATE({
         isClashed: false,
@@ -27,14 +25,25 @@ export const Menu: FC<{}> = ({}) => {
         }
       })
     )
+    playStop()
     set(100)
-  }, [dispatch, set])
+  }, [dispatch, playStop, set])
+
+  /**
+   * check window Active
+   */
+  useEffect(() => {
+    if (!document.hasFocus()) {
+      playStop()
+    }
+  })
+
   return (
     <Wrap>
       <div>POINTS: {point}</div>
       <div>METEOLITES: {meteosCount}</div>
-      <button onClick={handleClickMenu}>MENU</button>
-      <button onClick={handleClickReset}>RESET</button>
+      <button onClick={playStop}>MENU</button>
+      <button onClick={restart}>RESTART</button>
     </Wrap>
   )
 }
