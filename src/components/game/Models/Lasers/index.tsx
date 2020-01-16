@@ -8,6 +8,7 @@ import { Meteo, METEO_REMOVE, METEO_REPLACE } from '@/store/Meteolites'
 import { touchObject } from '@/utils/touchObject'
 import { Laser, LASER_REPLACE, LASER_ADD, LASER_REMOVE } from '@/store/Lasers'
 import { IS_GAME_ACTIVE } from '@/store/selectors'
+import { POINT_INC } from '@/store/Score'
 
 const geometry = new BoxBufferGeometry(0.3, 0.3, 10)
 const material = new MeshBasicMaterial({ color: new Color('lightgreen') })
@@ -54,8 +55,9 @@ const Laser = ({ guid, position, rotation, scale }: Laser) => {
         })
       )
       setTimeout(() => {
+        dispatch(POINT_INC(Math.floor(breakMeteo.scale.x * 100)))
         dispatch(METEO_REMOVE(breakMeteo.guid))
-      }, 300)
+      }, 100)
       dispatch(LASER_REMOVE(guid))
       return
     }

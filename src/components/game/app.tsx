@@ -1,9 +1,5 @@
-import React, { Fragment, useCallback, useLayoutEffect } from 'react'
-import { useSelector } from 'react-redux'
-import { useFrame, useThree } from 'react-three-fiber'
-import { RootStore } from '@/store'
+import React, { Fragment } from 'react'
 import Models from './Models'
-import Point from './Point'
 import useCameraControl from './Camera'
 
 function GameApp() {
@@ -15,7 +11,6 @@ function GameApp() {
         position={[0, 0, 10]}
         intensity={0.6}
       />
-      <Point />
       <Models />
     </Fragment>
   )

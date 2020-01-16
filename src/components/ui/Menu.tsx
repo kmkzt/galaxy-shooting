@@ -8,6 +8,9 @@ import { SPACESHIP_UPDATE } from '@/store/SpaceShip'
 
 export const Menu: FC<{}> = ({}) => {
   const point = useSelector<RootStore, number>(({ score }) => score.point)
+  const shipPosition = useSelector<RootStore, number>(({ spaceShip }) =>
+    Math.floor(spaceShip.position.z)
+  )
   const meteosCount = useSelector<RootStore, number>(
     ({ meteos }) => Object.keys(meteos).length
   )
@@ -41,6 +44,7 @@ export const Menu: FC<{}> = ({}) => {
   return (
     <Wrap>
       <div>POINTS: {point}</div>
+      <div>SHIP POSITION: {shipPosition}</div>
       <div>METEOLITES: {meteosCount}</div>
       <button onClick={playStop}>MENU</button>
       <button onClick={restart}>RESTART</button>

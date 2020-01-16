@@ -38,6 +38,11 @@ const GamePanel: FC = () => {
         <Suspense fallback={null}>
           <GameApp />
         </Suspense>
+        <hemisphereLight
+          args={[0x999999, 0x222222, 0x999999]}
+          position={[0, 0, 10]}
+          intensity={0.6}
+        />
         <Background background={new Color(0x333366)} />
         <StatsDom />
       </Provider>
