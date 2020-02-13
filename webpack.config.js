@@ -4,6 +4,7 @@ const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CopyPlugin = require('copy-webpack-plugin')
 const Dotenv = require('dotenv-webpack')
 
 const devMode = process.env.NODE_ENV === 'development'
@@ -111,7 +112,13 @@ const common = {
     }),
     new HtmlWebpackPlugin({
       template: resolve('template.html')
-    })
+    }),
+    new CopyPlugin([
+      {
+        from: 'node_modules/three/examples/js/libs/draco',
+        to: 'libs/draco'
+      }
+    ])
   ],
 
   optimization: {
