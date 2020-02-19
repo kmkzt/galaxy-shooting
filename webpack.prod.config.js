@@ -1,8 +1,4 @@
-const { join, resolve } = require('path')
-// const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
-const Dotenv = require('dotenv-webpack')
-
-const config = {
+module.exports = {
   mode: 'production',
   devtool: false,
   module: {
@@ -33,14 +29,8 @@ const config = {
         }
       }
     ]
+  },
+  optimization: {
+    minimize: true
   }
-  // optimization: {
-  //   minimizer: [
-  //     new UglifyJsPlugin({
-  //       parallel: true
-  //     })
-  //   ]
-  // }
 }
-
-module.exports = config
