@@ -6,8 +6,9 @@ import { Canvas } from 'react-three-fiber'
 import store from '@/store'
 import StatsDom from './StatsDom'
 import Background from './Background'
+import ControlCamera from './Camera'
 
-const GameApp = lazy(() => import('./app'))
+const Models = lazy(() => import('./Models'))
 /**
  * Camera
  */
@@ -35,8 +36,9 @@ const GamePanel: FC = () => {
       resize={{ polyfill } as any}
     >
       <Provider store={store}>
+        <ControlCamera />
         <Suspense fallback={null}>
-          <GameApp />
+          <Models />
         </Suspense>
         <hemisphereLight
           args={[0x999999, 0x222222, 0x999999]}

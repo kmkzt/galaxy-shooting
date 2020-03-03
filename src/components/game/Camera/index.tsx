@@ -1,14 +1,21 @@
-import React, { useCallback, useLayoutEffect } from 'react'
+import React, {
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  useEffect,
+  Fragment
+} from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useFrame, useThree } from 'react-three-fiber'
 import { RootStore } from '@/store'
 import { CAMERA_UPDATE } from '@/store/Camera'
 import { PLAY_STOP } from '@/store/Play'
+// import { PerspectiveCamera } from 'three'
 
 const app = document.getElementById('app') as HTMLElement
 
-function useCameraControl() {
-  const { camera, raycaster, mouse, aspect } = useThree()
+function ControlCamera() {
+  const { camera, raycaster, mouse, aspect, setDefaultCamera } = useThree()
   const ship = useSelector((state: RootStore) => state.spaceShip)
   const { distance: cameraDistane } = useSelector(
     (state: RootStore) => state.cam
@@ -43,27 +50,6 @@ function useCameraControl() {
   )
 
   const handleTouchMove = useCallback((e: TouchEvent) => e.preventDefault(), [])
-  useLayoutEffect(() => {
-    app.addEventListener('pointermove', handlePointerMove)
-    app.addEventListener('mousemove', handlePointerMove)
-    app.addEventListener('touchmove', handleTouchMove, { passive: false })
-
-    return () => {
-      app.removeEventListener('pointermove', handlePointerMove)
-      app.removeEventListener('mousemove', handlePointerMove)
-      app.removeEventListener('touchmove', handleTouchMove)
-    }
-  }, [handlePointerMove, handleTouchMove])
-
-  useLayoutEffect(() => {
-    dispatch(
-      CAMERA_UPDATE({
-        far: camera.far,
-        near: camera.near,
-        aspect
-      })
-    )
-  }, [aspect, camera, dispatch])
   /**
    * MOUSE LEAVE BEHAVIOR
    */
@@ -74,17 +60,44 @@ function useCameraControl() {
     [dispatch]
   )
   useLayoutEffect(() => {
+    app.addEventListener('pointermove', handlePointerMove)
+    app.addEventListener('mousemove', handlePointerMove)
+    app.addEventListener('touchmove', handleTouchMove, { passive: false })
     app.addEventListener('mouseleave', handleMouseLeave)
     return () => {
+      app.removeEventListener('pointermove', handlePointerMove)
+      app.removeEventListener('mousemove', handlePointerMove)
+      app.removeEventListener('touchmove', handleTouchMove)
       app.removeEventListener('mouseleave', handleMouseLeave)
     }
-  }, [handleMouseLeave, handlePointerMove, handleTouchMove])
+  }, [handlePointerMove, handleTouchMove, handleMouseLeave])
+
+  /**
+   * register camera status
+   */
+  useLayoutEffect(() => {
+    dispatch(
+      CAMERA_UPDATE({
+        far: camera.far,
+        near: camera.near,
+        aspect
+      })
+    )
+  }, [aspect, camera, dispatch])
+
+  // useEffect(() => {
+  //   if (!ref.current) return
+  //   setDefaultCamera(ref.current)
+  // }, [ref, setDefaultCamera])
   /**
    * COMMON FRAME BEHAVIOR
    */
   useFrame(({ camera }) => {
     camera.position.z = ship.position.z + cameraDistane
   })
+
+  // return <perspectiveCamera ref={ref} />
+  return <Fragment />
 }
 
-export default useCameraControl
+export default ControlCamera
