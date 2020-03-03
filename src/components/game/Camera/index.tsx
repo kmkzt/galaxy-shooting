@@ -10,11 +10,18 @@ import { useFrame, useThree } from 'react-three-fiber'
 import { RootStore } from '@/store'
 import { CAMERA_UPDATE } from '@/store/Camera'
 import { PLAY_STOP } from '@/store/Play'
-// import { PerspectiveCamera } from 'three'
+import { PerspectiveCamera } from 'three'
 
 const app = document.getElementById('app') as HTMLElement
 
-function ControlCamera() {
+interface Props {
+  position: [number, number, number]
+  fov: number
+  near: number
+  far: number
+}
+function ControlCamera(props: Props) {
+  const ref = useRef<PerspectiveCamera>()
   const { camera, raycaster, mouse, aspect, setDefaultCamera } = useThree()
   const ship = useSelector((state: RootStore) => state.spaceShip)
   const { distance: cameraDistane } = useSelector(
@@ -84,11 +91,13 @@ function ControlCamera() {
       })
     )
   }, [aspect, camera, dispatch])
-
-  // useEffect(() => {
-  //   if (!ref.current) return
-  //   setDefaultCamera(ref.current)
-  // }, [ref, setDefaultCamera])
+  /**
+   * change default camera
+   */
+  useEffect(() => {
+    if (!ref.current) return
+    setDefaultCamera(ref.current)
+  })
   /**
    * COMMON FRAME BEHAVIOR
    */
@@ -96,8 +105,7 @@ function ControlCamera() {
     camera.position.z = ship.position.z + cameraDistane
   })
 
-  // return <perspectiveCamera ref={ref} />
-  return <Fragment />
+  return <perspectiveCamera ref={ref} {...props} />
 }
 
 export default ControlCamera

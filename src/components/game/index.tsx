@@ -36,7 +36,12 @@ const GamePanel: FC = () => {
       resize={{ polyfill } as any}
     >
       <Provider store={store}>
-        <ControlCamera />
+        <ControlCamera
+          position={[0, 0, CAMERA_DISTANCE]}
+          near={NEAR}
+          far={FAR}
+          fov={FOV}
+        />
         <Suspense fallback={null}>
           <Models />
         </Suspense>
