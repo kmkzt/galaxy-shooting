@@ -17,7 +17,10 @@ const useMeteoData = ({ patternNum }: { patternNum: number }) => {
       const meteoData: MeteoState = Array(num)
         .fill(null)
         .reduce((res: MeteoState, _: null, i: number): MeteoState => {
-          const CAMERA_DISTANCE = camera.near + 5
+          const DISPLAY_SIZE = camera.near + 5
+          const ASPECT = camera.aspect
+          const DISTANCE = camera.far
+
           const pattern = Math.floor(Math.random() * patternNum)
           const randomScale = getRandom({ min: 0.5, max: 2 })
           return {
@@ -26,14 +29,14 @@ const useMeteoData = ({ patternNum }: { patternNum: number }) => {
               guid: i,
               position: {
                 x: getRandom({
-                  min: (-CAMERA_DISTANCE * camera.aspect) / 2,
-                  max: (CAMERA_DISTANCE * camera.aspect) / 2
+                  min: (-DISPLAY_SIZE * ASPECT) / 2,
+                  max: (DISPLAY_SIZE * ASPECT) / 2
                 }),
                 y: getRandom({
-                  min: -CAMERA_DISTANCE / 2,
-                  max: CAMERA_DISTANCE / 2
+                  min: -DISPLAY_SIZE / 2,
+                  max: DISPLAY_SIZE / 2
                 }),
-                z: getRandom({ min: camera.far, max: camera.far * 2 })
+                z: getRandom({ min: DISTANCE, max: DISTANCE * 2 })
               },
               rotation: {
                 x: 0,

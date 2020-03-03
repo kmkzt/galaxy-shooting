@@ -17,18 +17,20 @@ const NEAR = 9
 const FAR = 200
 const CAMERA_DISTANCE = NEAR + 5
 
+const defaultCameraOption = {
+  position: [0, 0, CAMERA_DISTANCE],
+  near: NEAR,
+  far: FAR,
+  fov: FOV
+}
 const GamePanel: FC = () => {
   return (
     <Canvas
       // concurrent={true} // react conncurrentMode
       orthographic={false}
       // https://github.com/react-spring/react-three-fiber/issues/208
-      camera={{
-        position: [0, 0, CAMERA_DISTANCE],
-        near: NEAR,
-        far: FAR,
-        fov: FOV
-      }}
+      // TODO: Remove camera option
+      camera={defaultCameraOption}
       onCreated={({ scene }) => {
         scene.fog = new Fog(0x000000, NEAR, FAR)
       }}
@@ -36,12 +38,7 @@ const GamePanel: FC = () => {
       resize={{ polyfill } as any}
     >
       <Provider store={store}>
-        <ControlCamera
-          position={[0, 0, CAMERA_DISTANCE]}
-          near={NEAR}
-          far={FAR}
-          fov={FOV}
-        />
+        <ControlCamera {...defaultCameraOption} />
         <Suspense fallback={null}>
           <Models />
         </Suspense>

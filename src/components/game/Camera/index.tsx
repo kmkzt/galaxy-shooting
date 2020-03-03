@@ -15,7 +15,7 @@ import { PerspectiveCamera } from 'three'
 const app = document.getElementById('app') as HTMLElement
 
 interface Props {
-  position: [number, number, number]
+  position: number[]
   fov: number
   near: number
   far: number
