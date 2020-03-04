@@ -51,14 +51,16 @@ const Meteo = memo(
     ...rest
   }: MeteoProps) => {
     const ref = useRef<Group>()
-    const { raycaster, camera, aspect } = useThree()
+    const { raycaster, aspect } = useThree()
     const dispatch = useDispatch()
-
-    useGameFrame(() => {
+    const mainCameraPostion = useSelector(
+      (state: RootStore) => state.cam.position
+    )
+    useGameFrame(({ camera }) => {
       if (!ref.current) return
       const isMouseOver =
         raycaster.intersectObject(ref.current, true).length > 0
-      const isFrameOut = ref.current.position.z > camera.position.z
+      const isFrameOut = ref.current.position.z > mainCameraPostion.z
 
       if (!isMouseOver && !isFrameOut) return
       const CAMERA_DISTANCE = camera.near + 5

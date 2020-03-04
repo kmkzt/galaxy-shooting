@@ -3,7 +3,8 @@ import { useSelector, useDispatch } from 'react-redux'
 import { useFrame, useThree } from 'react-three-fiber'
 import { RootStore } from '@/store'
 import { CAMERA_UPDATE } from '@/store/Camera'
-import { PerspectiveCamera } from 'three'
+import useView from '@/hooks/useView'
+import { PerspectiveCamera, Color } from 'three'
 interface Props {
   position: number[]
   fov: number
@@ -11,39 +12,38 @@ interface Props {
   far: number
 }
 function ControlCamera(props: Props) {
-  const ref = useRef<PerspectiveCamera>()
-  const { camera, aspect, setDefaultCamera } = useThree()
+  const { aspect, setDefaultCamera } = useThree()
   const ship = useSelector((state: RootStore) => state.spaceShip)
   const { distance: cameraDistane } = useSelector(
     (state: RootStore) => state.cam
   )
-
   const dispatch = useDispatch()
+  const ref = useView<PerspectiveCamera>({
+    isMain: true,
+    left: 0,
+    bottom: 0,
+    width: 1,
+    height: 1,
+    background: new Color(0x333366),
+    updateCamera: ctx => {
+      ctx.camera.position.z = ship.position.z + cameraDistane
+    }
+  })
+
   /**
-   * register camera status
+   * register main camera status
    */
   useLayoutEffect(() => {
+    if (!ref.current) return
     dispatch(
       CAMERA_UPDATE({
-        far: camera.far,
-        near: camera.near,
-        aspect
+        aspect,
+        far: ref.current.far,
+        near: ref.current.near,
+        position: ref.current.position
       })
     )
-  }, [aspect, camera, dispatch])
-  /**
-   * change default camera
-   */
-  useEffect(() => {
-    if (!ref.current) return
-    setDefaultCamera(ref.current)
-  })
-  /**
-   * COMMON FRAME BEHAVIOR
-   */
-  useFrame(({ camera }) => {
-    camera.position.z = ship.position.z + cameraDistane
-  })
+  }, [aspect, dispatch, ref])
 
   return <perspectiveCamera ref={ref} {...props} />
 }
