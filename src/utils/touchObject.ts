@@ -22,10 +22,12 @@ export const touchObject = <T1 extends Obj, T2 extends Obj = T1>(
   )
 }
 
-const checkVector = <T extends Obj>(obj: T, { x, y, z }: Xyz): boolean =>
-  x > obj.position.x - obj.scale.x / 2 &&
-  x < obj.position.x + obj.scale.x / 2 &&
-  y > obj.position.y - obj.scale.y / 2 &&
-  y < obj.position.y + obj.scale.y / 2 &&
-  z > obj.position.z - obj.scale.z / 2 &&
-  z < obj.position.z + obj.scale.z / 2
+export const checkVector = <T extends Obj>(obj: T, { x, y, z }: Xyz): boolean =>
+  checkParam(x, { point: obj.position.x, range: obj.scale.x }) &&
+  checkParam(y, { point: obj.position.y, range: obj.scale.y }) &&
+  checkParam(z, { point: obj.position.z, range: obj.scale.z })
+
+export const checkParam = (
+  c: number,
+  { point, range }: { point: number; range: number }
+) => c > point - range / 2 && c < point + range / 2
