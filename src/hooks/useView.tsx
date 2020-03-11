@@ -30,7 +30,7 @@ const defaultOption: ViewOption = {
   updateCamera: ({ camera }) => camera
 }
 function useView<T extends Camera = Camera>(
-  option: ViewOption = defaultOption
+  option: ViewOption<T> = defaultOption
 ): React.MutableRefObject<T | undefined> {
   const cam = useRef<T>()
   const { size, setDefaultCamera } = useThree()
