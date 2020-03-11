@@ -15,7 +15,7 @@ const material = new MeshBasicMaterial({ color: new Color('lightgreen') })
 
 const Laser = ({ guid, position, rotation, scale }: Laser) => {
   const { camera } = useThree()
-  const { position: shipPosition, flightSpeed, isClashed } = useSelector(
+  const { position: shipPosition, flightSpeed } = useSelector(
     (state: RootStore) => state.spaceShip
   )
   const meteos = useSelector((state: RootStore) => state.meteos)
@@ -41,9 +41,9 @@ const Laser = ({ guid, position, rotation, scale }: Laser) => {
           z: 0
         },
         scale: {
-          x: 0.3,
-          y: 0.3,
-          z: 10
+          x: 1,
+          y: 1,
+          z: 10 + flightSpeed
         }
       })
     )
