@@ -12,7 +12,7 @@ interface Props {
   far: number
 }
 function ControlCamera(props: Props) {
-  const { aspect, setDefaultCamera } = useThree()
+  const { aspect } = useThree()
   const ship = useSelector((state: RootStore) => state.spaceShip)
   const { distance: cameraDistane } = useSelector(
     (state: RootStore) => state.cam
@@ -25,8 +25,9 @@ function ControlCamera(props: Props) {
     width: 1,
     height: 1,
     background: new Color(0x333366),
-    updateCamera: ctx => {
-      ctx.camera.position.z = ship.position.z + cameraDistane
+    updateCamera: ({ camera }) => {
+      camera.position.z = ship.position.z + cameraDistane
+      return camera
     }
   })
 
