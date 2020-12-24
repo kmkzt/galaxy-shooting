@@ -1,10 +1,8 @@
 module.exports = {
   transform: {
-    '^.+\\.(ts|tsx)$': 'ts-jest'
+    '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest'
   },
-  testRegex: '(\\.|/)(test|spec)\\.tsx?$',
-  setupFilesAfterEnv: ['<rootDir>/setupTest.ts'],
-  snapshotSerializers: ['enzyme-to-json/serializer'],
+  testRegex: '(\\.|/)(test|spec)\\.(j|t)sx?$',
   moduleNameMapper: {
     '^@/(.*)': '<rootDir>/src/$1'
   },
