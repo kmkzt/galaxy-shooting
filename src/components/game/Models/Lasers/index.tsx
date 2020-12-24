@@ -13,7 +13,7 @@ import { POINT_INC } from '@/store/Score'
 const geometry = new BoxBufferGeometry(0.3, 0.3, 10)
 const material = new MeshBasicMaterial({ color: new Color('lightgreen') })
 
-const Laser = ({ guid, position, rotation, scale }: Laser) => {
+const LaserComponent = ({ guid, position, rotation, scale }: Laser) => {
   const { camera } = useThree()
   const { position: shipPosition, flightSpeed } = useSelector(
     (state: RootStore) => state.spaceShip
@@ -118,7 +118,7 @@ const Lasers = () => {
   return (
     <>
       {Object.values(lasers).map(({ guid, ...info }) => (
-        <Laser key={guid} guid={guid} {...info} />
+        <LaserComponent key={guid} guid={guid} {...info} />
       ))}
     </>
   )

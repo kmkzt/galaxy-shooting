@@ -39,7 +39,7 @@ interface MeteoProps extends Meteo {
   texture?: Texture
 }
 
-const Meteo = memo(
+const MeteoComponent = memo(
   ({
     guid,
     geometry,
@@ -166,9 +166,11 @@ const Meteolites = ({ num }: { num: number }) => {
         return (
           <Suspense
             key={info.guid}
-            fallback={() => <Meteo geometry={fallbackGeometry} {...info} />}
+            fallback={() => (
+              <MeteoComponent geometry={fallbackGeometry} {...info} />
+            )}
           >
-            <Meteo
+            <MeteoComponent
               geometry={geometries[info.pattern]}
               // texture={textures[info.pattern]}
               {...info}
