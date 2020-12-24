@@ -7,16 +7,15 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyPlugin = require('copy-webpack-plugin')
 const Dotenv = require('dotenv-webpack')
 
-const devMode = process.env.NODE_ENV === 'development'
-const config = devMode
-  ? require('./webpack.dev.config')
-  : require('./webpack.prod.config')
+const config =
+  process.env.NODE_ENV === 'development'
+    ? require('./webpack.dev.config')
+    : require('./webpack.prod.config')
 
-const jsEntry = resolve(__dirname, 'src/index')
 /** @type {import('webpack').Configuration} */
 const common = {
   entry: {
-    app: devMode ? ['react-hot-loader/patch', jsEntry] : jsEntry
+    app: resolve(__dirname, 'src/index')
   },
   output: {
     path: resolve('dist'),

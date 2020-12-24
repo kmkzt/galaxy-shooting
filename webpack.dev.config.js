@@ -1,14 +1,10 @@
 const webpack = require('webpack')
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
 const { join, resolve } = require('path')
 
 module.exports = {
   mode: 'development',
   devtool: 'source-map',
-  resolve: {
-    alias: {
-      'react-dom': '@hot-loader/react-dom'
-    }
-  },
   devServer: {
     contentBase: join(__dirname, 'dist'),
     compress: true,
@@ -18,6 +14,6 @@ module.exports = {
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin()
+    new ReactRefreshWebpackPlugin()
   ]
 }

@@ -1,6 +1,5 @@
 import React, { FC, lazy, Suspense } from 'react'
 import styled from 'styled-components'
-import { hot } from 'react-hot-loader/root'
 import Menu from '@/components/menu'
 
 const GamePanel = lazy(() => import('@/components/game'))
@@ -22,4 +21,4 @@ const App: FC = () => {
   )
 }
 
-export default hot(App)
+export default App
