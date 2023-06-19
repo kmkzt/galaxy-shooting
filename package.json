@@ -16,7 +16,7 @@
     "react": "16.12.0",
     "react-dom": "16.12.0",
     "react-redux": "7.1.3",
-    "react-router-dom": "5.1.2",
+    "react-router-dom": "5.3.4",
     "react-spring": "9.0.0-beta.34",
     "react-three-fiber": "4.0.0-beta.6",
     "react-use-gesture": "6.0.14",
