@@ -1,4 +1,4 @@
-const isDev = process.env.NODE_ENV !== 'development'
+const isDev = process.env.NODE_ENV === 'development'
 module.exports = api => {
   api.cache(false)
 
@@ -11,8 +11,8 @@ module.exports = api => {
     plugins: [
       isDev && require.resolve('react-refresh/babel'),
       '@babel/plugin-syntax-dynamic-import',
-      '@babel/plugin-proposal-class-properties',
-      '@babel/plugin-proposal-object-rest-spread'
+      '@babel/plugin-transform-class-properties',
+      '@babel/plugin-transform-object-rest-spread'
     ].filter(Boolean)
   }
 }

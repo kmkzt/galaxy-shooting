@@ -24,20 +24,6 @@ const common = {
   module: {
     rules: [
       {
-        enforce: 'pre',
-        test: /\.tsx?$/,
-        exclude: /node_modules/,
-        use: [
-          {
-            loader: 'eslint-loader',
-            options: {
-              failOnWarning: true,
-              fix: true
-            }
-          }
-        ]
-      },
-      {
         test: /\.[jt]sx?$/,
         exclude: /node_modules/,
         use: [
