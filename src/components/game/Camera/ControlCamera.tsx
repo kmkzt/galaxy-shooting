@@ -1,10 +1,10 @@
-import React, { useLayoutEffect, useRef, useEffect } from 'react'
+import { useLayoutEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { useFrame, useThree } from 'react-three-fiber'
+import { useThree } from 'react-three-fiber'
 import type { RootStore } from '@/store'
 import { CAMERA_UPDATE } from '@/store/Camera'
 import useView from '@/hooks/useView'
-import type { PerspectiveCamera} from 'three';
+import type { PerspectiveCamera } from 'three'
 import { Color } from 'three'
 interface Props {
   position: number[]
@@ -29,7 +29,7 @@ function ControlCamera(props: Props) {
     updateCamera: ({ camera }) => {
       camera.position.z = ship.position.z + cameraDistane
       return camera
-    }
+    },
   })
 
   /**
@@ -42,7 +42,7 @@ function ControlCamera(props: Props) {
         aspect,
         far: ref.current.far,
         near: ref.current.near,
-        position: ref.current.position
+        position: ref.current.position,
       })
     )
   }, [aspect, dispatch, ref])

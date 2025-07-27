@@ -1,5 +1,5 @@
-import type { FC} from 'react';
-import React, { useCallback, useLayoutEffect, useEffect } from 'react'
+import type { FC } from 'react'
+import { useCallback, useEffect } from 'react'
 import styled from 'styled-components'
 import { useSelector, useDispatch } from 'react-redux'
 import type { RootStore } from '@/store'
@@ -25,8 +25,8 @@ export const Menu: FC<{}> = ({}) => {
         position: {
           x: 0,
           y: 0,
-          z: 0
-        }
+          z: 0,
+        },
       })
     )
     playStop()

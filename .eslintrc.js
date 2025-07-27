@@ -5,7 +5,7 @@ module.exports = {
     commonjs: true,
     es6: true
   },
-  extends: ['plugin:react/recommended', 'prettier/@typescript-eslint'],
+  extends: ['plugin:react/recommended', 'prettier'],
   plugins: ['@typescript-eslint', 'prettier', 'react', 'react-hooks'],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -35,6 +35,7 @@ module.exports = {
     'react/no-deprecated': 'error',
     'react/display-name': 'off',
     'react/prop-types': 'off',
+    'react/no-unknown-property': ['error', { ignore: ['position', 'rotation', 'scale', 'geometry', 'material', 'object', 'attach', 'transparent', 'args', 'distance', 'intensity'] }],
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
     // TypeScript specific rules
@@ -60,7 +61,8 @@ module.exports = {
         semi: false,
         singleQuote: true,
         printWidth: 80,
-        tabWidth: 2
+        tabWidth: 2,
+        trailingComma: 'es5'
       }
     ]
   }

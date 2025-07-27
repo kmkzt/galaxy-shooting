@@ -11,7 +11,7 @@ export type State = {
 }
 export const initialState: State = {
   spaceShip: false,
-  meteolites: false
+  meteolites: false,
 }
 export const LOAD_UPDATE = load<Partial<State>>('UPDATE')
 export const LOAD_RESET = load('RESET')

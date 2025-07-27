@@ -1,6 +1,6 @@
 import polyfill from '@juggle/resize-observer'
 import { Fog } from 'three'
-import type { FC} from 'react';
+import type { FC } from 'react'
 import React, { Suspense, lazy } from 'react'
 import { Provider } from 'react-redux'
 import { Canvas } from 'react-three-fiber'
@@ -22,7 +22,7 @@ const defaultCameraOption = {
   position: [0, 0, CAMERA_DISTANCE],
   near: NEAR,
   far: FAR,
-  fov: FOV
+  fov: FOV,
 }
 
 const GameApp = () => {

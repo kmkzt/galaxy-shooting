@@ -1,4 +1,4 @@
-import type { FC} from 'react';
+import type { FC } from 'react'
 import React, { useCallback } from 'react'
 import styled from 'styled-components'
 import { Keyboard } from '@/enum/keyboard'

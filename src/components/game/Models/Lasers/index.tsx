@@ -1,13 +1,13 @@
-import React, { useCallback, useLayoutEffect } from 'react'
+import { useCallback, useLayoutEffect } from 'react'
 import { useThree } from 'react-three-fiber'
 import { useSelector, useDispatch } from 'react-redux'
 import type { RootStore } from '@/store'
 import useGameFrame from '@/hooks/useGameFrame'
 import { BoxBufferGeometry, Color, MeshBasicMaterial } from 'three'
-import type { Meteo} from '@/store/Meteolites';
+import type { Meteo } from '@/store/Meteolites'
 import { METEO_REMOVE, METEO_REPLACE } from '@/store/Meteolites'
 import { touchObject } from '@/utils/touchObject'
-import type { Laser} from '@/store/Lasers';
+import type { Laser } from '@/store/Lasers'
 import { LASER_REPLACE, LASER_ADD, LASER_REMOVE } from '@/store/Lasers'
 import { IS_GAME_ACTIVE } from '@/store/selectors'
 import { POINT_INC } from '@/store/Score'
@@ -40,20 +40,20 @@ const LaserComponent = ({ guid, position, rotation, scale }: Laser) => {
         rotation: {
           x: 0,
           y: 0,
-          z: 0
+          z: 0,
         },
         scale: {
           x: 1,
           y: 1,
-          z: 10 + flightSpeed
-        }
+          z: 10 + flightSpeed,
+        },
       })
     )
     if (breakMeteo) {
       dispatch(
         METEO_REPLACE({
           ...breakMeteo,
-          color: new Color('red')
+          color: new Color('red'),
         })
       )
       setTimeout(() => {
@@ -70,7 +70,7 @@ const LaserComponent = ({ guid, position, rotation, scale }: Laser) => {
     dispatch(
       LASER_REPLACE({
         guid,
-        position: updatePosition
+        position: updatePosition,
       })
     )
   })
@@ -96,8 +96,8 @@ const Lasers = () => {
         scale: {
           x: 0.3,
           y: 0.3,
-          z: 10
-        }
+          z: 10,
+        },
       } as any)
     )
   }, [dispatch, shipPosition])

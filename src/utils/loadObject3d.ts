@@ -1,4 +1,4 @@
-import type { Mesh, Group, Texture } from 'three';
+import type { Mesh, Group, Texture } from 'three'
 import { TextureLoader } from 'three'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
 
@@ -10,7 +10,7 @@ interface LoadObjectParam {
 export const loadObject3D = async ({
   resourcePath,
   texturePath,
-  objectPath
+  objectPath,
 }: LoadObjectParam): Promise<Group> =>
   new Promise((resolve, reject) => {
     setTimeout(() => reject(), 100000)
@@ -18,7 +18,7 @@ export const loadObject3D = async ({
     const loader = new OBJLoader()
     loader.setResourcePath((resourcePath || '/') + '/assets/textures')
     loader.load(objectPath, (obj: Group) => {
-      obj.traverse(child => {
+      obj.traverse((child) => {
         if ((child as any).isMesh) {
           ;((child as Mesh).material as any).normalMap = texture
         }

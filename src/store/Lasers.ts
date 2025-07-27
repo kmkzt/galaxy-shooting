@@ -30,7 +30,7 @@ export const reducer = (state: State = initialState, action: Action): State => {
   if (isType(action, LASERS_UPDATE)) {
     return {
       ...state,
-      ...action.payload
+      ...action.payload,
     }
   }
   if (isType(action, LASER_ADD)) {
@@ -38,8 +38,8 @@ export const reducer = (state: State = initialState, action: Action): State => {
       ...state,
       [nextId]: {
         guid: nextId,
-        ...action.payload
-      }
+        ...action.payload,
+      },
     }
     nextId += 1
     return updateLaser
@@ -49,13 +49,13 @@ export const reducer = (state: State = initialState, action: Action): State => {
       ...state,
       [action.payload.guid]: {
         ...state[action.payload.guid],
-        ...action.payload
-      }
+        ...action.payload,
+      },
     }
   }
   if (isType(action, LASER_REMOVE)) {
     const guid = action.payload
-    const { [guid]: _remove, ...update } = state
+    const { [guid]: _, ...update } = state
     return update
   }
   if (isType(action, LASERS_RESET)) {

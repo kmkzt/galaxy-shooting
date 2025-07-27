@@ -1,11 +1,7 @@
-import React, { useCallback } from 'react'
+import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import type {
-  State as MeteoState} from '@/store/Meteolites';
-import {
-  METEOS_UPDATE,
-  METEOS_REPLACE_ALL
-} from '@/store/Meteolites'
+import type { State as MeteoState } from '@/store/Meteolites'
+import { METEOS_REPLACE_ALL } from '@/store/Meteolites'
 import { getRandom } from '@/utils/getRandom'
 import type { RootStore } from '@/store'
 
@@ -31,26 +27,26 @@ const useMeteoData = ({ patternNum }: { patternNum: number }) => {
               position: {
                 x: getRandom({
                   min: (-DISPLAY_SIZE * ASPECT) / 2,
-                  max: (DISPLAY_SIZE * ASPECT) / 2
+                  max: (DISPLAY_SIZE * ASPECT) / 2,
                 }),
                 y: getRandom({
                   min: -DISPLAY_SIZE / 2,
-                  max: DISPLAY_SIZE / 2
+                  max: DISPLAY_SIZE / 2,
                 }),
-                z: getRandom({ min: DISTANCE, max: DISTANCE * 2 })
+                z: getRandom({ min: DISTANCE, max: DISTANCE * 2 }),
               },
               rotation: {
                 x: 0,
                 y: 0,
-                z: 0
+                z: 0,
               },
               scale: {
                 x: randomScale,
                 y: randomScale,
-                z: randomScale
+                z: randomScale,
               },
-              pattern
-            }
+              pattern,
+            },
           }
         }, {})
       dispatch(METEOS_REPLACE_ALL(meteoData))
@@ -59,7 +55,7 @@ const useMeteoData = ({ patternNum }: { patternNum: number }) => {
   )
 
   return {
-    set
+    set,
   }
 }
 export default useMeteoData

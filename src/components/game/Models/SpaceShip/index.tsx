@@ -1,11 +1,5 @@
-import React, {
-  memo,
-  Fragment,
-  useLayoutEffect,
-  useCallback,
-  Suspense
-} from 'react'
-import type { Loader, Group} from 'three';
+import { memo, Fragment, useLayoutEffect, useCallback, Suspense } from 'react'
+import type { Loader, Group } from 'three'
 import { Mesh, ConeGeometry } from 'three'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { useThree, useLoader } from 'react-three-fiber'
@@ -28,21 +22,15 @@ const ROTATE_UNIT = 0.1
 const fallbackObject = new Mesh(new ConeGeometry())
 const SpaceShip = memo(() => {
   const { mouse, aspect } = useThree()
-  const {
-    position,
-    rotation,
-    scale,
-    flightSpeed,
-    isRotation,
-    isClashed
-  } = useSelector((state: RootStore) => state.spaceShip)
+  const { position, rotation, scale, flightSpeed, isRotation, isClashed } =
+    useSelector((state: RootStore) => state.spaceShip)
   const meteos = useSelector((state: RootStore) => state.meteos)
   const dispatch = useDispatch()
   const load = useSelector((state: RootStore) => state.load.spaceShip)
   const handleClick = useCallback(() => {
     dispatch(
       SPACESHIP_UPDATE({
-        isRotation: !isRotation
+        isRotation: !isRotation,
       })
     )
   }, [dispatch, isRotation])
@@ -68,13 +56,13 @@ const SpaceShip = memo(() => {
           rotation: {
             x: obj.rotation.x - Math.PI,
             y: obj.rotation.y,
-            z: obj.rotation.z
+            z: obj.rotation.z,
           },
           scale: {
             x: obj.scale.x / 2,
             y: obj.scale.y / 2,
-            z: obj.scale.z / 2
-          }
+            z: obj.scale.z / 2,
+          },
         })
       )
     },
@@ -95,7 +83,7 @@ const SpaceShip = memo(() => {
     fixSpaceShipObject(shipObj)
     dispatch(
       LOAD_UPDATE({
-        spaceShip: true
+        spaceShip: true,
       })
     )
   }, [dispatch, fixSpaceShipObject, load, shipObj])
@@ -112,7 +100,7 @@ const SpaceShip = memo(() => {
           touchObject(me, {
             position,
             rotation,
-            scale
+            scale,
           })
         ),
         // spaceShip Moving
@@ -120,13 +108,13 @@ const SpaceShip = memo(() => {
           ...position,
           x: mousemove_x * aspect * 14,
           y: mousemove_y * 14,
-          z: position.z - flightSpeed
+          z: position.z - flightSpeed,
         },
         // spaceShip rotation
         rotation: {
           ...rotation,
-          z: isRotation ? rotation.z + ROTATE_UNIT : rotation.z
-        }
+          z: isRotation ? rotation.z + ROTATE_UNIT : rotation.z,
+        },
       })
     )
   })

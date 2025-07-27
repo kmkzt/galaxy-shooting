@@ -1,31 +1,12 @@
-import React, {
-  memo,
-  useRef,
-  useCallback,
-  useLayoutEffect,
-  Suspense
-} from 'react'
+import { memo, useRef, useLayoutEffect, Suspense } from 'react'
 import { useThree, useLoader } from 'react-three-fiber'
-import type {
-  BufferGeometry,
-  Group,
-  Texture,
-  Loader,
-  Geometry
-} from 'three';
-import {
-  IcosahedronGeometry
-} from 'three'
+import type { BufferGeometry, Group, Loader, Geometry } from 'three'
+import { IcosahedronGeometry } from 'three'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import type { RootStore } from '@/store'
 import { useSelector, useDispatch } from 'react-redux'
-import type {
-  Meteo} from '@/store/Meteolites';
-import {
-  METEO_REPLACE,
-  METEOS_UPDATE,
-  State as MeteoState
-} from '@/store/Meteolites'
+import type { Meteo } from '@/store/Meteolites'
+import { METEO_REPLACE, State as MeteoState } from '@/store/Meteolites'
 import useGameFrame from '@/hooks/useGameFrame'
 import useMeteoData from '@/hooks/useMeteoData'
 import { getRandom } from '@/utils/getRandom'
@@ -39,14 +20,12 @@ const dracoLoaderExtend = (loader: Loader) => {
 
 interface MeteoProps extends Meteo {
   geometry: BufferGeometry | Geometry
-  texture?: Texture
 }
 
 const MeteoComponent = memo(
   ({
     guid,
     geometry,
-    texture,
     position,
     rotation,
     scale,
@@ -71,24 +50,24 @@ const MeteoComponent = memo(
       const updateScale = {
         x: randomScale,
         y: randomScale,
-        z: randomScale
+        z: randomScale,
       }
 
       const updatePosition = {
         x: getRandom({
           min: (-CAMERA_DISTANCE * aspect) / 2,
-          max: (CAMERA_DISTANCE * aspect) / 2
+          max: (CAMERA_DISTANCE * aspect) / 2,
         }),
         y: getRandom({
           min: -CAMERA_DISTANCE / 2,
-          max: CAMERA_DISTANCE / 2
+          max: CAMERA_DISTANCE / 2,
         }),
-        z: position.z - camera.far
+        z: position.z - camera.far,
       }
       const updateRotation = {
         x: rotation.x + Math.PI * 0.05,
         y: rotation.y + Math.PI * 0.05,
-        z: rotation.z + Math.PI * 0.05
+        z: rotation.z + Math.PI * 0.05,
       }
       dispatch(
         METEO_REPLACE({
@@ -96,7 +75,7 @@ const MeteoComponent = memo(
           guid,
           scale: isFrameOut ? updateScale : scale,
           position: isFrameOut ? updatePosition : position,
-          rotation: isMouseOver ? updateRotation : rotation
+          rotation: isMouseOver ? updateRotation : rotation,
         })
       )
     })
@@ -142,30 +121,27 @@ const Meteolites = ({ num }: { num: number }) => {
       require('./drc/Meteolite1.drc'),
       require('./drc/Meteolite2.drc'),
       require('./drc/Meteolite3.drc'),
-      require('./drc/Meteolite4.drc')
+      require('./drc/Meteolite4.drc'),
     ],
     dracoLoaderExtend
   )
 
   const { set: createMeteosData } = useMeteoData({
-    patternNum: geometries.length
+    patternNum: geometries.length,
   })
 
   useLayoutEffect(() => {
     if (!geometries || load) return
-    geometries.map((obj: BufferGeometry, i: number) => {
-      obj
-    })
     createMeteosData(num)
     dispatch(
       LOAD_UPDATE({
-        meteolites: true
+        meteolites: true,
       })
     )
   }, [createMeteosData, dispatch, load, geometries, num])
   return (
     <>
-      {Object.values(meteos).map((info: Meteo, i: number) => {
+      {Object.values(meteos).map((info: Meteo) => {
         return (
           <Suspense
             key={info.guid}

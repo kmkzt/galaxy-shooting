@@ -1,4 +1,4 @@
-import type { Action } from 'redux';
+import type { Action } from 'redux'
 import { createStore, combineReducers } from 'redux'
 import actionCreatorFactory, { isType } from 'typescript-fsa'
 import * as Score from './Score'
@@ -28,7 +28,7 @@ const moduleReducer = combineReducers({
   cam: Camera.reducer,
   meteos: Meteolites.reducer,
   lasers: Lasers.reducer,
-  load: Load.reducer
+  load: Load.reducer,
 })
 const rootReducer = (
   state: RootStore = moduleReducer(undefined, { type: '' }),
@@ -37,7 +37,7 @@ const rootReducer = (
   if (isType(action, ROOT_UPDATE)) {
     return {
       ...state,
-      ...action.payload
+      ...action.payload,
     }
   }
   return moduleReducer(state, action)

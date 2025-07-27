@@ -15,7 +15,7 @@ export const initialState: State = {
   isRotation: false,
   position: { x: 0, y: 0, z: 0 },
   rotation: { x: 0, y: 0, z: 0 },
-  scale: { x: 1, y: 1, z: 1 }
+  scale: { x: 1, y: 1, z: 1 },
 }
 export interface State extends Obj {
   flightSpeed: number

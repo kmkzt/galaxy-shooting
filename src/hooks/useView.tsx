@@ -1,7 +1,7 @@
-import type React from 'react';
-import { useRef, useMemo, useEffect, createContext } from 'react'
+import type React from 'react'
+import { useRef, useMemo } from 'react'
 import { useFrame, useThree } from 'react-three-fiber'
-import type { Color, Scene, Vector2, Camera } from 'three';
+import type { Color, Scene, Vector2, Camera } from 'three'
 import { PerspectiveCamera } from 'three'
 
 export interface ViewOption<T extends Camera = any> {
@@ -15,7 +15,7 @@ export interface ViewOption<T extends Camera = any> {
   updateCamera: ({
     camera,
     scene,
-    mouse
+    mouse,
   }: {
     camera: T
     scene: Scene
@@ -29,35 +29,35 @@ const defaultOption: ViewOption = {
   bottom: 0,
   width: 1,
   height: 1,
-  updateCamera: ({ camera }) => camera
+  updateCamera: ({ camera }) => camera,
 }
 function useView<T extends Camera = Camera>(
   option: ViewOption<T> = defaultOption
 ): React.MutableRefObject<T | undefined> {
   const cam = useRef<T>()
-  const { size, setDefaultCamera } = useThree()
+  const { size } = useThree()
 
-  const left = useMemo(() => Math.floor(size.width * option.left), [
-    size.width,
-    option.left
-  ])
-  const bottom = useMemo(() => Math.floor(size.height * option.bottom), [
-    size.height,
-    option.bottom
-  ])
-  const width = useMemo(() => Math.floor(size.width * option.width), [
-    size.width,
-    option.width
-  ])
-  const height = useMemo(() => Math.floor(size.height * option.height), [
-    size.height,
-    option.height
-  ])
+  const left = useMemo(
+    () => Math.floor(size.width * option.left),
+    [size.width, option.left]
+  )
+  const bottom = useMemo(
+    () => Math.floor(size.height * option.bottom),
+    [size.height, option.bottom]
+  )
+  const width = useMemo(
+    () => Math.floor(size.width * option.width),
+    [size.width, option.width]
+  )
+  const height = useMemo(
+    () => Math.floor(size.height * option.height),
+    [size.height, option.height]
+  )
 
   /**
    * https://github.com/react-spring/react-three-fiber/blob/master/recipes.md#heads-up-display-rendering-multiple-scenes
    */
-  useFrame(({ scene, camera, gl, mouse, raycaster }) => {
+  useFrame(({ scene, camera, gl, mouse }) => {
     if (!cam.current) return
     option.updateCamera({ camera: cam.current, scene, mouse })
     gl.autoClear = true

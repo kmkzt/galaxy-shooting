@@ -9,7 +9,7 @@ export type State = {
   active: boolean
 }
 export const initialState: State = {
-  active: false
+  active: false,
 }
 export const PLAY_START = play('START')
 export const PLAY_STOP = play('STOP')

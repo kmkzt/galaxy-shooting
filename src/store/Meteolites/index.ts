@@ -29,7 +29,7 @@ export const reducer = (state: State = initialState, action: Action): State => {
   if (isType(action, METEOS_UPDATE)) {
     return {
       ...state,
-      ...action.payload
+      ...action.payload,
     }
   }
   if (isType(action, METEO_REPLACE)) {
@@ -37,8 +37,8 @@ export const reducer = (state: State = initialState, action: Action): State => {
       ...state,
       [action.payload.guid]: {
         ...state[action.payload.guid],
-        ...action.payload
-      }
+        ...action.payload,
+      },
     }
   }
   if (isType(action, METEO_REMOVE)) {
