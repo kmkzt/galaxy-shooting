@@ -4,8 +4,8 @@
   "private": true,
   "author": "kmkzt",
   "scripts": {
-    "dev": "NODE_ENV=development webpack-dev-server",
-    "build": "rimraf dist && NODE_ENV=production webpack -p ",
+    "dev": "NODE_ENV=development NODE_OPTIONS=--openssl-legacy-provider webpack-dev-server",
+    "build": "rimraf dist && NODE_ENV=production NODE_OPTIONS=--openssl-legacy-provider webpack -p ",
     "test": "jest",
     "lint": "eslint -c .eslintrc.js --fix \"./src/**/**.{ts,tsx}\"",
     "lint:fix": "prettier --write ./src/**/*.{ts,tsx}"
