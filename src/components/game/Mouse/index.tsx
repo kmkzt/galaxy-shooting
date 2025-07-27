@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect } from 'react'
+import { useCallback, useLayoutEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { useThree } from 'react-three-fiber'
 import { PLAY_STOP } from '@/store/Play'
@@ -42,12 +42,9 @@ function useElementMouse({ el }: Props) {
   /**
    * MOUSE LEAVE BEHAVIOR
    */
-  const handleMouseLeave = useCallback(
-    (_e: MouseEvent) => {
-      dispatch(PLAY_STOP())
-    },
-    [dispatch]
-  )
+  const handleMouseLeave = useCallback(() => {
+    dispatch(PLAY_STOP())
+  }, [dispatch])
   useLayoutEffect(() => {
     if (!el) return
     el.addEventListener('pointermove', handlePointerMove)

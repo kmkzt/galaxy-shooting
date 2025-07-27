@@ -1,7 +1,8 @@
-import React, { FC, useCallback, useLayoutEffect, useEffect } from 'react'
+import type { FC } from 'react'
+import { useCallback, useEffect } from 'react'
 import styled from 'styled-components'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootStore } from '@/store'
+import type { RootStore } from '@/store'
 import { PLAY_STOP } from '@/store/Play'
 import useMeteoData from '@/hooks/useMeteoData'
 import { SPACESHIP_UPDATE } from '@/store/SpaceShip'
@@ -24,8 +25,8 @@ export const Menu: FC<{}> = ({}) => {
         position: {
           x: 0,
           y: 0,
-          z: 0
-        }
+          z: 0,
+        },
       })
     )
     playStop()

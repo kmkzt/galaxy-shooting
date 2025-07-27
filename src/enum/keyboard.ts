@@ -97,5 +97,5 @@ export enum Keyboard {
   OPEN_BRACKET = 219,
   BACK_SLASH = 220,
   CLOSE_BRACKET = 221,
-  SINGLE_QUOTE = 222
+  SINGLE_QUOTE = 222,
 }

@@ -1,8 +1,8 @@
-import React from 'react'
 import useView from '@/hooks/useView'
-import { OrthographicCamera, Color, Object3D, Vector3 } from 'three'
+import type { OrthographicCamera } from 'three'
+import { Color } from 'three'
 import { useSelector } from 'react-redux'
-import { RootStore } from '@/store'
+import type { RootStore } from '@/store'
 
 function MapCamera(props: any) {
   const ship = useSelector((state: RootStore) => state.spaceShip)
@@ -17,7 +17,7 @@ function MapCamera(props: any) {
       camera.position.y = 20
       camera.lookAt(0, 0, ship.position.z)
       return camera
-    }
+    },
   })
 
   return <perspectiveCamera ref={ref} {...props} />

@@ -1,4 +1,3 @@
-import React from 'react'
 import { useSelector } from 'react-redux'
 import { useFrame } from 'react-three-fiber'
 import { IS_GAME_ACTIVE } from '@/store/selectors'
