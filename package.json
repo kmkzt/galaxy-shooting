@@ -10,8 +10,8 @@
     "test": "vitest --passWithNoTests",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
-    "lint": "eslint --config .eslintrc.js --fix \"./src/**/*.{ts,tsx}\"",
-    "lint:fix": "prettier --write ./src/**/*.{ts,tsx}"
+    "lint": "ESLINT_USE_FLAT_CONFIG=false eslint --config .eslintrc.js \"./src/**/*.{ts,tsx}\"",
+    "lint:fix": "prettier --write ./src/**/*.{ts,tsx} && pnpm lint --fix"
   },
   "dependencies": {
     "@juggle/resize-observer": "2.5.0",
