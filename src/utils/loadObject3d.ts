@@ -1,4 +1,5 @@
-import { Mesh, Group, TextureLoader, Texture } from 'three'
+import type { Mesh, Group, Texture } from 'three';
+import { TextureLoader } from 'three'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js'
 
 interface LoadObjectParam {

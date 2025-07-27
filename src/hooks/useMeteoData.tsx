@@ -1,12 +1,13 @@
 import React, { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import type {
+  State as MeteoState} from '@/store/Meteolites';
 import {
   METEOS_UPDATE,
-  State as MeteoState,
   METEOS_REPLACE_ALL
 } from '@/store/Meteolites'
 import { getRandom } from '@/utils/getRandom'
-import { RootStore } from '@/store'
+import type { RootStore } from '@/store'
 
 const useMeteoData = ({ patternNum }: { patternNum: number }) => {
   const camera = useSelector((state: RootStore) => state.cam)

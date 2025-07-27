@@ -1,7 +1,8 @@
-import React, { FC, useCallback, useLayoutEffect, useEffect } from 'react'
+import type { FC} from 'react';
+import React, { useCallback, useLayoutEffect, useEffect } from 'react'
 import styled from 'styled-components'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootStore } from '@/store'
+import type { RootStore } from '@/store'
 import { PLAY_STOP } from '@/store/Play'
 import useMeteoData from '@/hooks/useMeteoData'
 import { SPACESHIP_UPDATE } from '@/store/SpaceShip'

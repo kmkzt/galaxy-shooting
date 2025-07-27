@@ -1,4 +1,4 @@
-import { Obj, Xyz } from '@/interface/Obj'
+import type { Obj, Xyz } from '@/interface/Obj'
 
 export const touchObject = <T1 extends Obj, T2 extends Obj = T1>(
   obj1: T1,

@@ -1,4 +1,5 @@
-import { Object3D, Color } from 'three'
+import type { Color } from 'three';
+import { Object3D } from 'three'
 
 export interface Xyz {
   x: number

@@ -1,6 +1,7 @@
 import polyfill from '@juggle/resize-observer'
 import { Fog } from 'three'
-import React, { FC, Suspense, lazy } from 'react'
+import type { FC} from 'react';
+import React, { Suspense, lazy } from 'react'
 import { Provider } from 'react-redux'
 import { Canvas } from 'react-three-fiber'
 import store from '@/store'

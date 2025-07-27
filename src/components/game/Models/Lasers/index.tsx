@@ -1,12 +1,14 @@
 import React, { useCallback, useLayoutEffect } from 'react'
 import { useThree } from 'react-three-fiber'
 import { useSelector, useDispatch } from 'react-redux'
-import { RootStore } from '@/store'
+import type { RootStore } from '@/store'
 import useGameFrame from '@/hooks/useGameFrame'
 import { BoxBufferGeometry, Color, MeshBasicMaterial } from 'three'
-import { Meteo, METEO_REMOVE, METEO_REPLACE } from '@/store/Meteolites'
+import type { Meteo} from '@/store/Meteolites';
+import { METEO_REMOVE, METEO_REPLACE } from '@/store/Meteolites'
 import { touchObject } from '@/utils/touchObject'
-import { Laser, LASER_REPLACE, LASER_ADD, LASER_REMOVE } from '@/store/Lasers'
+import type { Laser} from '@/store/Lasers';
+import { LASER_REPLACE, LASER_ADD, LASER_REMOVE } from '@/store/Lasers'
 import { IS_GAME_ACTIVE } from '@/store/selectors'
 import { POINT_INC } from '@/store/Score'
 

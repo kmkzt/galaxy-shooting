@@ -5,14 +5,15 @@ import React, {
   useCallback,
   Suspense
 } from 'react'
-import { Loader, Group, Mesh, ConeGeometry } from 'three'
+import type { Loader, Group} from 'three';
+import { Mesh, ConeGeometry } from 'three'
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader'
 import { useThree, useLoader } from 'react-three-fiber'
-import { RootStore } from '@/store'
+import type { RootStore } from '@/store'
 import { useSelector, useDispatch } from 'react-redux'
 import { SPACESHIP_UPDATE } from '@/store/SpaceShip'
 import { touchObject } from '@/utils/touchObject'
-import { Meteo } from '@/store/Meteolites'
+import type { Meteo } from '@/store/Meteolites'
 import useGameFrame from '@/hooks/useGameFrame'
 import { LOAD_UPDATE } from '@/store/Load'
 

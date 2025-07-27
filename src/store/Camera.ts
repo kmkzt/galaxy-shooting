@@ -1,8 +1,8 @@
 // reducer.ts
-import { Action } from 'redux'
+import type { Action } from 'redux'
 import { isType } from 'typescript-fsa'
 import actionCreatorFactory from 'typescript-fsa'
-import { Xyz } from '@/interface/Obj'
+import type { Xyz } from '@/interface/Obj'
 
 const cam = actionCreatorFactory('CAMERA')
 

@@ -6,19 +6,22 @@ import React, {
   Suspense
 } from 'react'
 import { useThree, useLoader } from 'react-three-fiber'
-import {
+import type {
   BufferGeometry,
   Group,
   Texture,
   Loader,
-  IcosahedronGeometry,
   Geometry
+} from 'three';
+import {
+  IcosahedronGeometry
 } from 'three'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
-import { RootStore } from '@/store'
+import type { RootStore } from '@/store'
 import { useSelector, useDispatch } from 'react-redux'
+import type {
+  Meteo} from '@/store/Meteolites';
 import {
-  Meteo,
   METEO_REPLACE,
   METEOS_UPDATE,
   State as MeteoState

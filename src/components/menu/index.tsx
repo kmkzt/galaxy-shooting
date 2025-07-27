@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react'
 import { Provider, useSelector } from 'react-redux'
-import store, { RootStore } from '@/store'
+import type { RootStore } from '@/store';
+import store from '@/store'
 import Start from './Start'
 import Loading from './Loading'
 

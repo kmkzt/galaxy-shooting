@@ -1,10 +1,11 @@
 import React, { useLayoutEffect, useRef, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useFrame, useThree } from 'react-three-fiber'
-import { RootStore } from '@/store'
+import type { RootStore } from '@/store'
 import { CAMERA_UPDATE } from '@/store/Camera'
 import useView from '@/hooks/useView'
-import { PerspectiveCamera, Color } from 'three'
+import type { PerspectiveCamera} from 'three';
+import { Color } from 'three'
 interface Props {
   position: number[]
   fov: number

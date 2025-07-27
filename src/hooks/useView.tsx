@@ -1,6 +1,8 @@
-import React, { useRef, useMemo, useEffect, createContext } from 'react'
+import type React from 'react';
+import { useRef, useMemo, useEffect, createContext } from 'react'
 import { useFrame, useThree } from 'react-three-fiber'
-import { PerspectiveCamera, Color, Scene, Vector2, Camera } from 'three'
+import type { Color, Scene, Vector2, Camera } from 'three';
+import { PerspectiveCamera } from 'three'
 
 export interface ViewOption<T extends Camera = any> {
   isMain?: boolean

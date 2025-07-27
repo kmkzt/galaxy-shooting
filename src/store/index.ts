@@ -1,4 +1,5 @@
-import { createStore, combineReducers, Action } from 'redux'
+import type { Action } from 'redux';
+import { createStore, combineReducers } from 'redux'
 import actionCreatorFactory, { isType } from 'typescript-fsa'
 import * as Score from './Score'
 import * as Play from './Play'

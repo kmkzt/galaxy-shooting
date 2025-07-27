@@ -1,7 +1,9 @@
-import React, { FC, useCallback } from 'react'
+import type { FC} from 'react';
+import React, { useCallback } from 'react'
 import { useDispatch } from 'react-redux'
 import { PLAY_START } from '@/store/Play'
-import Layer, { Props } from '@/components/style/Layer'
+import type { Props } from '@/components/style/Layer';
+import Layer from '@/components/style/Layer'
 
 const Start: FC<Props> = props => {
   const dispatch = useDispatch()
