@@ -15,12 +15,16 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 12
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
       - name: install
         run: |
-          yarn install
+          pnpm install
       - name: Build
         run: |
-          yarn build
+          pnpm build
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
