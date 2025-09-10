@@ -1,0 +1,1 @@
+import{u as o}from"./index-CTzosyqu.js";import{l as t}from"./index-lTpgRmya.js";const c=e=>e.play.active&&!e.spaceShip.isClashed;function p(e,s){const a=o(c);t((r,i)=>{a&&e(r,i)},s)}export{c as I,p as u};
