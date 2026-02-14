@@ -1,0 +1,74 @@
+name: Update Visual Snapshots
+
+on:
+  issue_comment:
+    types: [edited]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-snapshots:
+    if: |
+      github.event.issue.pull_request &&
+      contains(github.event.comment.body, '<!-- visual-test-bot -->') &&
+      contains(github.event.comment.body, '- [x] 🚀 スナップショットを更新')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Get PR branch
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+            core.setOutput('ref', pr.head.ref);
+            core.setOutput('sha', pr.head.sha);
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr.outputs.ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install chromium --with-deps
+
+      - name: Regenerate snapshots
+        run: pnpm test:visual:update
+
+      - name: Commit and push updated snapshots
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add 'e2e/**/*.png'
+          if git diff --cached --quiet; then
+            echo "No snapshot changes to commit"
+          else
+            git commit -m "chore: update visual snapshots"
+            git push
+          fi
+
+      - name: Uncheck the checkbox
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.comment.body.replace(
+              '- [x] 🚀 スナップショットを更新',
+              '- [ ] 🚀 スナップショットを更新'
+            );
+            await github.rest.issues.updateComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: context.payload.comment.id,
+              body,
+            });
