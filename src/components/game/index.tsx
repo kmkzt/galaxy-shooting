@@ -1,13 +1,14 @@
 import polyfill from '@juggle/resize-observer'
-import { Fog } from 'three'
-import React, { FC, Suspense, lazy } from 'react'
+import { type FC, lazy, Suspense } from 'react'
 import { Provider } from 'react-redux'
 import { Canvas } from 'react-three-fiber'
+import { Fog } from 'three'
 import store from '@/store'
-import StatsDom from './StatsDom'
 import ControlCamera from './Camera/ControlCamera'
 import MapCamera from './Camera/MapCamera'
 import useElementMouse from './Mouse'
+import StatsDom from './StatsDom'
+
 const Models = lazy(() => import('./Models'))
 /**
  * Camera
@@ -21,7 +22,7 @@ const defaultCameraOption = {
   position: [0, 0, CAMERA_DISTANCE],
   near: NEAR,
   far: FAR,
-  fov: FOV
+  fov: FOV,
 }
 
 const GameApp = () => {

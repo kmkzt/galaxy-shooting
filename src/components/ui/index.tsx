@@ -1,7 +1,6 @@
-import React from 'react'
 import { Provider } from 'react-redux'
-import store from '@/store'
 import { Menu } from '@/components/ui/Menu'
+import store from '@/store'
 
 const UiPanel = () => (
   <Provider store={store}>

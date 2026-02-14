@@ -1,4 +1,4 @@
-import React, { FC, lazy, Suspense } from 'react'
+import { type FC, lazy, Suspense } from 'react'
 import styled from 'styled-components'
 import Menu from '@/components/menu'
 

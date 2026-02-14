@@ -1,18 +1,16 @@
 // reducer.ts
-import { Action } from 'redux'
-import { isType } from 'typescript-fsa'
-import actionCreatorFactory from 'typescript-fsa'
-import { Obj } from '@/interface/Obj'
-import { Omit } from 'react-redux'
+
+import type { Omit } from 'react-redux'
+import type { Action } from 'redux'
+import actionCreatorFactory, { isType } from 'typescript-fsa'
+import type { Obj } from '@/interface/Obj'
 
 const lasers = actionCreatorFactory('LASER')
 
 export const LASERS_UPDATE = lasers<State>('UPDATE')
 export const LASER_ADD = lasers<Omit<Laser, 'guid'>>('ADD')
 
-export const LASER_REPLACE = lasers<Partial<Laser> & { guid: number }>(
-  'REPLACE'
-)
+export const LASER_REPLACE = lasers<Partial<Laser> & { guid: number }>('REPLACE')
 export const LASER_REMOVE = lasers<number>('REMOVE')
 export const LASERS_RESET = lasers('RESET')
 
@@ -30,7 +28,7 @@ export const reducer = (state: State = initialState, action: Action): State => {
   if (isType(action, LASERS_UPDATE)) {
     return {
       ...state,
-      ...action.payload
+      ...action.payload,
     }
   }
   if (isType(action, LASER_ADD)) {
@@ -38,8 +36,8 @@ export const reducer = (state: State = initialState, action: Action): State => {
       ...state,
       [nextId]: {
         guid: nextId,
-        ...action.payload
-      }
+        ...action.payload,
+      },
     }
     nextId += 1
     return updateLaser
@@ -49,8 +47,8 @@ export const reducer = (state: State = initialState, action: Action): State => {
       ...state,
       [action.payload.guid]: {
         ...state[action.payload.guid],
-        ...action.payload
-      }
+        ...action.payload,
+      },
     }
   }
   if (isType(action, LASER_REMOVE)) {

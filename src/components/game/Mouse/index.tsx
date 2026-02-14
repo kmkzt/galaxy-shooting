@@ -1,4 +1,4 @@
-import React, { useCallback, useLayoutEffect } from 'react'
+import { useCallback, useLayoutEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { useThree } from 'react-three-fiber'
 import { PLAY_STOP } from '@/store/Play'
@@ -28,14 +28,14 @@ function useElementMouse({ el }: Props) {
        */
       raycaster.setFromCamera(mouse, camera)
     },
-    [camera, el, mouse, raycaster]
+    [camera, el, mouse, raycaster],
   )
   const handlePointerMove = useCallback(
     (e: PointerEvent | MouseEvent) => {
       e.preventDefault()
       handleMouse(e.clientX, e.clientY)
     },
-    [handleMouse]
+    [handleMouse],
   )
 
   const handleTouchMove = useCallback((e: TouchEvent) => e.preventDefault(), [])
@@ -46,7 +46,7 @@ function useElementMouse({ el }: Props) {
     (_e: MouseEvent) => {
       dispatch(PLAY_STOP())
     },
-    [dispatch]
+    [dispatch],
   )
   useLayoutEffect(() => {
     if (!el) return

@@ -1,4 +1,4 @@
-import React, { FC, useCallback } from 'react'
+import { type FC, useCallback } from 'react'
 import styled from 'styled-components'
 import { Keyboard } from '@/enum/keyboard'
 
@@ -21,16 +21,16 @@ export const Controler: FC<Props> = ({ onKeyboard }) => {
   }, [onKeyboard])
   return (
     <Wrap>
-      <button className="up" onClick={handleClickUp}>
+      <button type="button" className="up" onClick={handleClickUp}>
         ↑
       </button>
-      <button className="right" onClick={handleClickRight}>
+      <button type="button" className="right" onClick={handleClickRight}>
         →
       </button>
-      <button className="down" onClick={handleClickDown}>
+      <button type="button" className="down" onClick={handleClickDown}>
         ↓
       </button>
-      <button className="left" onClick={handleClickLeft}>
+      <button type="button" className="left" onClick={handleClickLeft}>
         ←
       </button>
     </Wrap>

@@ -1,10 +1,11 @@
-import React, { useLayoutEffect, useRef, useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { useFrame, useThree } from 'react-three-fiber'
-import { RootStore } from '@/store'
-import { CAMERA_UPDATE } from '@/store/Camera'
+import { useLayoutEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useThree } from 'react-three-fiber'
+import { Color, type PerspectiveCamera } from 'three'
 import useView from '@/hooks/useView'
-import { PerspectiveCamera, Color } from 'three'
+import type { RootStore } from '@/store'
+import { CAMERA_UPDATE } from '@/store/Camera'
+
 interface Props {
   position: number[]
   fov: number
@@ -14,9 +15,7 @@ interface Props {
 function ControlCamera(props: Props) {
   const { aspect } = useThree()
   const ship = useSelector((state: RootStore) => state.spaceShip)
-  const { distance: cameraDistane } = useSelector(
-    (state: RootStore) => state.cam
-  )
+  const { distance: cameraDistane } = useSelector((state: RootStore) => state.cam)
   const dispatch = useDispatch()
   const ref = useView<PerspectiveCamera>({
     isMain: true,
@@ -28,7 +27,7 @@ function ControlCamera(props: Props) {
     updateCamera: ({ camera }) => {
       camera.position.z = ship.position.z + cameraDistane
       return camera
-    }
+    },
   })
 
   /**
@@ -41,8 +40,8 @@ function ControlCamera(props: Props) {
         aspect,
         far: ref.current.far,
         near: ref.current.near,
-        position: ref.current.position
-      })
+        position: ref.current.position,
+      }),
     )
   }, [aspect, dispatch, ref])
 

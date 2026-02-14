@@ -1,7 +1,6 @@
 // reducer.ts
-import { Action } from 'redux'
-import { isType } from 'typescript-fsa'
-import actionCreatorFactory from 'typescript-fsa'
+import type { Action } from 'redux'
+import actionCreatorFactory, { isType } from 'typescript-fsa'
 
 const play = actionCreatorFactory('PLAY')
 
@@ -9,7 +8,7 @@ export type State = {
   active: boolean
 }
 export const initialState: State = {
-  active: false
+  active: false,
 }
 export const PLAY_START = play('START')
 export const PLAY_STOP = play('STOP')

@@ -1,7 +1,6 @@
 // reducer.ts
-import { Action } from 'redux'
-import { isType } from 'typescript-fsa'
-import actionCreatorFactory from 'typescript-fsa'
+import type { Action } from 'redux'
+import actionCreatorFactory, { isType } from 'typescript-fsa'
 
 const load = actionCreatorFactory('LOAD')
 
@@ -11,7 +10,7 @@ export type State = {
 }
 export const initialState: State = {
   spaceShip: false,
-  meteolites: false
+  meteolites: false,
 }
 export const LOAD_UPDATE = load<Partial<State>>('UPDATE')
 export const LOAD_RESET = load('RESET')

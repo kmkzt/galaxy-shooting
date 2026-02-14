@@ -1,8 +1,7 @@
 // reducer.ts
-import { Action } from 'redux'
-import { isType } from 'typescript-fsa'
-import actionCreatorFactory from 'typescript-fsa'
-import { Xyz } from '@/interface/Obj'
+import type { Action } from 'redux'
+import actionCreatorFactory, { isType } from 'typescript-fsa'
+import type { Xyz } from '@/interface/Obj'
 
 const cam = actionCreatorFactory('CAMERA')
 
@@ -18,8 +17,8 @@ export const initialState: State = {
   position: {
     x: 0,
     y: 0,
-    z: 0
-  }
+    z: 0,
+  },
 }
 export interface State {
   fov: number

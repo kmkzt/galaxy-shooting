@@ -1,19 +1,17 @@
-import React, { FC, useCallback, useLayoutEffect, useEffect } from 'react'
+import { type FC, useCallback, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
-import { useSelector, useDispatch } from 'react-redux'
-import { RootStore } from '@/store'
-import { PLAY_STOP } from '@/store/Play'
 import useMeteoData from '@/hooks/useMeteoData'
+import type { RootStore } from '@/store'
+import { PLAY_STOP } from '@/store/Play'
 import { SPACESHIP_UPDATE } from '@/store/SpaceShip'
 
-export const Menu: FC<{}> = ({}) => {
+export const Menu: FC = () => {
   const point = useSelector<RootStore, number>(({ score }) => score.point)
   const shipPosition = useSelector<RootStore, number>(({ spaceShip }) =>
-    Math.floor(spaceShip.position.z)
+    Math.floor(spaceShip.position.z),
   )
-  const meteosCount = useSelector<RootStore, number>(
-    ({ meteos }) => Object.keys(meteos).length
-  )
+  const meteosCount = useSelector<RootStore, number>(({ meteos }) => Object.keys(meteos).length)
   const { set } = useMeteoData({ patternNum: 4 })
   const dispatch = useDispatch()
   const playStop = useCallback(() => dispatch(PLAY_STOP()), [dispatch])
@@ -24,9 +22,9 @@ export const Menu: FC<{}> = ({}) => {
         position: {
           x: 0,
           y: 0,
-          z: 0
-        }
-      })
+          z: 0,
+        },
+      }),
     )
     playStop()
     set(100)
@@ -46,8 +44,12 @@ export const Menu: FC<{}> = ({}) => {
       <div>POINTS: {point}</div>
       <div>SHIP POSITION: {shipPosition}</div>
       <div>METEOLITES: {meteosCount}</div>
-      <button onClick={playStop}>MENU</button>
-      <button onClick={restart}>RESTART</button>
+      <button type="button" onClick={playStop}>
+        MENU
+      </button>
+      <button type="button" onClick={restart}>
+        RESTART
+      </button>
     </Wrap>
   )
 }

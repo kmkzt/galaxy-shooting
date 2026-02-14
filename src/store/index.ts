@@ -1,12 +1,12 @@
-import { createStore, combineReducers, Action } from 'redux'
+import { type Action, combineReducers, createStore } from 'redux'
 import actionCreatorFactory, { isType } from 'typescript-fsa'
-import * as Score from './Score'
-import * as Play from './Play'
-import * as SpaceShip from './SpaceShip'
 import * as Camera from './Camera'
-import * as Meteolites from './Meteolites'
 import * as Lasers from './Lasers'
 import * as Load from './Load'
+import * as Meteolites from './Meteolites'
+import * as Play from './Play'
+import * as Score from './Score'
+import * as SpaceShip from './SpaceShip'
 
 export type RootStore = {
   score: Score.State
@@ -27,22 +27,23 @@ const moduleReducer = combineReducers({
   cam: Camera.reducer,
   meteos: Meteolites.reducer,
   lasers: Lasers.reducer,
-  load: Load.reducer
+  load: Load.reducer,
 })
 const rootReducer = (
   state: RootStore = moduleReducer(undefined, { type: '' }),
-  action: Action
+  action: Action,
 ): RootStore => {
   if (isType(action, ROOT_UPDATE)) {
     return {
       ...state,
-      ...action.payload
+      ...action.payload,
     }
   }
   return moduleReducer(state, action)
 }
-export default createStore<RootStore, any, {}, {}>(
+// biome-ignore lint/suspicious/noExplicitAny: Redux createStore legacy API, will be replaced by Zustand
+export default createStore<RootStore, any, Record<string, never>, Record<string, never>>(
   rootReducer,
-  (<any>window).__REDUX_DEVTOOLS_EXTENSION__ &&
-    (<any>window).__REDUX_DEVTOOLS_EXTENSION__()
+  // biome-ignore lint/suspicious/noExplicitAny: accessing Redux DevTools extension
+  (window as any).__REDUX_DEVTOOLS_EXTENSION__?.(),
 )

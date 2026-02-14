@@ -1,7 +1,6 @@
 // reducer.ts
-import { Action } from 'redux'
-import { isType } from 'typescript-fsa'
-import actionCreatorFactory from 'typescript-fsa'
+import type { Action } from 'redux'
+import actionCreatorFactory, { isType } from 'typescript-fsa'
 
 const score = actionCreatorFactory('SCORE')
 

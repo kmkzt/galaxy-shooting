@@ -1,23 +1,21 @@
-import React, { useCallback, useLayoutEffect } from 'react'
+import { useCallback, useLayoutEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { useThree } from 'react-three-fiber'
-import { useSelector, useDispatch } from 'react-redux'
-import { RootStore } from '@/store'
-import useGameFrame from '@/hooks/useGameFrame'
 import { BoxBufferGeometry, Color, MeshBasicMaterial } from 'three'
-import { Meteo, METEO_REMOVE, METEO_REPLACE } from '@/store/Meteolites'
-import { touchObject } from '@/utils/touchObject'
-import { Laser, LASER_REPLACE, LASER_ADD, LASER_REMOVE } from '@/store/Lasers'
-import { IS_GAME_ACTIVE } from '@/store/selectors'
+import useGameFrame from '@/hooks/useGameFrame'
+import type { RootStore } from '@/store'
+import { LASER_ADD, LASER_REMOVE, LASER_REPLACE, type Laser } from '@/store/Lasers'
+import { METEO_REMOVE, METEO_REPLACE, type Meteo } from '@/store/Meteolites'
 import { POINT_INC } from '@/store/Score'
+import { IS_GAME_ACTIVE } from '@/store/selectors'
+import { touchObject } from '@/utils/touchObject'
 
 const geometry = new BoxBufferGeometry(0.3, 0.3, 10)
 const material = new MeshBasicMaterial({ color: new Color('lightgreen') })
 
-const LaserComponent = ({ guid, position, rotation, scale }: Laser) => {
+const LaserComponent = ({ guid, position, rotation: _rotation, scale: _scale }: Laser) => {
   const { camera } = useThree()
-  const { position: shipPosition, flightSpeed } = useSelector(
-    (state: RootStore) => state.spaceShip
-  )
+  const { position: shipPosition, flightSpeed } = useSelector((state: RootStore) => state.spaceShip)
   const meteos = useSelector((state: RootStore) => state.meteos)
   const dispatch = useDispatch()
 
@@ -38,21 +36,21 @@ const LaserComponent = ({ guid, position, rotation, scale }: Laser) => {
         rotation: {
           x: 0,
           y: 0,
-          z: 0
+          z: 0,
         },
         scale: {
           x: 1,
           y: 1,
-          z: 10 + flightSpeed
-        }
-      })
+          z: 10 + flightSpeed,
+        },
+      }),
     )
     if (breakMeteo) {
       dispatch(
         METEO_REPLACE({
           ...breakMeteo,
-          color: new Color('red')
-        })
+          color: new Color('red'),
+        }),
       )
       setTimeout(() => {
         dispatch(POINT_INC(Math.floor(breakMeteo.scale.x * 100)))
@@ -68,23 +66,17 @@ const LaserComponent = ({ guid, position, rotation, scale }: Laser) => {
     dispatch(
       LASER_REPLACE({
         guid,
-        position: updatePosition
-      })
+        position: updatePosition,
+      }),
     )
   })
   return (
-    <mesh
-      position={[position.x, position.y, position.z]}
-      geometry={geometry}
-      material={material}
-    />
+    <mesh position={[position.x, position.y, position.z]} geometry={geometry} material={material} />
   )
 }
 
 const Lasers = () => {
-  const { position: shipPosition } = useSelector(
-    (state: RootStore) => state.spaceShip
-  )
+  const { position: shipPosition } = useSelector((state: RootStore) => state.spaceShip)
   const isActive = useSelector(IS_GAME_ACTIVE)
   const dispatch = useDispatch()
   const handleClick = useCallback(() => {
@@ -94,9 +86,10 @@ const Lasers = () => {
         scale: {
           x: 0.3,
           y: 0.3,
-          z: 10
-        }
-      } as any)
+          z: 10,
+        },
+        // biome-ignore lint/suspicious/noExplicitAny: legacy Redux action type, will be replaced in Phase 4
+      } as any),
     )
   }, [dispatch, shipPosition])
   useLayoutEffect(() => {

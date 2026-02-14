@@ -1,9 +1,9 @@
-import React from 'react'
-import useView from '@/hooks/useView'
-import { OrthographicCamera, Color, Object3D, Vector3 } from 'three'
 import { useSelector } from 'react-redux'
-import { RootStore } from '@/store'
+import { Color, type OrthographicCamera } from 'three'
+import useView from '@/hooks/useView'
+import type { RootStore } from '@/store'
 
+// biome-ignore lint/suspicious/noExplicitAny: legacy R3F props, will be typed in Phase 4
 function MapCamera(props: any) {
   const ship = useSelector((state: RootStore) => state.spaceShip)
   const ref = useView<OrthographicCamera>({
@@ -17,7 +17,7 @@ function MapCamera(props: any) {
       camera.position.y = 20
       camera.lookAt(0, 0, ship.position.z)
       return camera
-    }
+    },
   })
 
   return <perspectiveCamera ref={ref} {...props} />
