@@ -6,9 +6,8 @@ export default defineConfig({
   plugins: [react()],
 
   test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: [],
+    include: ['src/**/*.test.{ts,tsx}'],
+    environment: 'node',
     coverage: {
       reporter: ['text', 'json', 'html'],
       include: ['src/**/*.{ts,tsx}'],
