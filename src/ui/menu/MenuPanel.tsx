@@ -1,11 +1,10 @@
 import { Fragment } from 'react'
-import { Provider, useSelector } from 'react-redux'
-import store, { type RootStore } from '@/store'
+import { useGameStore } from '../../store/gameStore'
 import Loading from './Loading'
 import Start from './Start'
 
 const Menu = () => {
-  const active = useSelector<RootStore, boolean>(({ play }) => play.active)
+  const active = useGameStore((s) => s.play.active)
   if (active) return null
   return (
     <Fragment>
@@ -14,9 +13,6 @@ const Menu = () => {
     </Fragment>
   )
 }
-const MenuPanel = () => (
-  <Provider store={store}>
-    <Menu />
-  </Provider>
-)
+
+const MenuPanel = () => <Menu />
 export default MenuPanel

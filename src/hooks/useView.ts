@@ -1,9 +1,10 @@
+import { useFrame, useThree } from '@react-three/fiber'
 import type React from 'react'
 import { useMemo, useRef } from 'react'
-import { useFrame, useThree } from 'react-three-fiber'
-import { type Camera, type Color, PerspectiveCamera, type Scene, type Vector2 } from 'three'
+import type { Camera, Color, Scene, Vector2 } from 'three'
+import { PerspectiveCamera } from 'three'
 
-export interface ViewOption<T extends Camera = any> {
+export interface ViewOption<T extends Camera = Camera> {
   isMain?: boolean
   left: number
   bottom: number
@@ -11,22 +12,12 @@ export interface ViewOption<T extends Camera = any> {
   height: number
   background?: Color
   renderPriority?: number
-  updateCamera: ({ camera, scene, mouse }: { camera: T; scene: Scene; mouse: Vector2 }) => T
+  updateCamera: (params: { camera: T; scene: Scene; mouse: Vector2 }) => T
 }
 
-const defaultOption: ViewOption = {
-  isMain: true,
-  left: 0,
-  bottom: 0,
-  width: 1,
-  height: 1,
-  updateCamera: ({ camera }) => camera,
-}
-function useView<T extends Camera = Camera>(
-  option: ViewOption<T> = defaultOption,
-): React.MutableRefObject<T | undefined> {
-  const cam = useRef<T>()
-  const { size } = useThree()
+function useView<T extends Camera = Camera>(option: ViewOption<T>): React.RefObject<T | null> {
+  const cam = useRef<T>(null)
+  const { size, pointer } = useThree()
 
   const left = useMemo(() => Math.floor(size.width * option.left), [size.width, option.left])
   const bottom = useMemo(
@@ -39,12 +30,9 @@ function useView<T extends Camera = Camera>(
     [size.height, option.height],
   )
 
-  /**
-   * https://github.com/react-spring/react-three-fiber/blob/master/recipes.md#heads-up-display-rendering-multiple-scenes
-   */
-  useFrame(({ scene, camera, gl, mouse }) => {
+  useFrame(({ scene, camera, gl }) => {
     if (!cam.current) return
-    option.updateCamera({ camera: cam.current, scene, mouse })
+    option.updateCamera({ camera: cam.current, scene, mouse: pointer })
     gl.autoClear = true
     if (option.isMain) {
       gl.clearDepth()
@@ -55,14 +43,15 @@ function useView<T extends Camera = Camera>(
     if (option.background) {
       gl.setClearColor(option.background)
     }
-    ;(camera as any).aspect = width / height
     if (cam.current instanceof PerspectiveCamera) {
-      ;(camera as any).fov = cam.current.fov
+      ;(camera as PerspectiveCamera).aspect = width / height
+      ;(camera as PerspectiveCamera).fov = cam.current.fov
     }
     camera.position.copy(cam.current.position)
     camera.rotation.copy(cam.current.rotation)
     gl.render(scene, camera)
   }, option.renderPriority)
+
   return cam
 }
 

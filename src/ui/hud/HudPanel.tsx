@@ -1,10 +1,4 @@
-import { Provider } from 'react-redux'
-import { Menu } from '@/components/ui/Menu'
-import store from '@/store'
+import { GameMenu } from './GameMenu'
 
-const UiPanel = () => (
-  <Provider store={store}>
-    <Menu />
-  </Provider>
-)
-export default UiPanel
+const HudPanel = () => <GameMenu />
+export default HudPanel

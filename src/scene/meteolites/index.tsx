@@ -1,62 +1,50 @@
+import { useLoader, useThree } from '@react-three/fiber'
 import { memo, Suspense, useLayoutEffect, useRef } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { useLoader, useThree } from 'react-three-fiber'
-import {
-  type BufferGeometry,
-  type Geometry,
-  type Group,
-  IcosahedronGeometry,
-  type Loader,
-  type Texture,
-} from 'three'
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
-import useGameFrame from '@/hooks/useGameFrame'
-import useMeteoData from '@/hooks/useMeteoData'
-import type { RootStore } from '@/store'
-import { LOAD_UPDATE } from '@/store/Load'
-import { METEO_REPLACE, type Meteo } from '@/store/Meteolites'
-import { getRandom } from '@/utils/getRandom'
+import type { BufferGeometry, Texture } from 'three'
+import { type Group, IcosahedronGeometry, type Loader } from 'three'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js'
+import useGameFrame from '../../hooks/useGameFrame'
+import useMeteoData from '../../hooks/useMeteoData'
+import { getRandom } from '../../logic/random'
+import type { Meteo } from '../../store/gameStore'
+import { useGameStore } from '../../store/gameStore'
+import drc1 from './assets/drc/Meteolite1.drc?url'
+import drc2 from './assets/drc/Meteolite2.drc?url'
+import drc3 from './assets/drc/Meteolite3.drc?url'
+import drc4 from './assets/drc/Meteolite4.drc?url'
 
 const dracoLoaderExtend = (loader: Loader) => {
   if (loader instanceof DRACOLoader) {
-    loader.setDecoderPath('./libs/draco/')
+    loader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/')
   }
 }
 
 interface MeteoProps extends Meteo {
-  geometry: BufferGeometry | Geometry
+  geometry: BufferGeometry
   texture?: Texture
 }
 
 const MeteoComponent = memo(
-  ({ guid, geometry, texture, position, rotation, scale, color, ...rest }: MeteoProps) => {
-    const ref = useRef<Group>()
-    const { raycaster, aspect } = useThree()
-    const dispatch = useDispatch()
-    const mainCameraPostion = useSelector((state: RootStore) => state.cam.position)
+  ({ guid, geometry, position, rotation, scale, color, ...rest }: MeteoProps) => {
+    const ref = useRef<Group>(null)
+    const aspect = useThree((s) => s.viewport.aspect)
+    const raycaster = useThree((s) => s.raycaster)
+    const replaceMeteo = useGameStore((s) => s.replaceMeteo)
+
     useGameFrame(({ camera }) => {
       if (!ref.current) return
+      const mainCameraPosition = useGameStore.getState().cam.position
       const isMouseOver = raycaster.intersectObject(ref.current, true).length > 0
-      const isFrameOut = ref.current.position.z > mainCameraPostion.z
+      const isFrameOut = ref.current.position.z > mainCameraPosition.z
 
       if (!isMouseOver && !isFrameOut) return
+
       const CAMERA_DISTANCE = camera.near + 5
       const randomScale = getRandom({ min: 0.5, max: 2 })
-      const updateScale = {
-        x: randomScale,
-        y: randomScale,
-        z: randomScale,
-      }
-
+      const updateScale = { x: randomScale, y: randomScale, z: randomScale }
       const updatePosition = {
-        x: getRandom({
-          min: (-CAMERA_DISTANCE * aspect) / 2,
-          max: (CAMERA_DISTANCE * aspect) / 2,
-        }),
-        y: getRandom({
-          min: -CAMERA_DISTANCE / 2,
-          max: CAMERA_DISTANCE / 2,
-        }),
+        x: getRandom({ min: (-CAMERA_DISTANCE * aspect) / 2, max: (CAMERA_DISTANCE * aspect) / 2 }),
+        y: getRandom({ min: -CAMERA_DISTANCE / 2, max: CAMERA_DISTANCE / 2 }),
         z: position.z - camera.far,
       }
       const updateRotation = {
@@ -64,15 +52,14 @@ const MeteoComponent = memo(
         y: rotation.y + Math.PI * 0.05,
         z: rotation.z + Math.PI * 0.05,
       }
-      dispatch(
-        METEO_REPLACE({
-          ...rest,
-          guid,
-          scale: isFrameOut ? updateScale : scale,
-          position: isFrameOut ? updatePosition : position,
-          rotation: isMouseOver ? updateRotation : rotation,
-        }),
-      )
+
+      replaceMeteo({
+        ...rest,
+        guid,
+        scale: isFrameOut ? updateScale : scale,
+        position: isFrameOut ? updatePosition : position,
+        rotation: isMouseOver ? updateRotation : rotation,
+      })
     })
 
     return (
@@ -97,25 +84,14 @@ const MeteoComponent = memo(
     prev.color === next.color,
 )
 
-const fallbackGeometry: Geometry = new IcosahedronGeometry()
-const Meteolites = ({ num }: { num: number }) => {
-  const load = useSelector((state: RootStore) => state.load.meteolites)
-  const meteos = useSelector((state: RootStore) => state.meteos)
-  const dispatch = useDispatch()
+const fallbackGeometry = new IcosahedronGeometry()
 
-  /**
-   * LOAD METEOLITES
-   */
-  const geometries: BufferGeometry[] = useLoader<any>(
-    DRACOLoader,
-    [
-      require('./drc/Meteolite1.drc'),
-      require('./drc/Meteolite2.drc'),
-      require('./drc/Meteolite3.drc'),
-      require('./drc/Meteolite4.drc'),
-    ],
-    dracoLoaderExtend,
-  )
+const Meteolites = ({ num }: { num: number }) => {
+  const load = useGameStore((s) => s.load.meteolites)
+  const meteos = useGameStore((s) => s.meteos)
+  const updateLoad = useGameStore((s) => s.updateLoad)
+
+  const geometries = useLoader(DRACOLoader, [drc1, drc2, drc3, drc4], dracoLoaderExtend)
 
   const { set: createMeteosData } = useMeteoData({
     patternNum: geometries.length,
@@ -123,33 +99,22 @@ const Meteolites = ({ num }: { num: number }) => {
 
   useLayoutEffect(() => {
     if (!geometries || load) return
-    for (const _obj of geometries) {
-      // geometry iteration (no-op for now, geometries loaded via useLoader)
-    }
     createMeteosData(num)
-    dispatch(
-      LOAD_UPDATE({
-        meteolites: true,
-      }),
-    )
-  }, [createMeteosData, dispatch, load, geometries, num])
+    updateLoad({ meteolites: true })
+  }, [createMeteosData, load, geometries, num, updateLoad])
+
   return (
     <>
-      {Object.values(meteos).map((info: Meteo, _i: number) => {
-        return (
-          <Suspense
-            key={info.guid}
-            fallback={() => <MeteoComponent geometry={fallbackGeometry} {...info} />}
-          >
-            <MeteoComponent
-              geometry={geometries[info.pattern]}
-              // texture={textures[info.pattern]}
-              {...info}
-            />
-          </Suspense>
-        )
-      })}
+      {Object.values(meteos).map((info: Meteo) => (
+        <Suspense
+          key={info.guid}
+          fallback={<MeteoComponent geometry={fallbackGeometry} {...info} />}
+        >
+          <MeteoComponent geometry={geometries[info.pattern]} {...info} />
+        </Suspense>
+      ))}
     </>
   )
 }
+
 export default Meteolites

@@ -1,11 +1,8 @@
-import { useSelector } from 'react-redux'
 import { Color, type OrthographicCamera } from 'three'
-import useView from '@/hooks/useView'
-import type { RootStore } from '@/store'
+import useView from '../../hooks/useView'
+import { useGameStore } from '../../store/gameStore'
 
-// biome-ignore lint/suspicious/noExplicitAny: legacy R3F props, will be typed in Phase 4
-function MapCamera(props: any) {
-  const ship = useSelector((state: RootStore) => state.spaceShip)
+function MapCamera(props: Record<string, unknown>) {
   const ref = useView<OrthographicCamera>({
     left: 0,
     bottom: 0,
@@ -13,9 +10,10 @@ function MapCamera(props: any) {
     height: 0.25,
     background: new Color(0, 0, 0),
     updateCamera: ({ camera }) => {
-      camera.position.z = ship.position.z
+      const { spaceShip } = useGameStore.getState()
+      camera.position.z = spaceShip.position.z
       camera.position.y = 20
-      camera.lookAt(0, 0, ship.position.z)
+      camera.lookAt(0, 0, spaceShip.position.z)
       return camera
     },
   })

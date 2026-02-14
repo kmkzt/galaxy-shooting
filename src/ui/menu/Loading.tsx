@@ -1,10 +1,10 @@
 import type { FC } from 'react'
-import { useSelector } from 'react-redux'
-import Layer, { type Props } from '@/components/style/Layer'
-import type { RootStore } from '@/store'
+import { useGameStore } from '../../store/gameStore'
+import type { LayerProps } from '../style/Layer'
+import Layer from '../style/Layer'
 
-const Loading: FC<Props> = (props) => {
-  const load = useSelector((state: RootStore) => state.load)
+const Loading: FC<LayerProps> = (props) => {
+  const load = useGameStore((s) => s.load)
   if (Object.values(load).every((l) => l)) return null
   return (
     <Layer {...props}>

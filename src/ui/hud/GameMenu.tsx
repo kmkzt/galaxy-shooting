@@ -1,66 +1,43 @@
-import { type FC, useCallback, useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import styled from 'styled-components'
-import useMeteoData from '@/hooks/useMeteoData'
-import type { RootStore } from '@/store'
-import { PLAY_STOP } from '@/store/Play'
-import { SPACESHIP_UPDATE } from '@/store/SpaceShip'
+import type { FC } from 'react'
+import { useCallback, useEffect } from 'react'
+import useMeteoData from '../../hooks/useMeteoData'
+import { useGameStore } from '../../store/gameStore'
+import styles from './GameMenu.module.css'
 
-export const Menu: FC = () => {
-  const point = useSelector<RootStore, number>(({ score }) => score.point)
-  const shipPosition = useSelector<RootStore, number>(({ spaceShip }) =>
-    Math.floor(spaceShip.position.z),
-  )
-  const meteosCount = useSelector<RootStore, number>(({ meteos }) => Object.keys(meteos).length)
+export const GameMenu: FC = () => {
+  const point = useGameStore((s) => s.score.point)
+  const shipPosition = useGameStore((s) => Math.floor(s.spaceShip.position.z))
+  const meteosCount = useGameStore((s) => Object.keys(s.meteos).length)
+  const stopPlay = useGameStore((s) => s.stopPlay)
+  const updateSpaceShip = useGameStore((s) => s.updateSpaceShip)
   const { set } = useMeteoData({ patternNum: 4 })
-  const dispatch = useDispatch()
-  const playStop = useCallback(() => dispatch(PLAY_STOP()), [dispatch])
-  const restart = useCallback(() => {
-    dispatch(
-      SPACESHIP_UPDATE({
-        isClashed: false,
-        position: {
-          x: 0,
-          y: 0,
-          z: 0,
-        },
-      }),
-    )
-    playStop()
-    set(100)
-  }, [dispatch, playStop, set])
 
-  /**
-   * check window Active
-   */
+  const restart = useCallback(() => {
+    updateSpaceShip({
+      isClashed: false,
+      position: { x: 0, y: 0, z: 0 },
+    })
+    stopPlay()
+    set(100)
+  }, [updateSpaceShip, stopPlay, set])
+
   useEffect(() => {
     if (!document.hasFocus()) {
-      playStop()
+      stopPlay()
     }
   })
 
   return (
-    <Wrap>
+    <div className={styles.wrap}>
       <div>POINTS: {point}</div>
       <div>SHIP POSITION: {shipPosition}</div>
       <div>METEOLITES: {meteosCount}</div>
-      <button type="button" onClick={playStop}>
+      <button type="button" onClick={stopPlay}>
         MENU
       </button>
       <button type="button" onClick={restart}>
         RESTART
       </button>
-    </Wrap>
+    </div>
   )
 }
-
-const Wrap = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-  position: fixed;
-  background: rgba(255, 255, 255, 0.4);
-  bottom: 0;
-  right: 0;
-  padding: 12px;
-`

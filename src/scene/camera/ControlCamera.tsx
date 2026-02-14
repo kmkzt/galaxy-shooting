@@ -1,22 +1,18 @@
+import { useThree } from '@react-three/fiber'
 import { useLayoutEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { useThree } from 'react-three-fiber'
 import { Color, type PerspectiveCamera } from 'three'
-import useView from '@/hooks/useView'
-import type { RootStore } from '@/store'
-import { CAMERA_UPDATE } from '@/store/Camera'
+import useView from '../../hooks/useView'
+import { useGameStore } from '../../store/gameStore'
 
 interface Props {
-  position: number[]
+  position: [number, number, number]
   fov: number
   near: number
   far: number
 }
+
 function ControlCamera(props: Props) {
-  const { aspect } = useThree()
-  const ship = useSelector((state: RootStore) => state.spaceShip)
-  const { distance: cameraDistane } = useSelector((state: RootStore) => state.cam)
-  const dispatch = useDispatch()
+  const aspect = useThree((s) => s.viewport.aspect)
   const ref = useView<PerspectiveCamera>({
     isMain: true,
     left: 0,
@@ -25,25 +21,25 @@ function ControlCamera(props: Props) {
     height: 1,
     background: new Color(0x333366),
     updateCamera: ({ camera }) => {
-      camera.position.z = ship.position.z + cameraDistane
+      const { spaceShip, cam } = useGameStore.getState()
+      camera.position.z = spaceShip.position.z + cam.distance
       return camera
     },
   })
 
-  /**
-   * register main camera status
-   */
   useLayoutEffect(() => {
     if (!ref.current) return
-    dispatch(
-      CAMERA_UPDATE({
-        aspect,
-        far: ref.current.far,
-        near: ref.current.near,
-        position: ref.current.position,
-      }),
-    )
-  }, [aspect, dispatch, ref])
+    useGameStore.getState().updateCamera({
+      aspect,
+      far: ref.current.far,
+      near: ref.current.near,
+      position: {
+        x: ref.current.position.x,
+        y: ref.current.position.y,
+        z: ref.current.position.z,
+      },
+    })
+  }, [aspect, ref])
 
   return <perspectiveCamera ref={ref} {...props} />
 }

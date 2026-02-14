@@ -1,23 +1,19 @@
-import { type FC, lazy, Suspense } from 'react'
-import styled from 'styled-components'
-import Menu from '@/components/menu'
+import { lazy, Suspense } from 'react'
+import styles from './App.module.css'
+import MenuPanel from './ui/menu/MenuPanel'
 
-const GamePanel = lazy(() => import('@/components/game'))
-const UiPanel = lazy(() => import('@/components/ui'))
+const Scene = lazy(() => import('./scene/Scene'))
+const HudPanel = lazy(() => import('./ui/hud/HudPanel'))
 
-const DisplayArea = styled.div`
-  width: 100vw;
-  height: 100vh;
-`
-const App: FC = () => {
+const App = () => {
   return (
-    <DisplayArea>
-      <Menu />
+    <div className={styles.displayArea}>
+      <MenuPanel />
       <Suspense fallback={null}>
-        <GamePanel />
-        <UiPanel />
+        <Scene />
+        <HudPanel />
       </Suspense>
-    </DisplayArea>
+    </div>
   )
 }
 

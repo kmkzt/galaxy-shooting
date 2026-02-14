@@ -1,22 +1,24 @@
-import styled from 'styled-components'
+import type { FC, ReactNode } from 'react'
+import styles from './Layer.module.css'
 
-export interface Props {
+export interface LayerProps {
   zIndex?: number
   background?: string
+  children?: ReactNode
 }
-export default styled.div<Props>`
-  position: fixed;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: ${({ background }) => background || 'rgba(0, 0, 0, 0.4)'};
-  padding: 12px;
-  display: flex;
-  justify-content: center;
-  align-content: center;
-  align-items: center;
-  z-index: ${({ zIndex }) => zIndex || 'auto'};
-`
+
+const Layer: FC<LayerProps> = ({ zIndex, background, children }) => {
+  return (
+    <div
+      className={styles.layer}
+      style={{
+        zIndex: zIndex ?? 'auto',
+        background: background ?? 'rgba(0, 0, 0, 0.4)',
+      }}
+    >
+      {children}
+    </div>
+  )
+}
+
+export default Layer

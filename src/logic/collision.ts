@@ -1,4 +1,4 @@
-import type { Obj, Xyz } from '@/interface/Obj'
+import type { Obj, Xyz } from './types'
 
 export const touchObject = <T1 extends Obj, T2 extends Obj = T1>(obj1: T1, obj2: T2): boolean => {
   const x1 = obj2.position.x + obj2.scale.x / 2

@@ -1,113 +1,76 @@
+import { useThree } from '@react-three/fiber'
 import { useCallback, useLayoutEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { useThree } from 'react-three-fiber'
-import { BoxBufferGeometry, Color, MeshBasicMaterial } from 'three'
-import useGameFrame from '@/hooks/useGameFrame'
-import type { RootStore } from '@/store'
-import { LASER_ADD, LASER_REMOVE, LASER_REPLACE, type Laser } from '@/store/Lasers'
-import { METEO_REMOVE, METEO_REPLACE, type Meteo } from '@/store/Meteolites'
-import { POINT_INC } from '@/store/Score'
-import { IS_GAME_ACTIVE } from '@/store/selectors'
-import { touchObject } from '@/utils/touchObject'
+import { BoxGeometry, Color, MeshBasicMaterial } from 'three'
+import useGameFrame from '../../hooks/useGameFrame'
+import { touchObject } from '../../logic/collision'
+import type { Laser, Meteo } from '../../store/gameStore'
+import { useGameStore } from '../../store/gameStore'
 
-const geometry = new BoxBufferGeometry(0.3, 0.3, 10)
+const geometry = new BoxGeometry(0.3, 0.3, 10)
 const material = new MeshBasicMaterial({ color: new Color('lightgreen') })
 
 const LaserComponent = ({ guid, position, rotation: _rotation, scale: _scale }: Laser) => {
-  const { camera } = useThree()
-  const { position: shipPosition, flightSpeed } = useSelector((state: RootStore) => state.spaceShip)
-  const meteos = useSelector((state: RootStore) => state.meteos)
-  const dispatch = useDispatch()
+  const camera = useThree((s) => s.camera)
 
   useGameFrame(() => {
-    /**
-     * Laser Frame Out
-     */
-    if (shipPosition.z - camera.far > position.z) {
-      dispatch(LASER_REMOVE(guid))
+    const { spaceShip, meteos, removeLaser, replaceLaser, replaceMeteo, removeMeteo, incPoint } =
+      useGameStore.getState()
+
+    if (spaceShip.position.z - camera.far > position.z) {
+      removeLaser(guid)
       return
     }
-    /**
-     * Break Meteolites
-     */
+
     const breakMeteo = Object.values(meteos).find((me: Meteo) =>
       touchObject(me, {
         position,
-        rotation: {
-          x: 0,
-          y: 0,
-          z: 0,
-        },
-        scale: {
-          x: 1,
-          y: 1,
-          z: 10 + flightSpeed,
-        },
+        rotation: { x: 0, y: 0, z: 0 },
+        scale: { x: 1, y: 1, z: 10 + spaceShip.flightSpeed },
       }),
     )
+
     if (breakMeteo) {
-      dispatch(
-        METEO_REPLACE({
-          ...breakMeteo,
-          color: new Color('red'),
-        }),
-      )
+      replaceMeteo({ ...breakMeteo, color: new Color('red') })
       setTimeout(() => {
-        dispatch(POINT_INC(Math.floor(breakMeteo.scale.x * 100)))
-        dispatch(METEO_REMOVE(breakMeteo.guid))
+        incPoint(Math.floor(breakMeteo.scale.x * 100))
+        removeMeteo(breakMeteo.guid)
       }, 100)
-      dispatch(LASER_REMOVE(guid))
+      removeLaser(guid)
       return
     }
-    /**
-     * Laser Move
-     */
-    const updatePosition = { ...position, z: position.z - flightSpeed - 5 }
-    dispatch(
-      LASER_REPLACE({
-        guid,
-        position: updatePosition,
-      }),
-    )
+
+    replaceLaser({
+      guid,
+      position: { ...position, z: position.z - spaceShip.flightSpeed - 5 },
+    })
   })
+
   return (
     <mesh position={[position.x, position.y, position.z]} geometry={geometry} material={material} />
   )
 }
 
 const Lasers = () => {
-  const { position: shipPosition } = useSelector((state: RootStore) => state.spaceShip)
-  const isActive = useSelector(IS_GAME_ACTIVE)
-  const dispatch = useDispatch()
+  const lasers = useGameStore((s) => s.lasers)
+  const addLaser = useGameStore((s) => s.addLaser)
+
   const handleClick = useCallback(() => {
-    dispatch(
-      LASER_ADD({
-        position: shipPosition,
-        scale: {
-          x: 0.3,
-          y: 0.3,
-          z: 10,
-        },
-        // biome-ignore lint/suspicious/noExplicitAny: legacy Redux action type, will be replaced in Phase 4
-      } as any),
-    )
-  }, [dispatch, shipPosition])
+    const { spaceShip, isGameActive } = useGameStore.getState()
+    if (!isGameActive()) return
+    addLaser({
+      position: spaceShip.position,
+      rotation: { x: 0, y: 0, z: 0 },
+      scale: { x: 0.3, y: 0.3, z: 10 },
+    })
+  }, [addLaser])
+
   useLayoutEffect(() => {
-    if (!isActive) return
     window.addEventListener('click', handleClick)
     return () => {
       window.removeEventListener('click', handleClick)
     }
-  }, [handleClick, isActive])
+  }, [handleClick])
 
-  const lasers = useSelector((state: RootStore) => state.lasers)
-  /**
-   * Laser Count Debug
-   */
-  // const debug = useMemo(() => Object.keys(lasers).length, [lasers])
-  // useEffect(() => {
-  //   console.log(lasers)
-  // }, [debug, lasers])
   return (
     <>
       {Object.values(lasers).map(({ guid, ...info }) => (
@@ -116,4 +79,5 @@ const Lasers = () => {
     </>
   )
 }
+
 export default Lasers
