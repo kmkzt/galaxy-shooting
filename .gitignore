@@ -25,3 +25,10 @@ yarn-error.log*
 package-lock.json
 .vscode
 
+# storybook
+storybook-static
+
+# playwright
+playwright-report
+test-results
+
