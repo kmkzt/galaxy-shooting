@@ -1,34 +1,97 @@
-name: generate github pages
+name: Deploy to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number for preview deployment (empty for production)"
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: deploy-${{ github.event.pull_request.number || github.event.inputs.pr_number || 'main-merge' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  build-deploy:
+  deploy:
     runs-on: ubuntu-latest
+    env:
+      PR_NUMBER: ${{ github.event.pull_request.number || github.event.inputs.pr_number || '' }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: latest
-      - name: install
-        run: |
-          pnpm install
-      - name: Build
-        run: |
-          pnpm build
+          cache: pnpm
 
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+        env:
+          VITE_BASE_PATH: ${{ env.PR_NUMBER != '' && format('/galaxy-shooting/pr/{0}/', env.PR_NUMBER) || '/galaxy-shooting/' }}
+
+      - name: Deploy to gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [[ -n "$PR_NUMBER" ]]; then
+            .github/scripts/deploy-to-pages.sh deploy dist \
+              --subdir "pr/${PR_NUMBER}" \
+              --message "deploy: PR #${PR_NUMBER} preview"
+          else
+            .github/scripts/deploy-to-pages.sh deploy dist \
+              --message "deploy: ${GITHUB_SHA::7}"
+          fi
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: ./dist
+          script: |
+            const prNumber = context.payload.pull_request.number;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const previewUrl = `https://${owner}.github.io/${repo}/pr/${prNumber}/`;
+            const marker = '<!-- pr-preview -->';
+            const body = [
+              marker,
+              `**Preview:** ${previewUrl}`,
+            ].join('\n');
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner,
+              repo,
+              issue_number: prNumber,
+            });
+
+            const existing = comments.find(c => c.body.includes(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: prNumber,
+                body,
+              });
+            }
+
