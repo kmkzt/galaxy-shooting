@@ -27,8 +27,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with:
-          version: latest
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -47,12 +45,18 @@ jobs:
           MODIFIED=$(git diff --name-only -- 'e2e/**/*.png')
           UNTRACKED=$(git ls-files --others --exclude-standard -- 'e2e/**/*.png')
           DELETED=$(git ls-files --deleted -- 'e2e/**/*.png')
+          REGRESSIONS=$(printf '%s\n%s' "$MODIFIED" "$DELETED" | sed '/^$/d')
           ALL_CHANGES=$(printf '%s\n%s\n%s' "$MODIFIED" "$UNTRACKED" "$DELETED" | sed '/^$/d')
           if [ -n "$ALL_CHANGES" ]; then
             echo "has_diff=true" >> "$GITHUB_OUTPUT"
             echo "$ALL_CHANGES" > /tmp/changed-snapshots.txt
           else
             echo "has_diff=false" >> "$GITHUB_OUTPUT"
+          fi
+          if [ -n "$REGRESSIONS" ]; then
+            echo "has_regression=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_regression=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Update PR comment
@@ -136,8 +140,8 @@ jobs:
           path: e2e/visual.test.ts-snapshots/
           retention-days: 7
 
-      - name: Fail if snapshots changed or regeneration failed
-        if: steps.diff.outputs.has_diff == 'true' || steps.regenerate.outcome == 'failure'
+      - name: Fail if regression detected or regeneration failed
+        if: steps.diff.outputs.has_regression == 'true' || steps.regenerate.outcome == 'failure'
         run: |
           if [ "${{ steps.regenerate.outcome }}" = "failure" ]; then
             echo "::error::Snapshot regeneration failed."
