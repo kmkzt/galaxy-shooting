@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "author": "kmkzt",
-  "packageManager": "pnpm@10.29.2",
+  "packageManager": "pnpm@10.29.3",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
